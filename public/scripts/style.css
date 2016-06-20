@@ -2,10 +2,11 @@
 
 /* Login */
 body.login { 
-    background-image: url('Images/login-background.jpg');
-    background-repeat: no-repeat;
-    background-attachment: fixed;
-    background-position: center;
+	background-image: url('../images/login-background.jpg');
+	background-repeat: no-repeat;
+	background-attachment: fixed;
+	background-size: cover;
+	background-position: center;
 	height: 100%;
 	width: 100%;
 	font-family: "Open Sans", sans-serif;
