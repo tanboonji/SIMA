@@ -30,7 +30,7 @@ body.login a {
 body.login .login-popup {
 	position: fixed;
 	background-color: rgba(0,0,0,0.85);
-	top: 52%;
+	top: 50%;
 	left: 50%;
 	margin: -155px 0 0 -225px;
 	height: 310px;
