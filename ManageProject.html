@@ -1,5 +1,6 @@
 <!doctype html>
 <html>
+
 <head>
 <meta charset="utf-8">
 <title>Projects</title>
@@ -21,11 +22,17 @@
     </table>
 </body>
 
-<script src="https://www.gstatic.com/firebasejs/live/3.0/firebase.js"></script>
+<!-- Firebase script -->
+<script src="https://www.gstatic.com/firebasejs/3.0.5/firebase.js"></script>
+<script src="https://www.gstatic.com/firebasejs/3.0.5/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/3.0.5/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/3.0.5/firebase-database.js"></script>
+<!-- JQuery & Bootstrap -->
 <script src="Scripts/jquery-2.1.4.min.js"></script>
-<link rel="stylesheet" type="text/css" href="Scripts/bootstrap.min.css">
+<link rel="stylesheet" type="text/css" href="Scripts/bootstrap.min.css"/>
+
 <script>
-  // Initialize firebase
+  // Initialize Firebase
   var config = {
     apiKey: "AIzaSyA_wrmu7wFqdueDEL3EMo15uDCsU7RpuR8",
     authDomain: "project-6187710772564662230.firebaseapp.com",
@@ -34,7 +41,7 @@
   };
   firebase.initializeApp(config);
   
-  //Getting project data from firebase
+  // Getting project data from Firebase
   var projectList;
   firebase.database().ref('/Project/').once('value').then(function(snapshot) {
 	  projectList = snapshot.val();
