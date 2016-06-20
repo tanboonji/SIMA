@@ -1,0 +1,75 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>Projects</title>
+    <link rel="icon" href="Images/knight-frank-icon.png"/>
+    <!-- JQuery & Bootstrap -->
+    <script src="Scripts/jquery-2.1.4.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="Scripts/bootstrap.min.css"/>
+    <!-- Font -->
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700,800" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" type="text/css" href="style.css"/>
+</head>
+
+<body>
+	<table id="projectTable" class="table table-hover table-bordered">
+    	<thead>
+        	<tr>
+            	<td>Id</td>
+                <td>Name</td>
+                <td>BUH</td>
+                <td>TM</td>
+                <td>CM</td>
+            </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+</body>
+
+<!-- Firebase script -->
+<script src="https://www.gstatic.com/firebasejs/3.0.5/firebase.js"></script>
+<script src="https://www.gstatic.com/firebasejs/3.0.5/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/3.0.5/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/3.0.5/firebase-database.js"></script>
+<script>
+	// Initialize Firebase
+	var config = {
+		apiKey: "AIzaSyA_wrmu7wFqdueDEL3EMo15uDCsU7RpuR8",
+		authDomain: "project-6187710772564662230.firebaseapp.com",
+		databaseURL: "https://project-6187710772564662230.firebaseio.com",
+		storageBucket: "project-6187710772564662230.appspot.com",
+	};
+	firebase.initializeApp(config);
+
+	// Getting project data from Firebase
+	var projectList;
+	firebase.database().ref('/Project/').once('value').then(function(snapshot) {
+		projectList = snapshot.val();
+		console.log(projectList);
+		
+		var $projectTableElement = $('#projectTable > tbody');
+		var $rowElement = null;
+		var $cellElement = null;
+		
+		for (var key in projectList) {
+			$rowElement = $('<tr></tr>');
+			$cellElement = $('<td></td>', { text: projectList[key]['Id'].toString() });
+			$rowElement.append($cellElement);
+			$cellElement = $('<td></td>', { text: projectList[key]['Name'].toString() });
+			$rowElement.append($cellElement);
+			$cellElement = $('<td></td>', { text: projectList[key]['BUH'].toString() });
+			$rowElement.append($cellElement);
+			$cellElement = $('<td></td>', { text: projectList[key]['TM'].toString() });
+			$rowElement.append($cellElement);
+			$cellElement = $('<td></td>', { text: projectList[key]['CM'].toString() });
+			$rowElement.append($cellElement);
+			$projectTableElement.append($rowElement);
+		}
+	});
+</script>
+
+</html>

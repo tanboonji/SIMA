@@ -1,25 +1,49 @@
 <!doctype html>
-<html>
-
-<head>
-<meta charset="utf-8">
-<title>Login</title>
-<link rel="icon" href="Images/knight-frank-logo.png"/>
-
-<!-- Background image -->
-<style type="text/css">
-body { 
-    background-image: url('Images/login-background.jpg');
-    background-repeat: no-repeat;
-    background-attachment: fixed;
-    background-position: center;
-	height: 100%;
-	width: 100%;
-}
-</style>
+<html><head>
+    <meta charset="utf-8">
+    <title>Login</title>
+    <link rel="icon" href="Images/knight-frank-icon.png"/>
+    <!-- JQuery & Bootstrap -->
+    <script src="Scripts/jquery-2.1.4.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="Scripts/bootstrap.min.css"/>
+    <!-- Font -->
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700,800" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" type="text/css" href="style.css"/>
 </head>
 
-<body>
+<body class="login">
+	<header>
+    	<img src="Images/knight-frank-logo.png"/>
+	</header>
+    <div class="login-popup">
+        <h3>Admin Login</h3>
+        <div class="content">
+        	<input type="text" class="input-text" placeholder="Username"/>
+        	<input type="password" class="input-text" placeholder="Password"/>
+            <div class="forget">
+            	<a id=""><u>Forget Password?</u></a>
+            </div>
+            <input type="button" class="btn btn-info login-btn" value="Login"/>
+        </div>
+    </div>
 </body>
+
+<!-- Firebase script -->
+<script src="https://www.gstatic.com/firebasejs/3.0.5/firebase.js"></script>
+<script src="https://www.gstatic.com/firebasejs/3.0.5/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/3.0.5/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/3.0.5/firebase-database.js"></script>
+
+<script>
+	// Initialize Firebase
+	var config = {
+		apiKey: "AIzaSyA_wrmu7wFqdueDEL3EMo15uDCsU7RpuR8",
+		authDomain: "project-6187710772564662230.firebaseapp.com",
+		databaseURL: "https://project-6187710772564662230.firebaseio.com",
+		storageBucket: "project-6187710772564662230.appspot.com",
+	};
+	firebase.initializeApp(config);
+</script>
 
 </html>
