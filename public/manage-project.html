@@ -11,7 +11,7 @@
     <!-- Font -->
     <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700,800" rel="stylesheet">
     <!-- Custom CSS -->
-    <link rel="stylesheet" type="text/css" href="style.css"/>
+    <link rel="stylesheet" type="text/css" href="scripts/style.css"/>
 </head>
 
 <body>
@@ -44,6 +44,9 @@
 		storageBucket: "project-6187710772564662230.appspot.com",
 	};
 	firebase.initializeApp(config);
+	
+	var user = firebase.auth().currentUser;
+	console.log(user);
 
 	// Getting project data from Firebase
 	var projectList;
