@@ -9,8 +9,9 @@ Bugs to fix:
 - 
 
 Things done:
--
+- 
 - Login.html
 
 Bugs fixed:
 - 
+- Signing in
