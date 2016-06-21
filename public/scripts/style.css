@@ -1,5 +1,47 @@
 /* CSS document */
 
+/* General - Font */
+body {	
+	font-family: "Open Sans", sans-serif;
+}
+
+/* Sign Out */
+body.signout h2 {
+	font-weight: 600;
+	font-size: 20pt;
+	margin-left: 20px;
+	margin-top: 20px;
+}
+
+/* General - Navigation */
+.navbar {
+	height: 90px;
+}
+.navbar .container {
+	margin-top: 20px;
+}
+.navbar .nav-menu {
+	display: inline;
+	position: fixed;
+	margin-top: 18px;
+	margin-left: 20px;
+}
+.navbar .nav-menu li {
+	display: inline;
+	margin-right: 50px;
+	font-size: 16px;
+}
+.navbar .nav-menu li:hover {
+	border-bottom: 2px solid #fa143a;
+}
+.navbar .nav-menu .selected {
+	border-bottom: 2px solid #fa143a;
+}
+.navbar .profile {
+	float: right;
+	margin-top: 18px;
+}
+
 /* Login */
 body.login { 
 	background-image: url('../images/login-background.jpg');
@@ -9,7 +51,6 @@ body.login {
 	background-position: center;
 	height: 100%;
 	width: 100%;
-	font-family: "Open Sans", sans-serif;
 }
 body.login header {
 	margin-left: 4%;

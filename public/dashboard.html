@@ -15,7 +15,23 @@
 </head>
 
 <body>
-
+    <header>
+		<nav class="navbar navbar-default navbar-static-top">
+			<div class="container">
+				<img src="images/knight-frank-logo.png" alt="Knight Frank" style="max-height:50px"/>
+                <div class="nav-menu">
+                    <ul>
+                        <li class="selected">Dashboard</li>
+                        <li>Projects</li>
+                        <li>Staff</li>
+                        <li>Facilities</li>
+                    </ul>
+                </div>
+                <div class="profile" id="profile">
+                </div>
+			</div>
+		</nav>
+    </header>
 </body>
 
 <!-- Firebase script -->
@@ -37,10 +53,22 @@
 	firebase.auth().onAuthStateChanged(function(user) {
 		if (user) {
 			console.log("User is signed in");
+			
+			console.log(firebase.auth().currentUser);
+				$('#profile').text(firebase.auth().currentUser.email);
 		} else {
 			window.location.href = "login.html";
 		}
 	});
+	
+	/*var user = firebase.auth().currentUser;
+			user.updateProfile({
+				displayName: "Hao Boon",
+				photoURL: "https://lh3.googleusercontent.com/-XdUIqdMkCWA/AAAAAAAAAAI/AAAAAAAAAAA/4252rscbv5M/photo.jpg?sz=64"
+			}).then(function() {
+			}, function(error) {
+				console.log("An error happened");
+			});*/
 </script>
 
 </html>
