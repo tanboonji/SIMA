@@ -44,9 +44,6 @@
 		storageBucket: "project-6187710772564662230.appspot.com",
 	};
 	firebase.initializeApp(config);
-	
-	var user = firebase.auth().currentUser;
-	console.log(user);
 
 	// Getting project data from Firebase
 	var projectList;
@@ -71,6 +68,14 @@
 			$cellElement = $('<td></td>', { text: projectList[key]['CM'].toString() });
 			$rowElement.append($cellElement);
 			$projectTableElement.append($rowElement);
+		}
+	});
+	
+	firebase.auth().onAuthStateChanged(function(user) {
+		if (user) {
+			console.log("User is signed in");
+		} else {
+			window.location.href = "login.html";
 		}
 	});
 </script>
