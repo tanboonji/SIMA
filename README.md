@@ -1,13 +1,16 @@
 # Knight Frank Site Inspection
 
-tutorial on github
-https://www.youtube.com/watch?v=0fKg7e37bQE
+Things to do:
+- 
+- Navigation menu
+- When logging in for the first time, update displayName and photoUrl
 
-git pull origin <branch>
-git add -A
-git commit -m 'commit comment' //for single line comment
-git commit //for multi line comment
-git push origin <branch>
+Bugs to fix:
+- 
 
-mobile branch for ionic app
-website branch for admin portal
+Things done:
+-
+- Login.html
+
+Bugs fixed:
+- 
