@@ -47,7 +47,8 @@
 
 	// Getting project data from Firebase
 	var projectList;
-	firebase.database().ref('/Project/').once('value').then(function(snapshot) {
+	/*firebase.database().ref("/Project/").orderByChild("Name").equalTo("Boon Keng Estate").once("value").then(function(snapshot) {*/
+	firebase.database().ref("Project").once("value").then(function(snapshot) {
 		projectList = snapshot.val();
 		console.log(projectList);
 		
