@@ -2,24 +2,33 @@ var app = angular.module('myApp', ['ngRoute', 'firebase']);
 
 app.config(function($routeProvider){
   $routeProvider
-	.when('/', {
-		controller: 'ListController',
-		templateUrl: 'views/list.html'
+	.when('/login', {
+		controller: 'LoginController',
+		templateUrl: 'views/login.html'
 	})
-	.when('/add', {
-		controller: 'AddController',
-		templateUrl: 'views/add.html'
+	.when('/dashboard', {
+		controller: 'DashboardController',
+		templateUrl: 'views/dashboard.html'
 	})
-	.when('/edit/:id', {
-		controller: 'EditController',
-		templateUrl: 'views/edit.html'
-	
+	.when('/projects', {
+		controller: 'ProjectsController',
+		templateUrl: 'views/projects.html'
+	})
+	.when('/staff', {
+		controller: 'StaffController',
+		templateUrl: 'views/projects.html'
+	})
+	.when('/facilities', {
+		controller: 'FacilitiesController',
+		templateUrl: 'views/facilities.html'
+	})
+	.when('/logout', {
+		controller: 'LogoutController',
+		templateUrl: 'views/logout.html'
 	})
 	.otherwise({
-		redirectTo: '/'
+		redirectTo: '/login'
 	});
 });
 
-app.constant("FBURL", 
-  "https://ang-crud.firebaseio.com/products/" //Use the URL of your project here
-);
+app.constant("firebase_url", "https://kfsi-new.firebaseio.com");
