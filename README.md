@@ -1,19 +1,15 @@
 # Knight Frank Site Inspection
 
-Things to do:
-- 
+### Things to do:
 - Button click feedback
 - Login error message
 - Navigation menu
 - When logging in for the first time, update displayName and photoUrl
 
-Bugs to fix:
-- 
+### Bugs to fix:
 
-Things done:
-- 
+### Things done:
 - Login.html
 
-Bugs fixed:
-- 
+### Bugs fixed:
 - Signing in
