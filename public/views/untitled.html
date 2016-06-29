@@ -1,0 +1,28 @@
+// Firebase auth
+	var firebaseAuth = function() {
+		var email = $('#email-input').val();
+		var password = $('#password-input').val();
+		firebase.auth().signInWithEmailAndPassword(email, password).catch(function(error) {
+			var errorCode = error.code;
+			var errorMessage = error.message;
+			console.log("Error " + errorCode + ": " + errorMessage);
+		})
+	};
+	
+	$('#login-btn').on('click',firebaseAuth);
+	
+	firebase.auth().onAuthStateChanged(function(user) {
+		if (user) {
+			console.log("User is signed in");
+		} else {
+			console.log("No user is signed in");
+			window.location.href = "login.html";
+		}
+	});
+	
+	$(document).keydown(function(event) {
+		var keyCode = event.which;   
+    	if (keyCode == 13) {
+			$('#login-btn').click();
+    	}
+	});
