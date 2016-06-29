@@ -5,6 +5,7 @@
 - Login error message
 - Navigation menu
 - When logging in for the first time, update displayName and photoUrl
+- Mouse hover over nav bar
 
 ### Bugs to fix:
 
