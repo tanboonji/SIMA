@@ -1,17 +1,17 @@
 <!doctype html>
-<html>
+<html ng-app="myApp">
 
 <head>
     <meta charset="utf-8">
-    <title>Login</title>
+    <title>Knight Frank Site Inspection</title>
     <link rel="icon" href="images/knight-frank-icon.png"/>
-    <!-- JQuery -->
-    <script src="scripts/jquery-2.1.4.min.js"></script>
     <!-- Bootstrap -->
     <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"/>
     <!-- Angular & ngRoute -->
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.7/angular.min.js"></script>
     <script src="https://code.angularjs.org/1.5.7/angular-route.min.js"></script>
+    <!-- ngFlash -->
+    <script src="js/angular-flash.min.js"></script>
     <!-- AngularFire -->
     <script src="https://cdn.firebase.com/libs/angularfire/2.0.1/angularfire.min.js"></script>
     <!-- Font -->
@@ -20,16 +20,17 @@
     <link rel="stylesheet" type="text/css" href="css/style.css"/>
     <!-- Firebase -->
     <script src="https://www.gstatic.com/firebasejs/3.1.0/firebase.js"></script>
-    <!--
-    <script src="https://www.gstatic.com/firebasejs/3.0.5/firebase.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/3.0.5/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/3.0.5/firebase-auth.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/3.0.5/firebase-database.js"></script>
-    -->
 </head>
 
-<body ng-app="myApp">
-	<div ng-view></div>
+<body ng-view>
+    <!-- Module -->
+	<script src="js/app.js"></script>
+    <!-- Controllers -->
+	<script src="js/controllers/LoginController.js"></script>
+	<!--
+	<script src="js/controllers/DashboardController.js"></script>
+	<script src="js/controllers/ProjectsController.js"></script> 
+    -->
 </body>
 
 <script>

@@ -1,16 +1,21 @@
 <div class="login">
+	<div class="error">
+		<flash-message></flash-message>
+	</div>
 	<header>
     	<img src="images/knight-frank-logo.png" alt="Knight Frank"/>
 	</header>
 	<div class="login-popup">
 		<h3>Admin Login</h3>
 		<div class="content">
-			<input id="email-input" type="text" class="input-text" placeholder="Email"/>
-			<input id="password-input" type="password" class="input-text" placeholder="Password"/>
+			<input ng-model="login.email" type="email" class="input-text" 
+            	placeholder="Email" ng-keyup="$event.keyCode == 13 && login()"/>
+			<input ng-model="login.password" type="password" class="input-text" 
+            	placeholder="Password" ng-keyup="$event.keyCode == 13 && login()"/>
 			<div class="forget">
-				<a id="forget-btn"><u>Forget Password?</u></a>
+				<a ng-click="forgetPassword()"><u>Forget Password?</u></a>
 			</div>
-			<input type="button" class="btn btn-info login-btn" value="Log In" id="login-btn"/>
+			<input type="button" class="btn btn-info login-btn" value="Log In" ng-click="login()"/>
 		</div>
 	</div>
 </div>

@@ -1,12 +1,14 @@
 /* CSS document */
 
 /* General - Font */
-body {	
+html, body {	
 	font-family: "Open Sans", sans-serif;
+	height: 100%;
+	width: 100%;
 }
 
-/* Sign Out */
-body.signout h2 {
+/* Logout */
+.logout h2 {
 	font-weight: 600;
 	font-size: 20pt;
 	margin-left: 20px;
@@ -43,7 +45,7 @@ body.signout h2 {
 }
 
 /* Login */
-body.login { 
+.login { 
 	background-image: url('../images/login-background.jpg');
 	background-repeat: no-repeat;
 	background-attachment: fixed;
@@ -52,23 +54,30 @@ body.login {
 	height: 100%;
 	width: 100%;
 }
-body.login header {
-	margin-left: 4%;
-	margin-top: 3%;
+.login header {
+	padding-left: 4%;
+	padding-top: 3%;
 }
-body.login h3 {
+.login h3 {
 	font-weight: 600;
 	font-size: 18pt;
 	color: white;
 	margin-top: 20px;
 	margin-left: 20px;
-	margin-bottom: 8px;
+	margin-bottom: 6px;
 }
-body.login a {
+.login a {
 	color: #ff4e00;
 	text-decoration: none;
 }
-body.login .login-popup {
+.login .error {
+	position: absolute;
+	top: 20px;
+	left: 50%;
+    transform: translate(-50%, 0);
+	z-index: 99;
+}
+.login .login-popup {
 	position: fixed;
 	background-color: rgba(0,0,0,0.85);
 	top: 50%;
@@ -77,12 +86,12 @@ body.login .login-popup {
 	height: 310px;
 	width: 450px;
 }
-body.login .login-popup .content {
+.login .login-popup .content {
 	margin-left: 75px;
 	margin-right: 75px;
 	text-align: center;
 }
-body.login .login-popup .input-text {
+.login .login-popup .input-text {
 	width: 300px;
 	height: 35px;
 	margin-top: 30px;
@@ -91,11 +100,11 @@ body.login .login-popup .input-text {
 	padding: 1px 10px;
 	color: white;
 }
-body.login .login-popup .forget {
+.login .login-popup .forget {
 	margin-top: 15px;
 	color: #ff4e00;
 }
-body.login .login-popup .login-btn {
+.login .login-popup .login-btn {
 	margin-top: 20px;
 	height: 35px;
 	width: 300px;
