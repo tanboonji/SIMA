@@ -1,0 +1,49 @@
+<header>
+	<nav class="navbar navbar-default navbar-static-top">
+		<div class="container">
+			<img src="images/knight-frank-logo.png" alt="Knight Frank" style="max-height:50px"/>
+			<div class="nav-menu">
+				<ul>
+					<li><a href="#/dashboard">Dashboard</a></li>
+ 					<li class="selected"><a href="#/projects">Projects</a></li>
+					<li><a href="#/staff">Staff</a></li>
+					<li><a href="#/facilities">Facilities</a></li>
+				</ul>
+			</div>
+			<div class="profile" id="profile">
+			</div>
+		</div>
+	</nav>
+</header>
+
+<div class="projects container">
+	<h3 class="title">Projects</h3>
+    <div class="row">
+    	<button type="button" class="btn btn-success force-col-margin pull-left" ng-click="addProject()">
+  			<span class="glyphicon glyphicon-plus button-icon" aria-hidden="true">
+            </span>Add
+		</button>
+        <div class="pull-left col-md-4 force-col-margin force-col-padding input-group">
+            <input type="text" class="form-control" placeholder="Search for...">
+            <div class="input-group-btn">
+                <button class="btn btn-primary" type="button">
+                    <span class="glyphicon glyphicon-search button-icon" aria-hidden="true"></span>Search
+                </button>
+	        </div>
+        </div>
+        <div class="pull-right">
+        	<label for="">Sort By:&nbsp;</label>
+			<div class="btn-group">
+                <button type="button" class="btn btn-default dropdown-toggle dropdown-style" data-toggle="dropdown"
+                    aria-haspopup="true" aria-expanded="true">
+                    <div class="dropdown-text-left">{{selectedItem}}&nbsp;</div>
+                    <span class="caret dropdown-text-right"></span>
+                </button>
+                <ul class="dropdown-menu">
+                    <li ng-repeat="a in sortByList"><a ng-click="dropdownItemSelected(a)">{{a}}</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    
+</div>

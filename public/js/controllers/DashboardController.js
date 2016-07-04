@@ -5,7 +5,7 @@ app.controller('DashboardController', ['$scope', 'Flash', '$location', '$firebas
 	
 	$scope.auth.$onAuthStateChanged(function(firebaseUser) {
 		$scope.firebaseUser = firebaseUser;
-		if ($scope.firebaseUser == null) {
+		if ($scope.firebaseUser === null) {
 			$location.path('/login');
 		}
 	});

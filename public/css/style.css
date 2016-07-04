@@ -7,10 +7,65 @@ html, body {
 	width: 100%;
 }
 
+/* ngFlash - not working */
+.alert.ng-leave {
+	opacity: 1;
+	transition: opacity 1.5s ease-out;
+}
+.alert.ng-leave.ng-leave-active {
+	opacity: 0;
+}
+.alert.ng-enter {
+	opacity: 0;
+	transition: opacity 1.5s ease-in;
+}
+.alert.ng-enter.ng-enter-active {
+	opacity: 1;
+}
+
 /* General - Body */
 .title {
 	color: #fa143a;
 	font-weight: 600;
+	display: inline-block;
+	margin-bottom: 20px;
+	font-size: 22px;
+}
+.search {
+	
+}
+.button-icon {
+	padding-right: 5px;
+}
+.force-col-margin {
+	margin-left: 15px;
+	margin-right: 0px;
+}
+.force-col-padding {
+	padding-left: 0px;
+	padding-right: 0px
+}
+.dropdown-text-left {
+	text-align: left;
+	display: inline-block;
+	min-width: 120px;
+}
+.dropdown-text-right {
+	text-align: right;
+	display: inline-block;
+}
+
+/* Projects - Dropdown */
+.projects .dropdown-style {
+	display: inline-block;
+	min-width: 160px;
+	max-width: 160px;
+}
+
+/* Dashboard - Body */
+.dashboard .search {
+	float: right;
+	margin-top: 20px;
 }
 
 /* Logout */
@@ -25,6 +80,10 @@ html, body {
 .navbar {
 	height: 90px;
 	margin-bottom: 15px;
+}
+.navbar a {
+	color: black;	
+	text-decoration: none;
 }
 .navbar .container {
 	margin-top: 20px;
