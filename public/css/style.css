@@ -7,6 +7,12 @@ html, body {
 	width: 100%;
 }
 
+/* General - Body */
+.title {
+	color: #fa143a;
+	font-weight: 600;
+}
+
 /* Logout */
 .logout h2 {
 	font-weight: 600;
@@ -18,6 +24,7 @@ html, body {
 /* General - Navigation */
 .navbar {
 	height: 90px;
+	margin-bottom: 15px;
 }
 .navbar .container {
 	margin-top: 20px;

@@ -1,7 +1,14 @@
-app.controller('LoginController', ['$scope', 'Flash', '$location', '$firebaseAuth',
+app.controller('LoginController', ['$scope', 'Flash', '$location', '$firebaseAuth', 
 	function($scope, Flash, $location, $firebaseAuth){
 	
 	$scope.auth = $firebaseAuth();
+	
+	$scope.auth.$onAuthStateChanged(function(firebaseUser) {
+		$scope.firebaseUser = firebaseUser;
+		if ($scope.firebaseUser != null) {
+			$location.path('/dashboard');
+		}
+	});
 	
 	$scope.login = function() {
 		$scope.auth.$signInWithEmailAndPassword($scope.login.email, $scope.login.password).then(function(firebaseUser) {
@@ -22,17 +29,10 @@ app.controller('LoginController', ['$scope', 'Flash', '$location', '$firebaseAut
 			} else {
 				
 			}
-			Flash.clear();
-    		Flash.create('danger', error.code, 5000);
-		});
-	};
-
-	function onAuthStateChanged() {
-		$scope.auth.$onAuthStateChanged(function(firebaseUser) {
-			$scope.firebaseUser = firebaseUser;
-			if ($scope.firebaseUser != null) {
-				$location.path('/dashboard');
+			if ($scope.flashId != null) {
+				Flash.dismiss($scope.flashId);
 			}
+    		$scope.flashId = Flash.create('danger', error.code, 20000);
 		});
 	};
 	
