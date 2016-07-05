@@ -54,6 +54,12 @@ html, body {
 	text-align: right;
 	display: inline-block;
 }
+.margin-right {
+	margin-right: 15px;
+}
+.margin-top {
+	margin-top: 20px;
+}
 
 /* Projects - Dropdown */
 .projects .dropdown-style {

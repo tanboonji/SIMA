@@ -31,7 +31,7 @@
                 </button>
 	        </div>
         </div>
-        <div class="pull-right">
+        <div class="pull-right margin-right">
         	<label for="">Sort By:&nbsp;</label>
 			<div class="btn-group">
                 <button type="button" class="btn btn-default dropdown-toggle dropdown-style" data-toggle="dropdown"
@@ -45,5 +45,25 @@
             </div>
         </div>
     </div>
-    
+    <div class="margin-top">
+    	<table class="col-md-12 table table-hover table-bordered">
+        	<thead>
+        	<tr>
+            	<td>Id</td>
+                <td>Name</td>
+                <td>BUH</td>
+                <td>TM</td>
+                <td>CM</td>
+            </tr>
+            </thead>
+            <tbody>
+            <tr ng-repeat"p in projects">
+            	<td>{{p.MCSTS}}</td>
+                <td>{{p.Name}}</td>
+                <td>{{p.BUH}}</td>
+                <td>{{p.TM}}</td>
+                <td>{{p.CM}}</td>
+            </tr>
+            </tbody>
+        </table>
 </div>
