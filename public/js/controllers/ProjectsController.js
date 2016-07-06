@@ -10,7 +10,7 @@ app.controller('ProjectsController', ['$scope', 'Flash', '$location', '$firebase
 		}
 	});
 	
-	var ref = firebase.database().ref().child("project");
+	var ref = firebase.database().ref().child("Project");
 	$scope.projects = $firebaseArray(ref);
 	
 	$scope.sortByList = ['Id', 'Name', 'Last Inspection', 'Defects'];
@@ -18,6 +18,10 @@ app.controller('ProjectsController', ['$scope', 'Flash', '$location', '$firebase
 	
 	$scope.dropdownItemSelected = function(item) {
 		$scope.selectedItem = item;	
-	}
+	};
+	
+	$scope.addProject = function() {
+		console.log($scope.projects);
+	};
 	
 }]);

@@ -17,7 +17,7 @@
 </header>
 
 <div class="projects container">
-	<h3 class="title">Projects</h3>
+	<h3 class="title">Add Project</h3>
     <div class="row">
     	<button type="button" class="btn btn-success force-col-margin pull-left" ng-click="addProject()">
   			<span class="glyphicon glyphicon-plus button-icon" aria-hidden="true">
@@ -44,27 +44,5 @@
                 </ul>
             </div>
         </div>
-    </div>
-    <div class="margin-top">
-    	<table class="col-md-12 table table-hover table-bordered">
-        	<thead>
-        	<tr>
-            	<td>Id</td>
-                <td>Name</td>
-                <td>BUH</td>
-                <td>TM</td>
-                <td>CM</td>
-            </tr>
-            </thead>
-            <tbody>
-            <tr ng-repeat="p in projects">
-            	<td>{{p.MCSTS}}</td>
-                <td>{{p.Name}}</td>
-                <td>{{p.BUH}}</td>
-                <td>{{p.TM}}</td>
-                <td>{{p.CM}}</td>
-            </tr>
-            </tbody>
-        </table>
     </div>
 </div>
