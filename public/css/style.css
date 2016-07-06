@@ -7,20 +7,38 @@ html, body {
 	width: 100%;
 }
 
-/* ngFlash - not working */
-.alert.ng-leave {
-	opacity: 1;
-	transition: opacity 1.5s ease-out;
+/* General - Navigation */
+.navbar {
+	height: 90px;
+	margin-bottom: 15px;
 }
-.alert.ng-leave.ng-leave-active {
-	opacity: 0;
+.navbar a {
+	color: black;	
+	text-decoration: none;
 }
-.alert.ng-enter {
-	opacity: 0;
-	transition: opacity 1.5s ease-in;
+.navbar .container {
+	margin-top: 20px;
 }
-.alert.ng-enter.ng-enter-active {
-	opacity: 1;
+.navbar .nav-menu {
+	display: inline;
+	position: absolute;
+	margin-top: 18px;
+	margin-left: 20px;
+}
+.navbar .nav-menu li {
+	display: inline;
+	margin-right: 50px;
+	font-size: 16px;
+}
+.navbar .nav-menu li:hover {
+	border-bottom: 2px solid #fa143a;
+}
+.navbar .nav-menu .selected {
+	border-bottom: 2px solid #fa143a;
+}
+.navbar .profile {
+	float: right;
+	margin-top: 18px;
 }
 
 /* General - Body */
@@ -58,10 +76,10 @@ html, body {
 	margin-right: 15px;
 }
 .margin-top {
-	margin-top: 20px;
+	margin-top: 25px;
 }
 
-/* Projects - Dropdown */
+/* Projects - Dropdown - needs edit */
 .projects .dropdown-style {
 	display: inline-block;
 	min-width: 160px;
@@ -74,46 +92,54 @@ html, body {
 	margin-top: 20px;
 }
 
+/* Facilities */
+.facility-list ul {
+	padding-left: 0;	
+}
+.facility-list li {
+	display: inline;
+	margin-right: 31.3px;
+}
+.facility-list img {
+	height: 200px;
+	width: 200px;
+	overflow: hidden;
+	margin-bottom: 7px;
+}
+.facility-list div {
+	padding-bottom: 7px;
+	max-width: 200px;
+	display: inline-block;
+	margin-bottom: 20px;
+	text-align: center;
+	border: 1px solid black;
+    border-radius: 7px;
+	overflow: hidden;
+	box-shadow: 1px 1px 3px #888888;
+}
+
+/* ngFlash - not working */
+.alert.ng-leave {
+	opacity: 1;
+	transition: opacity 1.5s ease-out;
+}
+.alert.ng-leave.ng-leave-active {
+	opacity: 0;
+}
+.alert.ng-enter {
+	opacity: 0;
+	transition: opacity 1.5s ease-in;
+}
+.alert.ng-enter.ng-enter-active {
+	opacity: 1;
+}
+
 /* Logout */
 .logout h2 {
 	font-weight: 600;
 	font-size: 20pt;
 	margin-left: 20px;
 	margin-top: 20px;
-}
-
-/* General - Navigation */
-.navbar {
-	height: 90px;
-	margin-bottom: 15px;
-}
-.navbar a {
-	color: black;	
-	text-decoration: none;
-}
-.navbar .container {
-	margin-top: 20px;
-}
-.navbar .nav-menu {
-	display: inline;
-	position: fixed;
-	margin-top: 18px;
-	margin-left: 20px;
-}
-.navbar .nav-menu li {
-	display: inline;
-	margin-right: 50px;
-	font-size: 16px;
-}
-.navbar .nav-menu li:hover {
-	border-bottom: 2px solid #fa143a;
-}
-.navbar .nav-menu .selected {
-	border-bottom: 2px solid #fa143a;
-}
-.navbar .profile {
-	float: right;
-	margin-top: 18px;
 }
 
 /* Login */

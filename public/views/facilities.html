@@ -7,9 +7,9 @@
 			<div class="nav-menu">
 				<ul>
 					<li><a href="#/dashboard">Dashboard</a></li>
- 					<li class="selected"><a href="#/projects">Projects</a></li>
+ 					<li><a href="#/projects">Projects</a></li>
 					<li><a href="#/staff">Staff</a></li>
-					<li><a href="#/facilities">Facilities</a></li>
+					<li class="selected"><a href="#/facilities">Facilities</a></li>
 				</ul>
 			</div>
 			<div class="profile" id="profile">
@@ -18,9 +18,9 @@
 	</nav>
 </header>
 
-<div class="projects container">
-	<h3 class="title">Add Project</h3>
-    <!--<div class="row">
+<div class="facilities container">
+	<h3 class="title">Facilities</h3>
+    <div class="row">
     	<button type="button" class="btn btn-success force-col-margin pull-left" ng-click="addProject()">
   			<span class="glyphicon glyphicon-plus button-icon" aria-hidden="true">
             </span>Add
@@ -33,18 +33,15 @@
                 </button>
 	        </div>
         </div>
-        <div class="pull-right margin-right">
-        	<label for="">Sort By:&nbsp;</label>
-			<div class="btn-group">
-                <button type="button" class="btn btn-default dropdown-toggle dropdown-style" data-toggle="dropdown"
-                    aria-haspopup="true" aria-expanded="true">
-                    <div class="dropdown-text-left">{{selectedItem}}&nbsp;</div>
-                    <span class="caret dropdown-text-right"></span>
-                </button>
-                <ul class="dropdown-menu">
-                    <li ng-repeat="a in sortByList"><a ng-click="dropdownItemSelected(a)">{{a}}</a></li>
-                </ul>
-            </div>
-        </div>
-    </div>-->
+    </div>
+    <div class="margin-top facility-list">
+    	<ul>
+        	<li ng-repeat="f in facilitiesList">
+                <div>
+                	<img src=""/>
+                    Swimming Pool
+                </div>
+            </li>
+      	</ul>
+    </div>
 </div>

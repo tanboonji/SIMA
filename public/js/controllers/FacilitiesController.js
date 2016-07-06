@@ -1,4 +1,4 @@
-app.controller('ProjectsController', ['$scope', 'Flash', '$location', '$firebaseAuth', '$firebaseObject', 
+app.controller('FacilitiesController', ['$scope', 'Flash', '$location', '$firebaseAuth', '$firebaseObject', 
 	'$firebaseArray', function($scope, Flash, $location, $firebaseAuth, $firebaseObject, $firebaseArray){
 	
 	$scope.auth = $firebaseAuth();
@@ -10,8 +10,8 @@ app.controller('ProjectsController', ['$scope', 'Flash', '$location', '$firebase
 		}
 	});
 	
-	var ref = firebase.database().ref().child("Project");
-	$scope.projectsList = $firebaseArray(ref);
+	var ref = firebase.database().ref().child("Facility");
+	$scope.facilitiesList = $firebaseArray(ref);
 	
 	$scope.sortByList = ['Id', 'Name', 'Last Inspection', 'Defects'];
 	$scope.selectedItem = 'Id';
@@ -21,7 +21,7 @@ app.controller('ProjectsController', ['$scope', 'Flash', '$location', '$firebase
 	};
 	
 	$scope.addProject = function() {
-		$location.path('/add-project');
+		console.log($scope.projects);
 	};
 	
 }]);
