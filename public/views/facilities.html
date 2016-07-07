@@ -21,7 +21,7 @@
 <div class="facilities container">
 	<h3 class="title">Facilities</h3>
     <div class="row">
-    	<button type="button" class="btn btn-success force-col-margin pull-left" ng-click="addProject()">
+    	<button type="button" class="btn btn-success force-col-margin pull-left" ng-click="addFacility()">
   			<span class="glyphicon glyphicon-plus button-icon" aria-hidden="true">
             </span>Add
 		</button>
@@ -34,12 +34,12 @@
 	        </div>
         </div>
     </div>
-    <div class="margin-top facility-list">
+    <div class="margin-top-25 facility-list">
     	<ul>
         	<li ng-repeat="f in facilitiesList">
                 <div>
                 	<img src=""/>
-                    Swimming Pool
+                    {{ f.Name }}
                 </div>
             </li>
       	</ul>

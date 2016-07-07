@@ -5,6 +5,7 @@
 - Facilities (list/add/view/delete/update)
 - Staff (list/add/view/delete/update)
 - When logging in for the first time, update displayName and photoUrl
+- Enter keyboard button for search
 
 ### Things half done:
 - Projects (list)

@@ -13,15 +13,12 @@ app.controller('FacilitiesController', ['$scope', 'Flash', '$location', '$fireba
 	var ref = firebase.database().ref().child("Facility");
 	$scope.facilitiesList = $firebaseArray(ref);
 	
-	$scope.sortByList = ['Id', 'Name', 'Last Inspection', 'Defects'];
-	$scope.selectedItem = 'Id';
-	
 	$scope.dropdownItemSelected = function(item) {
 		$scope.selectedItem = item;	
 	};
 	
-	$scope.addProject = function() {
-		console.log($scope.projects);
+	$scope.addFacility = function() {
+		console.log($scope.facilitiesList);
 	};
 	
 }]);

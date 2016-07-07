@@ -10,7 +10,7 @@ html, body {
 /* General - Navigation */
 .navbar {
 	height: 90px;
-	margin-bottom: 15px;
+	margin-bottom: 10px;
 }
 .navbar a {
 	color: black;	
@@ -72,10 +72,10 @@ html, body {
 	text-align: right;
 	display: inline-block;
 }
-.margin-right {
+.margin-right-15 {
 	margin-right: 15px;
 }
-.margin-top {
+.margin-top-25 {
 	margin-top: 25px;
 }
 
