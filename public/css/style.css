@@ -261,13 +261,6 @@ html, body {
 	color: #ff4e00;
 	text-decoration: none;
 }
-.login .error {
-	position: absolute;
-	top: 20px;
-	left: 50%;
-    transform: translate(-50%, 0);
-	z-index: 99;
-}
 .login .login-popup {
 	position: fixed;
 	background-color: rgba(0,0,0,0.85);
@@ -294,6 +287,9 @@ html, body {
 .login .login-popup .forget {
 	margin-top: 15px;
 	color: #ff4e00;
+}
+.login .login-popup .forget u {
+	cursor: pointer;
 }
 .login .login-popup .login-btn {
 	margin-top: 20px;

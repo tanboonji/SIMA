@@ -77,25 +77,33 @@ app.controller('FacilitiesController', ['$scope', 'Flash', '$location', '$fireba
 	};
 	
 	$scope.deleteCategory = function(category) {
-		$scope.categoryCount--;
-		var index = $scope.checklist.indexOf(category);
-		$scope.checklist.splice(index, 1);
-		
-		for(index; index < $scope.checklist.length; index++) {
-			$scope.checklist[index].id = index;
-			$scope.checklist[index].no = index+1;
+		if ($scope.categoryCount === 0) {
+			
+		} else {
+			$scope.categoryCount--;
+			var index = $scope.checklist.indexOf(category);
+			$scope.checklist.splice(index, 1);
+			
+			for(index; index < $scope.checklist.length; index++) {
+				$scope.checklist[index].id = index;
+				$scope.checklist[index].no = index+1;
+			}
 		}
 	};
 	
 	$scope.deleteQuestion = function(category,question) {
-		category.questionCount--;
-		var index = category.question.indexOf(question);
-		category.question.splice(index, 1);
-		
-		for(index; index < category.question.length; index++) {
-			var questionNo = 'abcdefghijklmnopqrstuvwxyz'[index];
-			category.question[index].id = index;
-			category.question[index].no = questionNo;
+		if (category.questionCount === 0) {
+			
+		} else {
+			category.questionCount--;
+			var index = category.question.indexOf(question);
+			category.question.splice(index, 1);
+			
+			for(index; index < category.question.length; index++) {
+				var questionNo = 'abcdefghijklmnopqrstuvwxyz'[index];
+				category.question[index].id = index;
+				category.question[index].no = questionNo;
+			}
 		}
 	};
 	

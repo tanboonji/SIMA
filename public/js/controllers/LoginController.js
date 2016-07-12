@@ -36,34 +36,62 @@ app.controller('LoginController', ['$scope', 'Flash', '$location', '$firebaseAut
 								default:
 									break;
 							}
-							if ($scope.flashId !== null) {
-								Flash.dismiss($scope.flashId);
-							}
-							$scope.flashId = Flash.create('danger', error.code, 5000);
+							$.notify({
+								message: error.code /* edit */
+							},{
+								placement: {
+									from: "top",
+									align: "center"
+								},
+								type: "danger",
+								timer: 5000,
+								newest_on_top: true
+							});
 						});
 					} else { 
-						if ($scope.flashId !== null) {
-							Flash.dismiss($scope.flashId);
-						}
-						$scope.flashId = Flash.create('danger', 'auth/account-not-available', 5000); /* edit */
+						$.notify({
+							message: "auth/account-not-available" /* edit */
+						},{
+							placement: {
+								from: "top",
+								align: "center"
+							},
+							type: "danger",
+							timer: 5000,
+							newest_on_top: true
+						});
 					}
 				} else {
-					if ($scope.flashId !== null) {
-						Flash.dismiss($scope.flashId);
-					}
-					$scope.flashId = Flash.create('danger', 'auth/no-matching-id', 5000); /* edit */
+					$.notify({
+						message: "auth/no-matching-id" /* edit */
+					},{
+						placement: {
+							from: "top",
+							align: "center"
+						},
+						type: "danger",
+						timer: 5000,
+						newest_on_top: true
+					});
 				}
 			});
 		} else {
-			if ($scope.flashId !== null) {
-				Flash.dismiss($scope.flashId);
-			}
-			$scope.flashId = Flash.create('danger', 'auth/invalid-id', 5000); /* edit */
+			$.notify({
+				message: "auth/invalid-id" /* edit */
+			},{
+				placement: {
+					from: "top",
+					align: "center"
+				},
+				type: "danger",
+				timer: 5000,
+				newest_on_top: true
+			});
 		}
 	};
 	
 	$scope.forgetPassword = function() {
-		/* edit */
+		
 	};
 	
 }]);
