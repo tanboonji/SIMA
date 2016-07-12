@@ -6,11 +6,11 @@
     	<img src="images/knight-frank-logo.png" alt="Knight Frank"/>
 	</header>
 	<div class="login-popup">
-		<h3>Admin Login</h3>
+		<h3>Admin Portal Login</h3>
 		<div class="content">
-			<input ng-model="login.email" type="email" class="input-text" 
-            	placeholder="Email" ng-keyup="$event.keyCode == 13 && login()"/>
-			<input ng-model="login.password" type="password" class="input-text" 
+			<input ng-model="staffId" type="text" class="input-text" 
+            	placeholder="Staff Id" ng-keyup="$event.keyCode == 13 && login()"/>
+			<input ng-model="password" type="password" class="input-text" 
             	placeholder="Password" ng-keyup="$event.keyCode == 13 && login()"/>
 			<div class="forget">
 				<a ng-click="forgetPassword()"><u>Forget Password?</u></a>

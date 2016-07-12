@@ -10,17 +10,17 @@ app.controller('ProjectsController', ['$scope', 'Flash', '$location', '$firebase
 		}
 	});
 	
-	var ref = firebase.database().ref().child("Project");
+	var ref = firebase.database().ref().child("project");
 	$scope.projectsList = $firebaseArray(ref);
 	
 	$scope.sortByList = ['Id', 'Name', 'Last Inspection', 'Defects'];
-	$scope.selectedItem = 'Id';
+	$scope.sortByItem = 'Id';
 	
-	$scope.dropdownItemSelected = function(item) {
-		$scope.selectedItem = item;	
+	$scope.sortByItemSelected = function(itemSelected) {
+		$scope.sortByItem = itemSelected;
 	};
 	
-	$scope.addProject = function() {
+	$scope.goToAddProject = function() {
 		$location.path('/add-project');
 	};
 	

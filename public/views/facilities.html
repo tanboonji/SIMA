@@ -21,25 +21,28 @@
 <div class="facilities container">
 	<h3 class="title">Facilities</h3>
     <div class="row">
-    	<button type="button" class="btn btn-success force-col-margin pull-left" ng-click="addFacility()">
-  			<span class="glyphicon glyphicon-plus button-icon" aria-hidden="true">
-            </span>Add
-		</button>
-        <div class="pull-left col-md-4 force-col-margin force-col-padding input-group">
-            <input type="text" class="form-control" placeholder="Search for...">
-            <div class="input-group-btn">
-                <button class="btn btn-primary" type="button">
-                    <span class="glyphicon glyphicon-search button-icon" aria-hidden="true"></span>Search
-                </button>
-	        </div>
+    	<div class="col-md-12">
+            <button type="button" class="btn btn-success pull-left" ng-click="goToAddFacility()">
+                <span class="glyphicon glyphicon-plus button-icon" aria-hidden="true"></span>
+                Add
+            </button>
+            <div class="pull-left col-md-4 force-col-margin force-col-padding input-group">
+                <input type="text" class="form-control" placeholder="Search for...">
+                <div class="input-group-btn">
+                    <button class="btn btn-primary" type="button">
+                        <span class="glyphicon glyphicon-search button-icon" aria-hidden="true"></span>
+                        Search
+                    </button>
+                </div>
+            </div>
         </div>
     </div>
-    <div class="margin-top-25 facility-list">
+    <div class="margin-top-25 margin-bottom-30 facility-list">
     	<ul>
         	<li ng-repeat="f in facilitiesList">
                 <div>
-                	<img src=""/>
-                    {{ f.Name }}
+                	<img ng-src="{{f.PhotoURL}}"/>
+                    {{f.Name}}
                 </div>
             </li>
       	</ul>

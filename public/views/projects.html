@@ -21,29 +21,31 @@
 <div class="projects container">
 	<h3 class="title">Projects</h3>
     <div class="row">
-    	<button type="button" class="btn btn-success force-col-margin pull-left" ng-click="addProject()">
-  			<span class="glyphicon glyphicon-plus button-icon" aria-hidden="true">
-            </span>Add
-		</button>
-        <div class="pull-left col-md-4 force-col-margin force-col-padding input-group">
-            <input type="text" class="form-control" placeholder="Search for...">
-            <div class="input-group-btn">
-                <button class="btn btn-primary" type="button">
-                    <span class="glyphicon glyphicon-search button-icon" aria-hidden="true"></span>Search
-                </button>
-	        </div>
-        </div>
-        <div class="pull-right margin-right-15">
-        	<label for="">Sort By:&nbsp;</label>
-			<div class="btn-group">
-                <button type="button" class="btn btn-default dropdown-toggle dropdown-style" data-toggle="dropdown"
-                    aria-haspopup="true" aria-expanded="true">
-                    <div class="dropdown-text-left">{{selectedItem}}&nbsp;</div>
-                    <span class="caret dropdown-text-right"></span>
-                </button>
-                <ul class="dropdown-menu">
-                    <li ng-repeat="s in sortByList"><a ng-click="dropdownItemSelected(s)">{{s}}</a></li>
-                </ul>
+    	<div class="col-md-12">
+            <button type="button" class="btn btn-success pull-left" ng-click="goToAddProject()">
+                <span class="glyphicon glyphicon-plus button-icon" aria-hidden="true"></span>
+                Add
+            </button>
+            <div class="pull-left col-md-4 force-col-margin force-col-padding input-group">
+                <input type="text" class="form-control" placeholder="Search for...">
+                <div class="input-group-btn">
+                    <button class="btn btn-primary" type="button">
+                        <span class="glyphicon glyphicon-search button-icon" aria-hidden="true"></span>Search
+                    </button>
+                </div>
+            </div>
+            <div class="pull-right">
+                <label for="">Sort By:&nbsp;</label>
+                <div class="btn-group">
+                    <button type="button" class="btn btn-default dropdown-toggle dropdown-style" 
+                    	data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                        <div class="dropdown-text-left">{{sortByItem}}&nbsp;</div>
+                        <span class="caret dropdown-text-right"></span>
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li ng-repeat="s in sortByList"><a ng-click="sortByItemSelected(s)">{{s}}</a></li>
+                    </ul>
+                </div>
             </div>
         </div>
     </div>

@@ -1,4 +1,4 @@
-var app = angular.module('myApp', ['ngRoute', 'firebase', 'ngFlash', 'ngAnimate']);
+var app = angular.module('myApp', ['ngRoute', 'firebase', 'ngFlash', 'ngAnimate', 'ngFileUpload']);
 
 app.config(function($routeProvider){
 	$routeProvider
@@ -26,6 +26,10 @@ app.config(function($routeProvider){
 			controller: 'FacilitiesController',
 			templateUrl: 'views/facilities.html'
 		})
+		.when('/add-facility', {
+			controller: 'FacilitiesController',
+			templateUrl: 'views/add-facility.html'
+		})
 		.when('/logout', {
 			controller: 'LogoutController',
 			templateUrl: 'views/logout.html'
@@ -35,4 +39,4 @@ app.config(function($routeProvider){
 		});
 });
 
-app.constant("firebase_url", "https://kfsi-new.firebaseio.com");
+app.constant("firebase_url", "https://kfpam-sima.firebaseio.com");

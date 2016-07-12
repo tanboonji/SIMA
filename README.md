@@ -6,6 +6,9 @@
 - Staff (list/add/view/delete/update)
 - When logging in for the first time, update displayName and photoUrl
 - Enter keyboard button for search
+- Staff role, then hide add button if not admin
+- Security control depending on staff role
+- Profile info on navigation bar
 
 ### Things half done:
 - Projects (list)
@@ -22,3 +25,6 @@
 
 ### Bugs fixed:
 - Signing in
+
+### Firebase:
+- Timestamp for data (deletedat/deletedby/createdat/createdby/updatedat/updatedby)

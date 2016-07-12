@@ -1,0 +1,105 @@
+<header>
+	<nav class="navbar navbar-default navbar-static-top">
+		<div class="container">
+			<a href="#/dashboard">
+            	<img src="images/knight-frank-logo.png" alt="Knight Frank" style="max-height:50px"/>
+            </a>
+			<div class="nav-menu">
+				<ul>
+					<li><a href="#/dashboard">Dashboard</a></li>
+ 					<li><a href="#/projects">Projects</a></li>
+					<li><a href="#/staff">Staff</a></li>
+					<li class="selected"><a href="#/facilities">Facilities</a></li>
+				</ul>
+			</div>
+			<div class="profile" id="profile">
+			</div>
+		</div>
+	</nav>
+</header>
+
+<div class="add-facility container">
+	<h3 class="title">Add Facility</h3>
+    <div class="form-horizontal">
+        <div class="row">
+            <label class="control-label col-md-2">Facility Name</label>
+            <div class="col-md-6">
+                <input type="text" ng-model="name" class="form-control"/>
+            </div>
+        </div>
+        <div class="row margin-top-25">
+        	<label class="control-label col-md-2">Photo</label>
+            <div class="col-md-6">
+            	<div ngf-drop ngf-select ng-model="photo" class="dropbox col-md-12" 
+                	ngf-drag-over-class="dragover" ngf-multiple="false" ngf-allow-dir="true" 
+                    accept="image/*" ngf-pattern="image/*" ngf-validate="size:{max: '5MB'}">
+                	Drag facility photo here or click here to upload<br/>
+                    (Max file size is 5MB)
+           		</div>
+                <div ngf-no-file-drop>File drag and drop is not supported for this browser</div>
+            </div>
+            <div class="col-md-6">
+            	
+            </div>
+            <img ngf-src="photo" ngf-resize="{width: 250, height: 250}" ngf-no-object-url="false"/>
+            <div>
+            {{photoStatus}}
+            </div>
+            <div>
+            {{photoProgress}}
+            </div>
+            <div>
+            {{downloadURL}}
+            </div>
+        </div>
+        <div class="row margin-top-25">
+        	<label class="control-label col-md-2">Checklist</label>
+            <div class="col-md-6">
+            	<div class="category-group" ng-repeat="c in checklist">
+                	<div class="category-group-title">
+                        <span class="group-addon">{{c.no}}.</span>
+                        <input type="text" class="form-control group-input" ng-model="c.name"
+                        	placeholder="Enter category name">
+                        <span class="glyphicon glyphicon-remove group-delete" aria-hidden="true"
+                        	ng-click="deleteCategory(c)"></span>
+                    </div>
+                    <div ng-repeat="q in c.question">
+                        <div class="question-group col-md-9 force-col-padding">
+                            <span class="group-addon">{{q.no}}.</span>
+                            <input type="text" class="form-control group-input"  ng-model="q.name"
+                                placeholder="Enter question name">
+                            <span class="glyphicon glyphicon-remove group-delete" aria-hidden="true"
+                            	ng-click="deleteQuestion(c,q)"></span>
+                        </div>
+                        <div class="question-radio col-md-2 force-col-padding">
+                            <div class="radio radio-first">
+                                <label><input type="radio" value="MCQ" ng-model="q.type"
+                                	name="questionType-{{c.id}}-{{q.id}}">MCQ</label>
+                            </div>
+                            <div class="radio radio-last">
+                                <label><input type="radio" value="Short Ans" ng-model="q.type"
+                                	name="questionType-{{c.id}}-{{q.id}}">Short Ans</label>
+                            </div>
+                        </div>
+                    </div>
+                    <button class="btn btn-default add-question-btn" type="button" ng-click="addQuestion(c)">
+                    	<span class="glyphicon glyphicon-plus button-icon" aria-hidden="true"></span>
+                        Add Question
+                    </button>
+            	</div>
+                <button class="btn btn-default" type="button" ng-click="addCategory()">
+                    <span class="glyphicon glyphicon-plus button-icon" aria-hidden="true"></span>
+                    Add Category
+                </button>
+            </div>
+        </div>
+        <div class="row margin-top-25 margin-bottom-50">
+        	<div class="col-md-offset-2 col-md-10">
+                <button class="btn btn-success" type="button" ng-click="addFacility()">
+                    <span class="glyphicon glyphicon-plus button-icon" aria-hidden="true"></span>
+                    Add
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,5 +1,85 @@
 /* CSS document */
 
+/* General - Checklist */
+.category-group {
+	border: 1px solid #ccc;
+	border-radius: 4px;
+	margin-bottom: 10px;
+	padding-bottom: 10px;
+}
+.category-group-title {
+    display: table;
+    border-bottom: 1px solid #ccc;
+	/* extra */
+	position: relative;
+    border-collapse: separate;
+}
+.group-addon {
+	padding: 6px 12px;
+    font-weight: 400;
+    line-height: 1;
+    text-align: center;
+    background-color: #eee;
+	display: table-cell;
+	width: 1%;
+    vertical-align: middle;
+	/* extra */
+    white-space: nowrap;
+}
+.group-input {
+	border-top: 0;
+	border-bottom: 0;
+	border-radius: 0;
+}
+.group-delete {
+	padding: 6px 12px;
+    font-weight: 400;
+    line-height: 1;
+    text-align: center;
+	display: table-cell;
+	width: 1%;
+    vertical-align: middle;
+	top: 0;
+	cursor: pointer;
+	/* extra */
+    white-space: nowrap;
+}
+.question-group {
+	border: 1px solid #ccc;
+	border-radius: 4px;
+	margin: 10px 10px 0 10px;
+    display: table;
+	/* extra */
+	position: relative;
+    border-collapse: separate;
+}
+.add-question-btn {
+	margin: 8px 0 0 10px;
+}
+.question-radio {
+	font-size: 14px;
+}
+.question-radio .radio-first {
+	min-height: 0;
+	padding-top: 8px;
+}
+.question-radio .radio-last {
+	min-height: 0;
+	padding-top: 0;
+}
+
+/* General - Photo Upload */
+.dropbox {
+    background: #f8f8f8;
+    border: 5px dashed #ddd;
+    height: 250px;
+    text-align: center;
+    padding-top: 105px;
+}
+.dragover {
+    border: 5px dashed #ddd;
+}
+
 /* General - Font */
 html, body {	
 	font-family: "Open Sans", sans-serif;
@@ -49,7 +129,7 @@ html, body {
 	margin-bottom: 20px;
 	font-size: 22px;
 }
-.search {
+.search { /* edit */
 	
 }
 .button-icon {
@@ -62,6 +142,10 @@ html, body {
 .force-col-padding {
 	padding-left: 0px;
 	padding-right: 0px
+}
+.force-row-margin {
+	margin-left: 0px;
+	margin-rgiht: 0px;
 }
 .dropdown-text-left {
 	text-align: left;
@@ -78,15 +162,24 @@ html, body {
 .margin-top-25 {
 	margin-top: 25px;
 }
+.margin-top-10 {
+	margin-top: 10px;
+}
+.margin-bottom-50 {
+	margin-bottom: 50px;
+}
+.margin-bottom-30 {
+	margin-bottom: 30px;
+}
 
-/* Projects - Dropdown - needs edit */
+/* Projects - Dropdown */ /* edit */
 .projects .dropdown-style {
 	display: inline-block;
 	min-width: 160px;
 	max-width: 160px;
 }
 
-/* Dashboard - Body */
+/* Dashboard - Body */ /* edit */
 .dashboard .search {
 	float: right;
 	margin-top: 20px;
@@ -94,7 +187,8 @@ html, body {
 
 /* Facilities */
 .facility-list ul {
-	padding-left: 0;	
+	padding-left: 0;
+	margin-bottom: 0;	
 }
 .facility-list li {
 	display: inline;
@@ -118,19 +212,19 @@ html, body {
 	box-shadow: 1px 1px 3px #888888;
 }
 
-/* ngFlash - not working */
-.alert.ng-leave {
+/* ngFlash */ /* edit */
+.alert .ng-leave {
 	opacity: 1;
 	transition: opacity 1.5s ease-out;
 }
-.alert.ng-leave.ng-leave-active {
+.alert .ng-leave .ng-leave-active {
 	opacity: 0;
 }
-.alert.ng-enter {
+.alert .ng-enter {
 	opacity: 0;
 	transition: opacity 1.5s ease-in;
 }
-.alert.ng-enter.ng-enter-active {
+.alert .ng-enter .ng-enter-active {
 	opacity: 1;
 }
 
@@ -138,8 +232,7 @@ html, body {
 .logout h2 {
 	font-weight: 600;
 	font-size: 20pt;
-	margin-left: 20px;
-	margin-top: 20px;
+	margin: 20px 0 0 20px;
 }
 
 /* Login */
