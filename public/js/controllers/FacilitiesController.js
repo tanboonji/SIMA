@@ -1,5 +1,5 @@
-app.controller('FacilitiesController', ['$scope', '$location', '$firebaseAuth', '$firebaseObject', 
-	'$firebaseArray', function($scope, $location, $firebaseAuth, $firebaseObject, $firebaseArray){
+app.controller('FacilitiesController', ['$routeParams', '$scope', '$location', '$firebaseAuth', '$firebaseObject', 
+	'$firebaseArray', function($routeParams, $scope, $location, $firebaseAuth, $firebaseObject, $firebaseArray){
 	
 	$scope.auth = $firebaseAuth();
 	
@@ -9,6 +9,8 @@ app.controller('FacilitiesController', ['$scope', '$location', '$firebaseAuth', 
 			$location.path('/login');
 		}
 	});
+	
+	console.log("error: " + $routeParams.error + ", id: " + $routeParams.id);
 	
 	var ref = firebase.database().ref().child("facility");
 	$scope.facilitiesList = $firebaseArray(ref);
