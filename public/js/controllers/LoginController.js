@@ -12,7 +12,7 @@ app.controller('LoginController', ['$scope', '$location', '$firebaseAuth',
 	
 	$scope.login = function() {
 		if (/^\w+$/.test($scope.staffId) && $scope.staffId.length === 5) {
-			firebase.database().ref('loginchecks/' + $scope.staffId).on('value', function(data) {
+			firebase.database().ref('logincheck/' + $scope.staffId).on('value', function(data) {
 				if (data.val() !== null) {
 					if (data.val().status === "Active") {
 						$scope.email = data.val().email;
