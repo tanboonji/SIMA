@@ -1,5 +1,5 @@
-app.controller('LoginController', ['$scope', 'Flash', '$location', '$firebaseAuth', 
-	function($scope, Flash, $location, $firebaseAuth){
+app.controller('LoginController', ['$scope', '$location', '$firebaseAuth', 
+	function($scope, $location, $firebaseAuth){
 	
 	$scope.auth = $firebaseAuth();
 	

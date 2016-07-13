@@ -1,5 +1,5 @@
-app.controller('DashboardController', ['$scope', 'Flash', '$location', '$firebaseAuth', 
-	function($scope, Flash, $location, $firebaseAuth){
+app.controller('DashboardController', ['$scope', '$location', '$firebaseAuth', 
+	function($scope, $location, $firebaseAuth){
 	
 	$scope.auth = $firebaseAuth();
 	

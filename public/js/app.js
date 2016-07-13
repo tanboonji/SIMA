@@ -1,4 +1,4 @@
-var app = angular.module('myApp', ['ngRoute', 'firebase', 'ngFlash', 'ngAnimate', 'ngFileUpload']);
+var app = angular.module('myApp', ['ngRoute', 'firebase', 'ngAnimate', 'ngFileUpload']);
 
 app.config(function($routeProvider){
 	$routeProvider

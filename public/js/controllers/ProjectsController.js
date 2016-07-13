@@ -1,5 +1,5 @@
-app.controller('ProjectsController', ['$scope', 'Flash', '$location', '$firebaseAuth', '$firebaseObject', 
-	'$firebaseArray', function($scope, Flash, $location, $firebaseAuth, $firebaseObject, $firebaseArray){
+app.controller('ProjectsController', ['$scope', '$location', '$firebaseAuth', '$firebaseObject', 
+	'$firebaseArray', function($scope, $location, $firebaseAuth, $firebaseObject, $firebaseArray){
 	
 	$scope.auth = $firebaseAuth();
 	
