@@ -2,13 +2,15 @@
 
 ### Things to do:
 - Button click feedback
-- Facilities (list/add/view/delete/update)
+- Facilities (view/delete/update)
 - Staff (list/add/view/delete/update)
 - When logging in for the first time, update displayName and photoUrl
 - Enter keyboard button for search
 - Staff role, then hide add button if not admin
 - Security control depending on staff role
 - Profile info on navigation bar
+- Login error message (customize the message)
+- Error message for everything?
 
 ### Things half done:
 - Projects (list)
@@ -20,8 +22,8 @@
 ### Things done:
 - Mouse hover over nav bar
 - Navigation menu
-- Login error message
 - Login.html
+- Facilities (list/add)
 
 ### Bugs fixed:
 - Signing in

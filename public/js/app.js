@@ -6,6 +6,14 @@ app.config(function($routeProvider){
 			controller: 'LoginController',
 			templateUrl: 'views/login.html'
 		})
+        .when('/login?:forget', {
+			controller: 'LoginController',
+			templateUrl: 'views/login.html'
+		})
+		.when('/forget-password', {
+			controller: 'LoginController',
+			templateUrl: 'views/forget-password.html'
+		})
 		.when('/dashboard', {
 			controller: 'DashboardController',
 			templateUrl: 'views/dashboard.html'
@@ -26,7 +34,7 @@ app.config(function($routeProvider){
 			controller: 'FacilitiesController',
 			templateUrl: 'views/facilities.html'
 		})
-		.when('/facilities?:error&:id', {
+		.when('/facilities', {
 			controller: 'FacilitiesController',
 			templateUrl: 'views/facilities.html'
 		})

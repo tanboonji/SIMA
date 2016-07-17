@@ -2,46 +2,46 @@
 
 /* General - Checklist */
 .category-group {
-	border: 1px solid #ccc;
-	border-radius: 4px;
-	margin-bottom: 10px;
-	padding-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    margin-bottom: 10px;
+    padding-bottom: 10px;
 }
 .category-group-title {
     display: table;
     border-bottom: 1px solid #ccc;
-	/* extra */
-	position: relative;
+    /* extra */
+    position: relative;
     border-collapse: separate;
 }
 .group-addon {
-	padding: 6px 12px;
+    padding: 6px 12px;
     font-weight: 400;
     line-height: 1;
     text-align: center;
     background-color: #eee;
-	display: table-cell;
-	width: 1%;
+    display: table-cell;
+    width: 1%;
     vertical-align: middle;
-	/* extra */
+    /* extra */
     white-space: nowrap;
 }
 .group-input {
-	border-top: 0;
-	border-bottom: 0;
-	border-radius: 0;
+    border-top: 0;
+    border-bottom: 0;
+    border-radius: 0;
 }
 .group-delete {
-	padding: 6px 12px;
+    padding: 6px 12px;
     font-weight: 400;
     line-height: 1;
     text-align: center;
-	display: table-cell;
-	width: 1%;
+    display: table-cell;
+    width: 1%;
     vertical-align: middle;
-	top: 0;
-	cursor: pointer;
-	/* extra */
+    top: 0;
+    cursor: pointer;
+    /* extra */
     white-space: nowrap;
 }
 .question-group {
@@ -236,7 +236,7 @@ html, body {
 }
 
 /* Login */
-.login { 
+.login, .forget-password { 
 	background-image: url('../images/login-background.jpg');
 	background-repeat: no-repeat;
 	background-attachment: fixed;
@@ -245,57 +245,70 @@ html, body {
 	height: 100%;
 	width: 100%;
 }
-.login header {
+.login header, .forget-password header {
 	padding-left: 4%;
 	padding-top: 3%;
 }
-.login h3 {
+.login h3, .forget-password h3 {
 	font-weight: 600;
 	font-size: 18pt;
 	color: white;
-	margin-top: 20px;
-	margin-left: 20px;
-	margin-bottom: 6px;
+    margin: 20px 0 16px 20px;
 }
-.login a {
+.login a, .forget-password a {
 	color: #ff4e00;
 	text-decoration: none;
 }
-.login .login-popup {
+.login .login-popup, .forget-password .forget-popup {
 	position: fixed;
 	background-color: rgba(0,0,0,0.85);
 	top: 50%;
 	left: 50%;
-	margin: -155px 0 0 -225px;
-	height: 310px;
 	width: 450px;
+    transform: translate(-50%, -50%);
 }
-.login .login-popup .content {
+.login .login-popup .content, .forget-password .forget-popup .content {
 	margin-left: 75px;
-	margin-right: 75px;
-	text-align: center;
+    margin-right: 75px;
+	text-align: left;
 }
-.login .login-popup .input-text {
+.login .login-popup .input-text, .forget-password .forget-popup .input-text {
 	width: 300px;
 	height: 35px;
-	margin-top: 30px;
+	margin: 20px 0 5px 0;
 	background-color: #242424;
 	border: 0;
 	padding: 1px 10px;
 	color: white;
 }
-.login .login-popup .forget {
+.login .login-popup .forget, .forget-password .forget-popup .forget {
 	margin-top: 15px;
 	color: #ff4e00;
+    text-align: center;
 }
-.login .login-popup .forget u {
+.login .login-popup .forget u, .forget-password .forget-popup .forget u {
 	cursor: pointer;
 }
 .login .login-popup .login-btn {
-	margin-top: 20px;
 	height: 35px;
 	width: 300px;
 	background-color: #ff4e00;
 	border: 0;
 	color: white;
+    margin: 15px 0 35px 0;
+}
+.forget-password .forget-popup .forget-btn {
+	height: 35px;
+	width: 100%;
+	background-color: #ff4e00;
+	border: 0;
+	color: white;
+    margin: 20px 0 35px 0;
+}
+.login .error-message, .forget-password .error-message {
+    color: red;
+}
+.login .error-empty, .forget-password .error-empty {
+    color: red;
+    margin-top: -10px;
 }
