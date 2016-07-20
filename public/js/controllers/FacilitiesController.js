@@ -1,6 +1,8 @@
 app.controller('FacilitiesController', ['$routeParams', '$scope', '$location', '$firebaseAuth', '$firebaseObject', 
     '$firebaseArray', function($routeParams, $scope, $location, $firebaseAuth, $firebaseObject, $firebaseArray){
     
+    /***** General *****/
+        
     $scope.notify = function(message, type) {
         $.notify({
             message: message
@@ -13,7 +15,7 @@ app.controller('FacilitiesController', ['$routeParams', '$scope', '$location', '
             timer: 5000,
             newest_on_top: true
         });
-    } //end of notify()
+    }; //end of notify()
     
     $scope.auth = $firebaseAuth();
     
@@ -23,20 +25,94 @@ app.controller('FacilitiesController', ['$routeParams', '$scope', '$location', '
             $location.path('/login');
         }
     }); //end of $scope.auth.$onAuthStateChanged()
+        
+    $scope.goToAddFacility = function() {
+        $location.path('/add-facility').search("facilityID",null);
+    }; //end of $scope.goToAddFacility()
+        
+    $scope.goToFacilities = function() {
+        $location.path('/facilities').search("facilityID",null);
+    }; //end of $scope.goToFacilities()
+    
+    $scope.goToEditFacility = function() {
+        $location.path("/edit-facility").search("facilityID",$scope.facility.ID);
+    }; //end of $scope.goToEditFacility()
+        
+    /***** Checklist *****/
+        
+    $scope.categoryCount = 0;
+    var newQuestion = {name:"", formID:0, no:"a", type:"MCQ"};
+    var newCategory = {name:"", formID:0, no:1, questionCount:0, question:[newQuestion]};
+    $scope.checklist = [];
+    $scope.checklist.push(newCategory);
+        
+    $scope.addEmptyCategory = function() {
+        $scope.categoryCount++;
+        var newCategory = {questionCount:-1, question:[]};
+        $scope.checklist.push(newCategory);
+    }; //end of $scope.addCategory()
+        
+    $scope.addEmptyQuestion = function() {
+        $scope.checklist[$scope.categoryCount].questionCount++;
+        var questionNo = 'abcdefghijklmnopqrstuvwxyz'[$scope.checklist[$scope.categoryCount].questionCount];
+        var newQuestion = {formID:$scope.checklist[$scope.categoryCount].questionCount, no:questionNo};
+        $scope.checklist[$scope.categoryCount].question.push(newQuestion);
+    }; //end of $scope.addQuestion()
+    
+    $scope.addCategory = function() {
+        $scope.categoryCount++;
+        var newQuestion = {name:"", formID:0, no:"a", type:"MCQ"};
+        var newCategory = {name:"", formID:$scope.categoryCount, no:$scope.categoryCount+1,
+            questionCount:0, question:[newQuestion]};
+        $scope.checklist.push(newCategory);
+    }; //end of $scope.addCategory()
+    
+    $scope.addQuestion = function(category) {
+        category.questionCount++;
+        var questionNo = 'abcdefghijklmnopqrstuvwxyz'[category.questionCount];
+        var newQuestion = {name:"", formID:category.questionCount, no:questionNo, type:"MCQ"};
+        category.question.push(newQuestion);
+    }; //end of $scope.addQuestion()
+    
+    $scope.deleteCategory = function(category) {
+        if ($scope.categoryCount !== 0) {
+            $scope.categoryCount--;
+            var index = $scope.checklist.indexOf(category);
+            $scope.checklist.splice(index, 1);
+            
+            for(index; index < $scope.checklist.length; index++) {
+                $scope.checklist[index].formID = index;
+                $scope.checklist[index].no = index+1;
+            }
+        }
+    }; //end of $scope.deleteCategory()
+    
+    $scope.deleteQuestion = function(category,question) {
+        if (category.questionCount !== 0) {
+            category.questionCount--;
+            var index = category.question.indexOf(question);
+            category.question.splice(index, 1);
+            
+            for(index; index < category.question.length; index++) {
+                var questionNo = 'abcdefghijklmnopqrstuvwxyz'[index];
+                category.question[index].formID = index;
+                category.question[index].no = questionNo;
+            }
+        }
+    }; //end of $scope.deleteQuestion()
+    
+    /***** List *****/
 	
     var ref = firebase.database().ref().child("facility");
     $scope.facilitiesList = $firebaseArray(ref);
     
-    $scope.goToAddFacility = function() {
-        $location.path('/add-facility');
-    }; //end of $scope.goToAddFacility()
-
     $scope.storageRef = firebase.storage().ref();
     $scope.facilitiesRef = $scope.storageRef.child('facility');
 
+    /***** Add *****/
+    
     $scope.addFacility = function() {
         
-        $scope.questionAdded = [];
         $scope.categoryAdded = [];
         
         firebase.database().ref('count').once('value').then(function (snapshot, error) {
@@ -50,14 +126,30 @@ app.controller('FacilitiesController', ['$routeParams', '$scope', '$location', '
                 $scope.facilityCount = snapshot.val().facilityCount.count;
                 
                 $scope.facilityCount++;
-				
+                
                 angular.forEach($scope.checklist, function(categoryValue, key) {
                     $scope.categoryCount++;
                     $scope.categoryAdded.push($scope.categoryAlphabet + $scope.categoryCount);
+                    
+                    firebase.database().ref('category/' + $scope.categoryAlphabet + $scope.categoryCount).set({
+                        name: categoryValue.name,
+                        ID: $scope.categoryAlphabet + $scope.categoryCount
+                    }).then(function() {
+                        firebase.database().ref('count/categoryCount').set({
+                            count: $scope.categoryCount,
+                            alphabet: $scope.categoryAlphabet
+                        });
+                    }).catch(function(error) {
+                        console.log(error);
+                        if (error.code === "PERMISSION_DENIED") {
+							$scope.notify("auth/no-access-permission", "danger"); /* edit */
+                        }
+                    });
+                    
                     angular.forEach(categoryValue.question, function(questionValue, key) {
                         $scope.questionCount++;
-                        $scope.questionAdded.push($scope.questionAlphabet + $scope.questionCount);
-                        firebase.database().ref('question/' + $scope.questionAlphabet + $scope.questionCount).set({
+                        firebase.database().ref('category/' + $scope.categoryAlphabet + $scope.categoryCount + '/question/' + 
+                            $scope.questionAlphabet + $scope.questionCount).set({
                             name: questionValue.name,
                             ID: $scope.questionAlphabet + $scope.questionCount,
                             type: questionValue.type
@@ -68,40 +160,15 @@ app.controller('FacilitiesController', ['$routeParams', '$scope', '$location', '
                             });
                         }).catch(function(error) {
                             if (error.code === "PERMISSION_DENIED") {
-                                $scope.notfiy("auth/no-access-permission","danger"); /* edit */
+                                $scope.notify("auth/no-access-permission","danger"); /* edit */
                             }
                         });
-                    });
-                    
-                    var questionList = "{";
-                    for (var i = 0; i < $scope.questionAdded.length; i++) {
-                        questionList += $scope.questionAdded[i];
-                        if (i !== ($scope.questionAdded.length - 1)) {
-                            questionList += ",";
-                        }
-                    }
-                    questionList += "}";
-                    $scope.questionAdded = [];
-
-                    firebase.database().ref('category/' + $scope.categoryAlphabet + $scope.categoryCount).set({
-                        name: categoryValue.name,
-                        ID: $scope.categoryAlphabet + $scope.categoryCount,
-                        question: questionList
-                    }).then(function() {
-                        firebase.database().ref('count/categoryCount').set({
-                            count: $scope.categoryCount,
-                            alphabet: $scope.categoryAlphabet
-                        });
-                    }).catch(function(error) {
-                        console.log(error);
-                        if (error.code === "PERMISSION_DENIED") {
-							$scope.notfiy("auth/no-access-permission", "danger"); /* edit */
-                        }
                     });
                 });
                 
                 var file = $scope.photo;
-                var uploadTask = $scope.facilitiesRef.child($scope.name).put(file);
+                var filename = $scope.facilityAlphabet + $scope.facilityCount + " " + $scope.name;
+                var uploadTask = $scope.facilitiesRef.child(filename).put(file);
                 
                 uploadTask.on(firebase.storage.TaskEvent.STATE_CHANGED, function(snapshot) {
                     var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
@@ -130,92 +197,145 @@ app.controller('FacilitiesController', ['$routeParams', '$scope', '$location', '
                 }, function() {
                     $scope.downloadURL = uploadTask.snapshot.downloadURL;
                     
-                    var categoryList = "{";
-                    for (var i = 0; i < $scope.categoryAdded.length; i++) {
-                        categoryList += $scope.categoryAdded[i];
-                        if (i !== ($scope.categoryAdded.length - 1)) {
-                            categoryList += ",";
-                        }
-                    }
-                    categoryList += "}";
-                    
                     firebase.database().ref('facility/' + $scope.facilityAlphabet + $scope.facilityCount).set({
                         name: $scope.name,
                         ID: $scope.facilityAlphabet + $scope.facilityCount,
-                        photoURL: $scope.downloadURL,
-                        category: categoryList
+                        photoURL: $scope.downloadURL
                     }).then(function() {
                         firebase.database().ref('count/facilityCount').set({
                             count: $scope.facilityCount,
                             alphabet: $scope.facilityAlphabet
                         });
+                        
+                        angular.forEach($scope.categoryAdded, function(categoryValue, key) {
+                            firebase.database().ref('facility/' + $scope.facilityAlphabet + $scope.facilityCount + '/category/')
+                                .push(categoryValue)
+                                .then(function() {
+                                //nothing
+                            }).catch(function(error) {
+                                if (error.code === "PERMISSION_DENIED") {
+                                    $scope.notify("auth/no-access-permission","danger"); /* edit */
+                                }
+                            });
+                        });
                     }).catch(function(error) {
                         console.log(error);
                         if (error.code === "PERMISSION_DENIED") {
-                            $scope.notfiy("auth/no-access-permission", "danger"); /* edit */
+                            $scope.notify("auth/no-access-permission", "danger"); /* edit */
                         }
                     });
                 });
             } else {
-                $scope.notfiy("auth/count-does-not-exist", "danger"); /* edit */
+                $scope.notify("auth/count-does-not-exist", "danger"); /* edit */
             }
         }).catch(function(error) {
             if (error.code === "PERMISSION_DENIED") {
-                $scope.notfiy("auth/no-access-permission", "danger"); /* edit */
+                $scope.notify("auth/no-access-permission", "danger"); /* edit */
             }
         });
-    }; //end of $scope.addFacility()
         
-    $scope.categoryCount = 0;
-    var newQuestion = {name:"", id:0, no:"a", type:"MCQ"};
-    var newCategory = {name:"", id:0, no:1, questionCount:0, question:[newQuestion]};
-    $scope.checklist = [];
-    $scope.checklist.push(newCategory);
+    }; //end of $scope.addFacility()
     
-    $scope.addCategory = function() {
-    $scope.categoryCount++;
-    var newQuestion = {name:"", id:0, no:"a", type:"MCQ"};
-    var newCategory = {name:"", id:$scope.categoryCount, no:$scope.categoryCount+1,
-        questionCount:0, question:[newQuestion]};
-        $scope.checklist.push(newCategory);
-    }; //end of $scope.addCategory()
+    /***** View *****/
+        
+    $scope.overlay = false;
     
-    $scope.addQuestion = function(category) {
-        category.questionCount++;
-        var questionNo = 'abcdefghijklmnopqrstuvwxyz'[category.questionCount];
-        var newQuestion = {name:"", id:category.questionCount, no:questionNo, type:"MCQ"};
-        category.question.push(newQuestion);
-    }; //end of $scope.addQuestion()
+    $scope.closeOverlay = function() {
+        $scope.overlay = false;
+    }; //end of $scope.closeOverlay()
+        
+    $scope.viewFacility = function(facility) {
+        $scope.overlay = true;
+        $scope.facility = facility;
+        $scope.checklist = [];
+        $scope.categoryCount = -1;
+        
+        angular.forEach($scope.facility.category, function(categoryID, key) {
+            firebase.database().ref("category/" + categoryID).once("value").then(function(snapshot) {
+                if (snapshot.val() != null) {
+                    $scope.addEmptyCategory();
+                    $scope.checklist[$scope.categoryCount].name = snapshot.val().name;
+                    $scope.checklist[$scope.categoryCount].ID = snapshot.val().ID;
+                    $scope.checklist[$scope.categoryCount].no = $scope.categoryCount+1;
+                    $scope.checklist[$scope.categoryCount].formID = $scope.categoryCount;
+
+                    angular.forEach(snapshot.val().question, function(questionValue, key) {
+                        $scope.addEmptyQuestion();
+                        var questionCount = $scope.checklist[$scope.categoryCount].questionCount;
+                        $scope.checklist[$scope.categoryCount].question[questionCount].name = questionValue.name;
+                        $scope.checklist[$scope.categoryCount].question[questionCount].ID = questionValue.ID;
+                        $scope.checklist[$scope.categoryCount].question[questionCount].type = questionValue.type;
+                        $scope.$apply();
+                    });
+                    
+                } else {
+                    $scope.notify("category-not-found","danger"); /* edit */
+                }
+            }).catch(function(error) {
+                if (error.code === "PERMISSION_DENIED") {
+                    $scope.notify("auth/no-access-permission", "danger"); /* edit */
+                }
+            }); //end of firebase.database().ref()
+        }); //end of angular.forEach()
+    }; //end of $scope.viewFacility()
+        
+    /***** Edit *****/
     
-    $scope.deleteCategory = function(category) {
-        if ($scope.categoryCount === 0) {
-            
-        } else {
-            $scope.categoryCount--;
-            var index = $scope.checklist.indexOf(category);
-            $scope.checklist.splice(index, 1);
-            
-            for(index; index < $scope.checklist.length; index++) {
-                $scope.checklist[index].id = index;
-                $scope.checklist[index].no = index+1;
+    if ($routeParams.facilityID !== undefined) {
+        $scope.facilityID = $routeParams.facilityID;
+        firebase.database().ref("facility/" + $scope.facilityID).once("value").then(function(snapshot) {
+            if (snapshot.val() != null) {
+                $scope.facility = snapshot.val();
+                $scope.photoURL = $scope.facility.photoURL;
+                $scope.checklist = [];
+                $scope.categoryCount = -1;
+                
+                angular.forEach($scope.facility.category, function(categoryID, key) {
+                    firebase.database().ref("category/" + categoryID).once("value").then(function(snapshot) {
+                        if (snapshot.val() != null) {
+                            $scope.addEmptyCategory();
+                            $scope.checklist[$scope.categoryCount].name = snapshot.val().name;
+                            $scope.checklist[$scope.categoryCount].ID = snapshot.val().ID;
+                            $scope.checklist[$scope.categoryCount].no = $scope.categoryCount+1;
+                            $scope.checklist[$scope.categoryCount].formID = $scope.categoryCount;
+
+                            angular.forEach(snapshot.val().question, function(questionValue, key) {
+                                $scope.addEmptyQuestion();
+                                var questionCount = $scope.checklist[$scope.categoryCount].questionCount;
+                                $scope.checklist[$scope.categoryCount].question[questionCount].name = questionValue.name;
+                                $scope.checklist[$scope.categoryCount].question[questionCount].ID = questionValue.ID;
+                                $scope.checklist[$scope.categoryCount].question[questionCount].type = questionValue.type;
+                                $scope.$apply();
+                            });
+
+                        } else {
+                            $scope.notify("category-not-found","danger"); /* edit */
+                        }
+                    }).catch(function(error) {
+                        if (error.code === "PERMISSION_DENIED") {
+                            $scope.notify("auth/no-access-permission", "danger"); /* edit */
+                        }
+                    }); //end of firebase.database().ref()
+                }); //end of angular.forEach()
+                
+                $scope.$apply();
+            } else {
+                $scope.notify("facility-not-found","danger"); /* edit */
             }
-        }
-    }; //end of $scope.deleteCategory()
-    
-    $scope.deleteQuestion = function(category,question) {
-        if (category.questionCount === 0) {
-            
-        } else {
-            category.questionCount--;
-            var index = category.question.indexOf(question);
-            category.question.splice(index, 1);
-            
-            for(index; index < category.question.length; index++) {
-                var questionNo = 'abcdefghijklmnopqrstuvwxyz'[index];
-                category.question[index].id = index;
-                category.question[index].no = questionNo;
+        }).catch(function(error) {
+            if (error.code === "PERMISSION_DENIED") {
+                $scope.notify("auth/no-access-permission", "danger"); /* edit */
             }
-        }
-    }; //end of $scope.deleteQuestion()
-    
+        }); //end of firebase.database().ref()
+    }; //end of if()
+        
+    $scope.saveFacility = function() {
+        console.log($scope.facility);
+        if ($scope.facility.photoURL !== $scope.photoURL)
+            console.log("false");
+        else
+            console.log("true");
+        console.log($scope.checklist);
+    };
+        
 }]);

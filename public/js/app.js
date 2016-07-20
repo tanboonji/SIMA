@@ -34,16 +34,16 @@ app.config(function($routeProvider){
 			controller: 'FacilitiesController',
 			templateUrl: 'views/facilities.html'
 		})
-		.when('/facilities', {
-			controller: 'FacilitiesController',
-			templateUrl: 'views/facilities.html'
-		})
 		.when('/add-facility', {
 			controller: 'FacilitiesController',
 			templateUrl: 'views/add-facility.html'
 		})
 		.when('/edit-facility', {
-			controller: 'EditFacilitiesController',
+			controller: 'FacilitiesController',
+			templateUrl: 'views/edit-facility.html'
+		})
+		.when('/edit-facility?:facilityID', {
+			controller: 'FacilitiesController',
 			templateUrl: 'views/edit-facility.html'
 		})
 		.when('/logout', {

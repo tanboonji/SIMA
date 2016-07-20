@@ -1,15 +1,60 @@
 /* CSS document */
 
+/* General - Overlay */
+.overlay input[type="radio"][disabled], .overlay .radio label {
+    cursor: default;
+}
+.overlay .form-control[disabled] {
+    cursor: default;
+    background-color: white;
+}
+.overlay {
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    position: fixed;
+    background-color: rgba(50, 50, 50, 0.7);
+    overflow: auto;
+    z-index: 1001;
+}
+.overlay-popup {
+    width: 50%;
+    max-height: 80%;
+    border-radius: 10px;
+    background-color:#fff;
+    z-index:1002;
+    top: 50%;
+    left: 50%;
+    position: fixed;
+    transform: translate(-50%, -50%);
+    overflow: auto;
+    padding: 20px 20px 0 20px;
+}
+.overlay-popup .header {
+    border-bottom: 1px solid #ccc;
+    margin-bottom: 20px;
+}
+.overlay-popup .header h3 {
+    margin: 0 0 15px 0;
+}
+
 /* General - Checklist */
 .category-group {
     border: 1px solid #ccc;
     border-radius: 4px;
-    margin-bottom: 10px;
-    padding-bottom: 10px;
+    margin-bottom: 13px;
+    padding-bottom: 13px;
+}
+.category-group-without-padding {
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    margin-bottom: 13px;
 }
 .category-group-title {
     display: table;
     border-bottom: 1px solid #ccc;
+    margin-bottom: 3px;
     /* extra */
     position: relative;
     border-collapse: separate;
@@ -45,27 +90,33 @@
     white-space: nowrap;
 }
 .question-group {
-	border: 1px solid #ccc;
-	border-radius: 4px;
-	margin: 10px 10px 0 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    margin: 10px 10px 0 10px;
     display: table;
-	/* extra */
-	position: relative;
+    /* extra */
+    position: relative;
     border-collapse: separate;
 }
 .add-question-btn {
-	margin: 8px 0 0 10px;
+    margin: 10px 0 0 10px;
 }
 .question-radio {
-	font-size: 14px;
+    margin-right: 26px;
+    font-size: 14px;
 }
 .question-radio .radio-first {
-	min-height: 0;
-	padding-top: 8px;
+    min-height: 0;
+    padding-top: 8px;
 }
 .question-radio .radio-last {
-	min-height: 0;
-	padding-top: 0;
+    min-height: 0;
+    padding-top: 0;
+}
+.category-group-without-padding .force-height-10 {
+    font-size: 7px;
+    color: white;
+    cursor: default;
 }
 
 /* General - Photo Upload */
@@ -82,227 +133,230 @@
 
 /* General - Font */
 html, body {	
-	font-family: "Open Sans", sans-serif;
-	height: 100%;
-	width: 100%;
+    font-family: "Open Sans", sans-serif;
+    height: 100%;
+    width: 100%;
 }
 
 /* General - Navigation */
 .navbar {
-	height: 90px;
-	margin-bottom: 10px;
+    height: 90px;
+    margin-bottom: 10px;
 }
 .navbar a {
-	color: black;	
-	text-decoration: none;
+    color: black;	
+    text-decoration: none;
 }
 .navbar .container {
-	margin-top: 20px;
+    margin-top: 20px;
 }
 .navbar .nav-menu {
-	display: inline;
-	position: absolute;
-	margin-top: 18px;
-	margin-left: 20px;
+    display: inline;
+    position: absolute;
+    margin-top: 18px;
+    margin-left: 20px;
 }
 .navbar .nav-menu li {
-	display: inline;
-	margin-right: 50px;
-	font-size: 16px;
+    display: inline;
+    margin-right: 50px;
+    font-size: 16px;
 }
 .navbar .nav-menu li:hover {
-	border-bottom: 2px solid #fa143a;
+    border-bottom: 2px solid #fa143a;
 }
 .navbar .nav-menu .selected {
-	border-bottom: 2px solid #fa143a;
+    border-bottom: 2px solid #fa143a;
 }
 .navbar .profile {
-	float: right;
-	margin-top: 18px;
+    float: right;
+    margin-top: 18px;
 }
 
 /* General - Body */
 .title {
-	color: #fa143a;
-	font-weight: 600;
-	display: inline-block;
-	margin-bottom: 20px;
-	font-size: 22px;
+    color: #fa143a;
+    font-weight: 600;
+    display: inline-block;
+    margin-bottom: 20px;
+    font-size: 22px;
 }
 .search { /* edit */
-	
+    
 }
 .button-icon {
-	padding-right: 5px;
+    padding-right: 5px;
 }
 .force-col-margin {
-	margin-left: 15px;
-	margin-right: 0px;
+    margin-left: 15px;
+    margin-right: 0px;
 }
 .force-col-padding {
-	padding-left: 0px;
-	padding-right: 0px
+    padding-left: 0px;
+    padding-right: 0px
 }
 .force-row-margin {
-	margin-left: 0px;
-	margin-rgiht: 0px;
+    margin-left: 0px;
+    margin-rgiht: 0px;
 }
 .dropdown-text-left {
-	text-align: left;
-	display: inline-block;
-	min-width: 120px;
+    text-align: left;
+    display: inline-block;
+    min-width: 120px;
 }
 .dropdown-text-right {
-	text-align: right;
-	display: inline-block;
+    text-align: right;
+    display: inline-block;
 }
 .margin-right-15 {
-	margin-right: 15px;
+    margin-right: 15px;
 }
 .margin-top-25 {
-	margin-top: 25px;
+    margin-top: 25px;
 }
 .margin-top-10 {
-	margin-top: 10px;
+    margin-top: 10px;
+}
+.margin-top-15 {
+    margin-top: 15px;
+}
+.margin-top-5 {
+    margin-top: 5px;
+}
+.margin-top-7 {
+    margin-top: 7px;
+}
+.margin-top-20 {
+    margin-top: 20px;
 }
 .margin-bottom-50 {
-	margin-bottom: 50px;
+    margin-bottom: 50px;
 }
 .margin-bottom-30 {
-	margin-bottom: 30px;
+    margin-bottom: 30px;
+}
+.margin-bottom-20 {
+    margin-bottom: 20px;
+}
+.margin-bottom-25 {
+    margin-bottom: 25px;
 }
 
 /* Projects - Dropdown */ /* edit */
 .projects .dropdown-style {
-	display: inline-block;
-	min-width: 160px;
-	max-width: 160px;
+    display: inline-block;
+    min-width: 160px;
+    max-width: 160px;
 }
 
 /* Dashboard - Body */ /* edit */
 .dashboard .search {
-	float: right;
-	margin-top: 20px;
+    float: right;
+    margin-top: 20px;
 }
 
 /* Facilities */
 .facility-list ul {
-	padding-left: 0;
-	margin-bottom: 0;	
+    padding-left: 0;
+    margin-bottom: 0;	
 }
 .facility-list li {
-	display: inline;
-	margin-right: 31.3px;
+    cursor: pointer;
+    display: inline;
+    margin-right: 31.3px;
 }
 .facility-list img {
-	height: 200px;
-	width: 200px;
-	overflow: hidden;
-	margin-bottom: 7px;
+    height: 200px;
+    width: 200px;
+    overflow: hidden;
+    margin-bottom: 7px;
 }
 .facility-list div {
-	padding-bottom: 7px;
-	max-width: 200px;
-	display: inline-block;
-	margin-bottom: 20px;
-	text-align: center;
-	border: 1px solid black;
+    padding-bottom: 7px;
+    max-width: 200px;
+    display: inline-block;
+    margin-bottom: 20px;
+    text-align: center;
+    border: 1px solid black;
     border-radius: 7px;
-	overflow: hidden;
-	box-shadow: 1px 1px 3px #888888;
-}
-
-/* ngFlash */ /* edit */
-.alert .ng-leave {
-	opacity: 1;
-	transition: opacity 1.5s ease-out;
-}
-.alert .ng-leave .ng-leave-active {
-	opacity: 0;
-}
-.alert .ng-enter {
-	opacity: 0;
-	transition: opacity 1.5s ease-in;
-}
-.alert .ng-enter .ng-enter-active {
-	opacity: 1;
+    overflow: hidden;
+    box-shadow: 1px 1px 3px #888888;
 }
 
 /* Logout */
 .logout h2 {
-	font-weight: 600;
-	font-size: 20pt;
-	margin: 20px 0 0 20px;
+    font-weight: 600;
+    font-size: 26px;
+    margin: 20px 0 0 20px;
 }
 
 /* Login */
 .login, .forget-password { 
-	background-image: url('../images/login-background.jpg');
-	background-repeat: no-repeat;
-	background-attachment: fixed;
-	background-size: cover;
-	background-position: center;
-	height: 100%;
-	width: 100%;
+    background-image: url('../images/login-background.jpg');
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-size: cover;
+    background-position: center;
+    height: 100%;
+    width: 100%;
 }
 .login header, .forget-password header {
-	padding-left: 4%;
-	padding-top: 3%;
+    padding-left: 4%;
+    padding-top: 3%;
 }
 .login h3, .forget-password h3 {
-	font-weight: 600;
-	font-size: 18pt;
-	color: white;
+    font-weight: 600;
+    font-size: 24px;
+    color: white;
     margin: 20px 0 16px 20px;
 }
 .login a, .forget-password a {
-	color: #ff4e00;
-	text-decoration: none;
+    color: #ff4e00;
+    text-decoration: none;
 }
 .login .login-popup, .forget-password .forget-popup {
-	position: fixed;
-	background-color: rgba(0,0,0,0.85);
-	top: 50%;
-	left: 50%;
-	width: 450px;
+    position: fixed;
+    background-color: rgba(0,0,0,0.85);
+    top: 50%;
+    left: 50%;
+    width: 450px;
     transform: translate(-50%, -50%);
 }
 .login .login-popup .content, .forget-password .forget-popup .content {
-	margin-left: 75px;
+    margin-left: 75px;
     margin-right: 75px;
-	text-align: left;
+    text-align: left;
 }
 .login .login-popup .input-text, .forget-password .forget-popup .input-text {
-	width: 300px;
-	height: 35px;
-	margin: 20px 0 5px 0;
-	background-color: #242424;
-	border: 0;
-	padding: 1px 10px;
-	color: white;
+    width: 300px;
+    height: 35px;
+    margin: 20px 0 5px 0;
+    background-color: #242424;
+    border: 0;
+    padding: 1px 10px;
+    color: white;
 }
 .login .login-popup .forget, .forget-password .forget-popup .forget {
-	margin-top: 15px;
-	color: #ff4e00;
+    margin-top: 15px;
+    color: #ff4e00;
     text-align: center;
 }
 .login .login-popup .forget u, .forget-password .forget-popup .forget u {
-	cursor: pointer;
+    cursor: pointer;
 }
 .login .login-popup .login-btn {
-	height: 35px;
-	width: 300px;
-	background-color: #ff4e00;
-	border: 0;
-	color: white;
+    height: 35px;
+    width: 300px;
+    background-color: #ff4e00;
+    border: 0;
+    color: white;
     margin: 15px 0 35px 0;
 }
 .forget-password .forget-popup .forget-btn {
-	height: 35px;
-	width: 100%;
-	background-color: #ff4e00;
-	border: 0;
-	color: white;
+    height: 35px;
+    width: 100%;
+    background-color: #ff4e00;
+    border: 0;
+    color: white;
     margin: 20px 0 35px 0;
 }
 .login .error-message, .forget-password .error-message {

@@ -98,7 +98,7 @@ app.controller('LoginController', ['$routeParams', '$route', '$scope', '$locatio
                             firebase.auth().sendPasswordResetEmail($scope.email).then(function() {
                                 $location.path('/login').search('forget', $scope.email);
                                 $route.reload();
-                            }).catch(function(error) {
+                            }, function(error) {
                                 console.error("Reset failed:", error);
                                 var message = '';
                                 switch (error.code) { /* edit */
@@ -135,7 +135,7 @@ app.controller('LoginController', ['$routeParams', '$route', '$scope', '$locatio
                 firebase.auth().sendPasswordResetEmail($scope.email).then(function() {
                     $location.path('/login').search('forget', $scope.email);
                     $route.reload();
-                }).catch(function(error) {
+                }, function(error) {
                     console.error("Reset failed:", error);
                     var message = '';
                     switch (error.code) { /* edit */

@@ -1,27 +1,27 @@
 <header>
-	<nav class="navbar navbar-default navbar-static-top">
-		<div class="container">
-			<a href="#/dashboard">
-            	<img src="images/knight-frank-logo.png" alt="Knight Frank" style="max-height:50px"/>
+    <nav class="navbar navbar-default navbar-static-top">
+        <div class="container">
+            <a href="#/dashboard">
+                <img src="images/knight-frank-logo.png" alt="Knight Frank" style="max-height:50px"/>
             </a>
-			<div class="nav-menu">
-				<ul>
-					<li><a href="#/dashboard">Dashboard</a></li>
- 					<li><a href="#/projects">Projects</a></li>
-					<li><a href="#/staff">Staff</a></li>
-					<li class="selected"><a href="#/facilities">Facilities</a></li>
-				</ul>
-			</div>
-			<div class="profile" id="profile">
-			</div>
-		</div>
-	</nav>
+            <div class="nav-menu">
+                <ul>
+                    <li><a href="#/dashboard">Dashboard</a></li>
+                    <li><a href="#/projects">Projects</a></li>
+                    <li><a href="#/staff">Staff</a></li>
+                    <li class="selected"><a href="#/facilities">Facilities</a></li>
+                </ul>
+            </div>
+            <div class="profile" id="profile">
+            </div>
+        </div>
+    </nav>
 </header>
 
 <div class="facilities container">
-	<h3 class="title">Facilities</h3>
+    <h3 class="title">Facilities</h3>
     <div class="row">
-    	<div class="col-md-12">
+        <div class="col-md-12">
             <button type="button" class="btn btn-success pull-left" ng-click="goToAddFacility()">
                 <span class="glyphicon glyphicon-plus button-icon" aria-hidden="true"></span>
                 Add
@@ -37,14 +37,71 @@
             </div>
         </div>
     </div>
-    <div class="margin-top-25 margin-bottom-30 facility-list">
-    	<ul>
-        	<li ng-repeat="f in facilitiesList">
+    <div class="margin-top-25 margin-bottom-25 facility-list">
+        <ul>
+            <li ng-repeat="f in facilitiesList" ng-click="viewFacility(f)">
                 <div>
-                	<img ng-src="{{f.photoURL}}"/>
+                    <img ng-src="{{f.photoURL}}"/>
                     {{f.name}}
                 </div>
             </li>
-      	</ul>
+        </ul>
+    </div>
+</div>
+
+<div class="overlay" ng-show="overlay">
+    <div class="overlay-popup">
+        <div class="form-horizontal">
+            <div class="row">
+                <div class="col-md-12 header">
+                    <h3>{{facility.name}}</h3>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="category-group-without-padding" ng-repeat="c in checklist">
+                        <div class="category-group-title">
+                            <span class="group-addon">{{c.no}}.</span>
+                            <input type="text" class="form-control group-input" ng-model="c.name"
+                                placeholder="Enter category name" disabled>
+                        </div>
+                        <div ng-repeat="q in c.question">
+                            <div class="question-group col-md-9 force-col-padding">
+                                <span class="group-addon">{{q.no}}.</span>
+                                <input type="text" class="form-control group-input"  ng-model="q.name"
+                                    placeholder="Enter question name" disabled>
+                            </div>
+                            <div class="question-radio col-md-2 force-col-padding">
+                                <div class="radio radio-first">
+                                    <label><input type="radio" value="MCQ" ng-model="q.type"
+                                        name="questionType-{{c.formID}}-{{q.formID}}" disabled>MCQ</label>
+                                </div>
+                                <div class="radio radio-last">
+                                    <label><input type="radio" value="Short Answer" ng-model="q.type"
+                                        name="questionType-{{c.formID}}-{{q.formID}}" disabled>Short Ans</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="force-height-10">{{facility.name}}</div>
+                    </div>
+                </div>
+            </div>
+            <div class="row margin-bottom-20 margin-top-7">
+                <div class="col-md-12">
+                    <button class="btn btn-primary" type="button" ng-click="closeOverlay()">
+                        <span class="glyphicon glyphicon-remove button-icon" aria-hidden="true"></span>
+                        Close
+                    </button>
+                    <button class="btn btn-danger" type="button" ng-click="deleteFacility()">
+                        <span class="glyphicon glyphicon-trash button-icon" aria-hidden="true"></span>
+                        Delete
+                    </button>
+                    <button class="btn btn-warning" type="button" ng-click="goToEditFacility()">
+                        <span class="glyphicon glyphicon-pencil button-icon" aria-hidden="true"></span>
+                        Edit
+                    </button>
+                </div>
+            </div>
+        </div>
     </div>
 </div>

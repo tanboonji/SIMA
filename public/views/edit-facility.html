@@ -18,21 +18,21 @@
 	</nav>
 </header>
 
-<div class="add-facility container">
+<div class="edit-facility container">
 	<h3 class="title">Edit Facility</h3>
     <div class="form-horizontal">
         <div class="row">
             <label class="control-label col-md-2">Facility Name</label>
             <div class="col-md-6">
-                <input type="text" ng-model="name" class="form-control"/>
+                <input type="text" ng-model="facility.name" class="form-control"/>
             </div>
         </div>
         <div class="row margin-top-25">
         	<label class="control-label col-md-2">Photo</label>
             <div class="col-md-6">
-            	<div ngf-drop ngf-select ng-model="photo" class="dropbox col-md-12" 
+            	<div ngf-drop ngf-select ng-model="facility.photoURL" class="dropbox col-md-12" 
                 	ngf-drag-over-class="dragover" ngf-multiple="false" ngf-allow-dir="true" 
-                    accept="image/*" ngf-pattern="image/*" ngf-validate="size:{max: '5MB'}">
+                    accept="image/*" ngf-pattern="image/*" ngf-validate="size:{max:'5MB'}">
                 	Drag facility photo here or click here to upload<br/>
                     (Max file size is 5MB)
            		</div>
@@ -41,7 +41,8 @@
             <div class="col-md-6">
             	
             </div>
-            <img ngf-src="photo" ngf-resize="{width: 250, height: 250}" ngf-no-object-url="false"/>
+            <img ngf-src="facility.photoURL" ngf-resize="{width:250, height:250}" ngf-no-object-url="false"
+                 style="max-width:250px;max-height:250px"/>
             <div>
             {{photoStatus}}
             </div>
@@ -71,11 +72,11 @@
                         <div class="question-radio col-md-2 force-col-padding">
                             <div class="radio radio-first">
                                 <label><input type="radio" value="MCQ" ng-model="q.type"
-                                	name="questionType-{{c.id}}-{{q.id}}">MCQ</label>
+                                	name="questionType-{{c.formID}}-{{q.formID}}">MCQ</label>
                             </div>
                             <div class="radio radio-last">
-                                <label><input type="radio" value="Short Ans" ng-model="q.type"
-                                	name="questionType-{{c.id}}-{{q.id}}">Short Ans</label>
+                                <label><input type="radio" value="Short Answer" ng-model="q.type"
+                                	name="questionType-{{c.formID}}-{{q.formID}}">Short Ans</label>
                             </div>
                         </div>
                     </div>
@@ -84,17 +85,25 @@
                         Add Question
                     </button>
             	</div>
-                <button class="btn btn-default" type="button" ng-click="addCategory()">
+                <button class="btn btn-default margin-bottom-20" type="button" ng-click="addCategory()">
                     <span class="glyphicon glyphicon-plus button-icon" aria-hidden="true"></span>
                     Add Category
                 </button>
             </div>
         </div>
-        <div class="row margin-top-25 margin-bottom-50">
+        <div class="row margin-top-5 margin-bottom-50">
         	<div class="col-md-offset-2 col-md-10">
-                <button class="btn btn-success" type="button" ng-click="addFacility()">
-                    <span class="glyphicon glyphicon-plus button-icon" aria-hidden="true"></span>
-                    Add
+                <button class="btn btn-primary" type="button" ng-click="goToFacilities()">
+                    <span class="glyphicon glyphicon-remove button-icon" aria-hidden="true"></span>
+                    Cancel
+                </button>
+                <button class="btn btn-danger" type="button" ng-click="deleteFacility()">
+                    <span class="glyphicon glyphicon-trash button-icon" aria-hidden="true"></span>
+                    Delete
+                </button>
+                <button class="btn btn-success" type="button" ng-click="saveFacility()">
+                    <span class="glyphicon glyphicon-floppy-disk button-icon" aria-hidden="true"></span>
+                    Save
                 </button>
             </div>
         </div>

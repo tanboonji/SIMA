@@ -71,11 +71,11 @@
                         <div class="question-radio col-md-2 force-col-padding">
                             <div class="radio radio-first">
                                 <label><input type="radio" value="MCQ" ng-model="q.type"
-                                	name="questionType-{{c.id}}-{{q.id}}">MCQ</label>
+                                	name="questionType-{{c.formID}}-{{q.formID}}">MCQ</label>
                             </div>
                             <div class="radio radio-last">
-                                <label><input type="radio" value="Short Ans" ng-model="q.type"
-                                	name="questionType-{{c.id}}-{{q.id}}">Short Ans</label>
+                                <label><input type="radio" value="Short Answer" ng-model="q.type"
+                                	name="questionType-{{c.formID}}-{{q.formID}}">Short Ans</label>
                             </div>
                         </div>
                     </div>
@@ -84,15 +84,15 @@
                         Add Question
                     </button>
             	</div>
-                <button class="btn btn-default" type="button" ng-click="addCategory()">
+                <button class="btn btn-default margin-bottom-20" type="button" ng-click="addCategory()">
                     <span class="glyphicon glyphicon-plus button-icon" aria-hidden="true"></span>
                     Add Category
                 </button>
             </div>
         </div>
-        <div class="row margin-top-25 margin-bottom-50">
+        <div class="row margin-top-5 margin-bottom-50">
         	<div class="col-md-offset-2 col-md-10">
-                <button class="btn btn-danger" type="button" ng-click="goToFacilities()">
+                <button class="btn btn-primary" type="button" ng-click="goToFacilities()">
                     <span class="glyphicon glyphicon-remove button-icon" aria-hidden="true"></span>
                     Cancel
                 </button>
