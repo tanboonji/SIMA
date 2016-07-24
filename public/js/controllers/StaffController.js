@@ -39,5 +39,5 @@ app.controller('StaffController', ['$scope', '$location', '$firebaseAuth', '$fir
     $scope.logout = function() {
         $scope.auth.$signOut();
     }
-	
+    
 }]);

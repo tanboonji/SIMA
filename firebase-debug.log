@@ -3,7 +3,7 @@
 [debug] CLI Version:  3.0.2
 [debug] Platform:     win32
 [debug] Node Version: v4.4.3
-[debug] Time:         Mon Jul 25 2016 01:53:05 GMT+0800 (Malay Peninsula Standard Time)
+[debug] Time:         Mon Jul 25 2016 04:29:49 GMT+0800 (Malay Peninsula Standard Time)
 [debug] ----------------------------------------------------------------------
 [debug] 
 [debug] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase"]
@@ -14,9 +14,3 @@
 [debug] <<< HTTP RESPONSE 200
 [debug] >>> HTTP REQUEST GET https://admin.firebase.com/v1/database/kfpam-sima/tokens 
 [debug] <<< HTTP RESPONSE 200
-[info] 
-[info] === Deploying to 'kfpam-sima'...
-[info] 
-[info] i  deploying database, hosting
-[info] i  hosting: preparing public directory for upload...
-[debug] >>> HTTP REQUEST PUT https://deploy.firebase.com/v1/hosting/kfpam-sima/uploads/-KNT1VbxDYjOi88F9fYi?fileCount=43&message= 

@@ -52,6 +52,9 @@ app.controller('FacilitiesController', ['$routeParams', '$scope', '$location', '
         }
     }); //end of $scope.auth.$onAuthStateChanged()
         
+    $scope.storageRef = firebase.storage().ref();
+    $scope.facilitiesRef = $scope.storageRef.child('facility');
+        
     $scope.logout = function() {
         $scope.auth.$signOut();
     }
@@ -61,7 +64,6 @@ app.controller('FacilitiesController', ['$routeParams', '$scope', '$location', '
     }; //end of $scope.goToAddFacility()
         
     $scope.goToFacilities = function() {
-        console.log($scope.firebaseUser);
         $location.path('/facilities').search("facilityID",null);
     }; //end of $scope.goToFacilities()
     
@@ -69,7 +71,7 @@ app.controller('FacilitiesController', ['$routeParams', '$scope', '$location', '
         if ($scope.facilityID !== undefined) {
             $location.path("/edit-facility").search("facilityID",$scope.facilityID);
         } else {
-             $location.path("/edit-facility").search("facilityID",$scope.facility.ID);
+            $location.path("/edit-facility").search("facilityID",$scope.facility.ID);
         }
     }; //end of $scope.goToEditFacility()
         
@@ -177,12 +179,79 @@ app.controller('FacilitiesController', ['$routeParams', '$scope', '$location', '
     }; //end of $scope.removeCategory()
     
     /***** List *****/
+    
+    $scope.refreshFacilityList = function() {
+        firebase.database().ref('facility').once('value').then(function (snapshot, error) {
+            $scope.facilitiesList = Object.values(snapshot.val());
+            angular.forEach($scope.facilitiesList, function(facilityValue, key) {
+                if (facilityValue.deletedAt !== undefined) {
+                    facilityValue.deleted = true;
+                }
+            }); //end of angular.forEach()
+            $scope.$apply();
+        }).catch(function(error) {
+            if (error.code === "PERMISSION_DENIED") {
+                $scope.notify("auth/no-access-permission", "danger"); /* edit */
+            }
+        }); //end of firebase.database().ref()
+    }; //end of $scope.refreshFacilityList
+    
+    $scope.refreshFacilityList();
 	
     var ref = firebase.database().ref().child("facility");
-    $scope.facilitiesList = $firebaseArray(ref);
+    ref.on("child_changed", function() {
+        $scope.refreshFacilityList();
+    });
+    ref.on("child_added", function() {
+        $scope.refreshFacilityList();
+    });
+    ref.on("child_removed", function() {
+        $scope.refreshFacilityList();
+    });
     
-    $scope.storageRef = firebase.storage().ref();
-    $scope.facilitiesRef = $scope.storageRef.child('facility');
+    //$scope.facilitiesList = $firebaseArray(ref);
+        
+    Date.prototype.dayNow = function () { 
+        return ((this.getDate() < 10)?"0":"") + this.getDate() + "/" +(((this.getMonth()+1) < 10)?"0":"") + 
+            (this.getMonth()+1) + "/" + this.getFullYear();
+    }
+    Date.prototype.timeNow = function () {
+        return ((this.getHours() < 10)?"0":"") + this.getHours() + ":" + ((this.getMinutes() < 10)?"0":"") + 
+            this.getMinutes() + ":" + ((this.getSeconds() < 10)?"0":"") + this.getSeconds();
+    }
+    
+    $scope.deleteFacility = function() {
+        $scope.facilityDeleted = true;
+        var newDate = new Date();
+        var datetime = newDate.dayNow() + " @ " + newDate.timeNow();
+        firebase.database().ref('facility/' + $scope.facility.ID + "/deletedAt").set(datetime).then(function() {
+            firebase.database().ref('facility/' + $scope.facility.ID + "/deletedBy").set($scope.user.ID).then(function() {
+                $scope.notify("Successfully deleted \"" + $scope.facility.name + "\" facility","success");
+            }).catch(function(error) {
+                console.log(error);
+                if (error.code === "PERMISSION_DENIED") {
+                    $scope.notify("auth/no-access-permission", "danger"); /* edit */
+                }
+            }); //end of firebase.database().ref()
+        }).catch(function(error) {
+            console.log(error);
+            if (error.code === "PERMISSION_DENIED") {
+                $scope.notify("auth/no-access-permission", "danger"); /* edit */
+            }
+        }); //end of firebase.database().ref()
+    }; //end of $scope.deleteFacility()
+        
+    $scope.restoreFacility = function() {
+        $scope.facilityDeleted = false;
+        firebase.database().ref('facility/' + $scope.facility.ID + "/deletedAt").set(null).then(function() {
+            $scope.notify("Successfully restored \"" + $scope.facility.name + "\" facility","success");
+        }).catch(function(error) {
+            console.log(error);
+            if (error.code === "PERMISSION_DENIED") {
+                $scope.notify("auth/no-access-permission", "danger"); /* edit */
+            }
+        }); //end of firebase.database().ref()
+    }; //end of $scope.restoreFacility()
 
     /***** Add *****/
     
@@ -241,8 +310,7 @@ app.controller('FacilitiesController', ['$routeParams', '$scope', '$location', '
                     }); //end of angular.forEach()
                 }); //end of angular.forEach()
                 
-                var file = $scope.photo;
-                var uploadTask = $scope.facilitiesRef.child($scope.facilityAlphabet + $scope.facilityCount).put(file);
+                var uploadTask = $scope.facilitiesRef.child($scope.facilityAlphabet + $scope.facilityCount).put($scope.photo);
                 
                 uploadTask.on(firebase.storage.TaskEvent.STATE_CHANGED, function(snapshot) {
                     var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
@@ -324,6 +392,7 @@ app.controller('FacilitiesController', ['$routeParams', '$scope', '$location', '
         $scope.facility = facility;
         $scope.checklist = [];
         $scope.categoryCount = -1;
+        $scope.facilityDeleted = false;
         
         angular.forEach($scope.facility.category, function(categoryID, key) {
             firebase.database().ref("category/" + categoryID).once("value").then(function(snapshot) {
@@ -552,8 +621,7 @@ app.controller('FacilitiesController', ['$routeParams', '$scope', '$location', '
                 }); //end of angular.forEach() //looping through category in checklist
                 
                 if ($scope.facility.photoURL !== $scope.photoURL) {
-                    var file = $scope.facility.photoURL;
-                    var uploadTask = $scope.facilitiesRef.child($scope.facility.ID).put(file);
+                    var uploadTask = $scope.facilitiesRef.child($scope.facility.ID).put($scope.facility.photoURL);
 
                     uploadTask.on(firebase.storage.TaskEvent.STATE_CHANGED, function(snapshot) {
                         var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;

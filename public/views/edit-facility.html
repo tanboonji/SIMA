@@ -101,13 +101,21 @@
                 <span class="glyphicon glyphicon-remove button-icon" aria-hidden="true"></span>
                 Cancel
             </button>
-            <button class="btn btn-danger" type="button" ng-click="deleteFacility()">
+            <button class="btn btn-danger" type="button" ng-click="deleteFacility()" ng-show="!facilityDeleted">
                 <span class="glyphicon glyphicon-trash button-icon" aria-hidden="true"></span>
                 Delete
             </button>
-            <button class="btn btn-success" type="button" ng-click="saveFacility()">
+            <button class="btn btn-success" type="button" ng-click="saveFacility()" ng-show="!facilityDeleted">
                 <span class="glyphicon glyphicon-floppy-disk button-icon" aria-hidden="true"></span>
                 Save
+            </button>
+            <button class="btn btn-danger" type="button" ng-show="facilityDeleted" disabled>
+                <span class="glyphicon glyphicon-trash button-icon" aria-hidden="true"></span>
+                Deleted
+            </button>
+            <button class="btn btn-warning" type="button" ng-click="restoreFacility()" ng-show="facilityDeleted">
+                <span class="glyphicon glyphicon-repeat button-icon" aria-hidden="true"></span>
+                Restore
             </button>
         </div>
     </div>

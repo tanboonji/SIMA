@@ -49,7 +49,7 @@
     </div>
     <div class="margin-top-25 margin-bottom-25 facility-list">
         <ul>
-            <li ng-repeat="f in facilitiesList | filter:search" ng-click="viewFacility(f)">
+            <li ng-repeat="f in facilitiesList | filter:search" ng-click="viewFacility(f)" ng-show="!f.deleted">
                 <div>
                     <img ng-src="{{f.photoURL}}"/>
                     {{f.name}}
@@ -102,13 +102,21 @@
                         <span class="glyphicon glyphicon-remove button-icon" aria-hidden="true"></span>
                         Close
                     </button>
-                    <button class="btn btn-danger" type="button" ng-click="deleteFacility()">
+                    <button class="btn btn-danger" type="button" ng-click="deleteFacility()" ng-show="!facilityDeleted">
                         <span class="glyphicon glyphicon-trash button-icon" aria-hidden="true"></span>
                         Delete
                     </button>
-                    <button class="btn btn-warning" type="button" ng-click="goToEditFacility()">
+                    <button class="btn btn-warning" type="button" ng-click="goToEditFacility()" ng-show="!facilityDeleted">
                         <span class="glyphicon glyphicon-pencil button-icon" aria-hidden="true"></span>
                         Edit
+                    </button>
+                    <button class="btn btn-danger" type="button" ng-show="facilityDeleted" disabled>
+                        <span class="glyphicon glyphicon-trash button-icon" aria-hidden="true"></span>
+                        Deleted
+                    </button>
+                    <button class="btn btn-warning" type="button" ng-click="restoreFacility()" ng-show="facilityDeleted">
+                        <span class="glyphicon glyphicon-repeat button-icon" aria-hidden="true"></span>
+                        Restore
                     </button>
                 </div>
             </div>
