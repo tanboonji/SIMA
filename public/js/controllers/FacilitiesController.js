@@ -481,6 +481,10 @@ app.controller('FacilitiesController', ['$routeParams', '$scope', '$location', '
                 $scope.checklist = [];
                 $scope.categoryCount = -1;
                 
+                if ($scope.facility.deletedAt !== undefined) {
+                    $scope.facilityDeleted = true;
+                }
+                
                 angular.forEach($scope.facility.category, function(categoryID, key) {
                     firebase.database().ref("category/" + categoryID).once("value").then(function(snapshot) {
                         if (snapshot.val() != null) {
