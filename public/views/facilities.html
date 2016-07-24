@@ -30,8 +30,13 @@
                 <span class="glyphicon glyphicon-plus button-icon" aria-hidden="true"></span>
                 Add
             </button>
+            <div class="pull-left col-md-4 force-col-margin force-col-padding form-group has-icon">
+                <span class="glyphicon glyphicon-search form-control-icon"></span>
+                <input type="text" class="form-control" placeholder="Search for..." ng-model="search.name">
+            </div>
+            <!--
             <div class="pull-left col-md-4 force-col-margin force-col-padding input-group">
-                <input type="text" class="form-control" placeholder="Search for...">
+                <input type="text" class="form-control" placeholder="Search for..." ng-model="search.name">
                 <div class="input-group-btn">
                     <button class="btn btn-primary" type="button">
                         <span class="glyphicon glyphicon-search button-icon" aria-hidden="true"></span>
@@ -39,11 +44,12 @@
                     </button>
                 </div>
             </div>
+            -->
         </div>
     </div>
     <div class="margin-top-25 margin-bottom-25 facility-list">
         <ul>
-            <li ng-repeat="f in facilitiesList" ng-click="viewFacility(f)">
+            <li ng-repeat="f in facilitiesList | filter:search" ng-click="viewFacility(f)">
                 <div>
                     <img ng-src="{{f.photoURL}}"/>
                     {{f.name}}
