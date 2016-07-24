@@ -63,12 +63,12 @@
     <div class="overlay-popup">
         <div class="form-horizontal">
             <div class="row">
-                <div class="col-md-12 header">
+                <div class="col-md-12 col-lg-12 header">
                     <h3>{{facility.name}}</h3>
                 </div>
             </div>
             <div class="row">
-                <div class="col-md-12">
+                <div class="col-md-12 col-lg-12">
                     <div class="category-group-without-padding" ng-repeat="c in checklist">
                         <div class="category-group-title">
                             <span class="group-addon">{{c.no}}.</span>
@@ -76,12 +76,12 @@
                                 placeholder="Enter category name" disabled>
                         </div>
                         <div ng-repeat="q in c.question">
-                            <div class="question-group col-md-9 force-col-padding">
+                            <div class="question-group col-lg-9 col-md-9 force-col-padding">
                                 <span class="group-addon">{{q.no}}.</span>
                                 <input type="text" class="form-control group-input"  ng-model="q.name"
                                     placeholder="Enter question name" disabled>
                             </div>
-                            <div class="question-radio col-md-2 force-col-padding">
+                            <div class="question-radio col-lg-2 col-md-2 force-col-padding">
                                 <div class="radio radio-first">
                                     <label><input type="radio" value="MCQ" ng-model="q.type"
                                         name="questionType-{{c.formID}}-{{q.formID}}" disabled>MCQ</label>
@@ -92,12 +92,12 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="force-height-10">{{facility.name}}</div>
+                        <div class="force-height-10">JustNeededSomeExtraSpaceForStyleIssue.ToBeEdited</div>
                     </div>
                 </div>
             </div>
             <div class="row margin-bottom-20 margin-top-7">
-                <div class="col-md-12">
+                <div class="col-md-12 col-lg-12">
                     <button class="btn btn-primary" type="button" ng-click="closeOverlay()">
                         <span class="glyphicon glyphicon-remove button-icon" aria-hidden="true"></span>
                         Close
