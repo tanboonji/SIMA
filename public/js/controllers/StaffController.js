@@ -1,5 +1,5 @@
-app.controller('DashboardController', ['$scope', '$location', '$firebaseAuth', 
-	function($scope, $location, $firebaseAuth){
+app.controller('StaffController', ['$scope', '$location', '$firebaseAuth', '$firebaseObject', 
+	'$firebaseArray', function($scope, $location, $firebaseAuth, $firebaseObject, $firebaseArray){
 	
 	$scope.auth = $firebaseAuth();
 	
@@ -8,7 +8,7 @@ app.controller('DashboardController', ['$scope', '$location', '$firebaseAuth',
 		if ($scope.firebaseUser === null) {
 			$location.path('/login');
 		} else {
-            firebase.database().ref("staff/" + $scope.firebaseUser.uid).once("value").then(function(snapshot) {
+           firebase.database().ref("staff/" + $scope.firebaseUser.uid).once("value").then(function(snapshot) {
                 if (snapshot.val() !== null) {
                     $scope.user = snapshot.val();
                     $scope.user.name = $scope.user.name.toUpperCase();
@@ -32,7 +32,7 @@ app.controller('DashboardController', ['$scope', '$location', '$firebaseAuth',
                 if (error.code === "PERMISSION_DENIED") {
                     $scope.notify("auth/no-access-permission", "danger"); /* edit */
                 }
-            }); //end of firebase.database().ref()
+            }); //end of firebase.database().ref() 
         }
 	});
         

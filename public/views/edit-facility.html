@@ -13,6 +13,10 @@
 				</ul>
 			</div>
 			<div class="profile" id="profile">
+                Hello {{user.name}}
+                <button class="logout-btn" type="button" ng-click="logout()">
+                    Log Out
+                </button>
 			</div>
 		</div>
 	</nav>
@@ -20,11 +24,11 @@
 
 <div class="edit-facility container">
 	<h3 class="title">Edit Facility</h3>
-    <div class="form-horizontal">
+    <form class="form-horizontal">
         <div class="row">
             <label class="control-label col-md-2">Facility Name</label>
             <div class="col-md-6">
-                <input type="text" ng-model="facility.name" class="form-control"/>
+                <input type="text" ng-model="facility.name" class="form-control" required/>
             </div>
         </div>
         <div class="row margin-top-25">
@@ -34,78 +38,77 @@
                 	ngf-drag-over-class="dragover" ngf-multiple="false" ngf-allow-dir="true" 
                     accept="image/*" ngf-pattern="image/*" ngf-validate="size:{max:'5MB'}">
                 	Drag facility photo here or click here to upload<br/>
-                    (Max file size is 5MB)
+                    (Max file size is 5MB)<br/><br/>
+                    {{photoStatus}}<br/>
+                    {{photoProgress}}
            		</div>
                 <div ngf-no-file-drop>File drag and drop is not supported for this browser</div>
             </div>
-            <div class="col-md-6">
-            	
-            </div>
             <img ngf-src="facility.photoURL" ngf-resize="{width:250, height:250}" ngf-no-object-url="false"
                  style="max-width:250px;max-height:250px"/>
-            <div>
-            {{photoStatus}}
-            </div>
-            <div>
-            {{photoProgress}}
-            </div>
         </div>
         <div class="row margin-top-25">
-        	<label class="control-label col-md-2">Checklist</label>
+            <label class="control-label col-md-2">Checklist</label>
             <div class="col-md-6">
-            	<div class="category-group" ng-repeat="c in checklist">
-                	<div class="category-group-title">
-                        <span class="group-addon">{{c.no}}.</span>
-                        <input type="text" class="form-control group-input" ng-model="c.name"
-                        	placeholder="Enter category name">
-                        <span class="glyphicon glyphicon-remove group-delete" aria-hidden="true"
-                        	ng-click="deleteCategory(c)"></span>
-                    </div>
-                    <div ng-repeat="q in c.question">
-                        <div class="question-group col-md-9 force-col-padding">
-                            <span class="group-addon">{{q.no}}.</span>
-                            <input type="text" class="form-control group-input"  ng-model="q.name"
-                                placeholder="Enter question name">
+                <div class="category-group" ng-repeat="c in checklist" ng-show="c.show">
+                    <form class="form-horizontal" id="myForm">
+                        <div class="category-group-title">
+                            <span class="group-addon">{{c.no}}.</span>
+                            <input type="text" class="form-control group-input" ng-model="c.name"
+                                placeholder="Enter category name" required>
                             <span class="glyphicon glyphicon-remove group-delete" aria-hidden="true"
-                            	ng-click="deleteQuestion(c,q)"></span>
+                                ng-click="removeCategory(c)"></span>
                         </div>
-                        <div class="question-radio col-md-2 force-col-padding">
-                            <div class="radio radio-first">
-                                <label><input type="radio" value="MCQ" ng-model="q.type"
-                                	name="questionType-{{c.formID}}-{{q.formID}}">MCQ</label>
+                        <div ng-repeat="q in c.question">
+                            <div class="question-group col-md-9 force-col-padding">
+                                <span class="group-addon">{{q.no}}.</span>
+                                <input type="text" class="form-control group-input" ng-model="q.name"
+                                    placeholder="Enter question name" required>
+                                <span class="glyphicon glyphicon-remove group-delete" aria-hidden="true"
+                                    ng-click="deleteQuestion(c,q)"></span>
                             </div>
-                            <div class="radio radio-last">
-                                <label><input type="radio" value="Short Answer" ng-model="q.type"
-                                	name="questionType-{{c.formID}}-{{q.formID}}">Short Ans</label>
+                            <div class="question-radio col-md-2 force-col-padding">
+                                <div class="radio radio-first">
+                                    <label><input type="radio" value="MCQ" ng-model="q.type"
+                                        name="questionType-{{c.formID}}-{{q.formID}}">MCQ</label>
+                                </div>
+                                <div class="radio radio-last">
+                                    <label><input type="radio" value="Short Answer" ng-model="q.type"
+                                        name="questionType-{{c.formID}}-{{q.formID}}">Short Ans</label>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    <button class="btn btn-default add-question-btn" type="button" ng-click="addQuestion(c)">
-                    	<span class="glyphicon glyphicon-plus button-icon" aria-hidden="true"></span>
-                        Add Question
-                    </button>
-            	</div>
-                <button class="btn btn-default margin-bottom-20" type="button" ng-click="addCategory()">
+                        <button class="btn btn-default add-question-btn" type="button" ng-click="addQuestion(c)">
+                            <span class="glyphicon glyphicon-plus button-icon" aria-hidden="true"></span>
+                            Add Question
+                        </button>
+                    </form>
+                </div>
+                <button class="btn btn-default margin-bottom-20" type="button" ng-click="addEditCategory()">
                     <span class="glyphicon glyphicon-plus button-icon" aria-hidden="true"></span>
                     Add Category
                 </button>
+                <button class="btn btn-default margin-bottom-20" type="button" ng-click="refreshChecklist()">
+                    <span class="glyphicon glyphicon-refresh button-icon" aria-hidden="true"></span>
+                    Reset Checklist
+                </button>
             </div>
         </div>
-        <div class="row margin-top-5 margin-bottom-50">
-        	<div class="col-md-offset-2 col-md-10">
-                <button class="btn btn-primary" type="button" ng-click="goToFacilities()">
-                    <span class="glyphicon glyphicon-remove button-icon" aria-hidden="true"></span>
-                    Cancel
-                </button>
-                <button class="btn btn-danger" type="button" ng-click="deleteFacility()">
-                    <span class="glyphicon glyphicon-trash button-icon" aria-hidden="true"></span>
-                    Delete
-                </button>
-                <button class="btn btn-success" type="button" ng-click="saveFacility()">
-                    <span class="glyphicon glyphicon-floppy-disk button-icon" aria-hidden="true"></span>
-                    Save
-                </button>
-            </div>
+    </form>
+    <div class="row margin-top-5 margin-bottom-50">
+        <div class="col-md-offset-2 col-md-10">
+            <button class="btn btn-primary" type="button" ng-click="goToFacilities()">
+                <span class="glyphicon glyphicon-remove button-icon" aria-hidden="true"></span>
+                Cancel
+            </button>
+            <button class="btn btn-danger" type="button" ng-click="deleteFacility()">
+                <span class="glyphicon glyphicon-trash button-icon" aria-hidden="true"></span>
+                Delete
+            </button>
+            <button class="btn btn-success" type="button" ng-click="saveFacility()">
+                <span class="glyphicon glyphicon-floppy-disk button-icon" aria-hidden="true"></span>
+                Save
+            </button>
         </div>
     </div>
 </div>

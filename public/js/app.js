@@ -46,10 +46,6 @@ app.config(function($routeProvider){
 			controller: 'FacilitiesController',
 			templateUrl: 'views/edit-facility.html'
 		})
-		.when('/logout', {
-			controller: 'LogoutController',
-			templateUrl: 'views/logout.html'
-		})
 		.otherwise({
 			redirectTo: '/login'
 		});

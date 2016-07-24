@@ -33,58 +33,63 @@ app.controller('LoginController', ['$routeParams', '$route', '$scope', '$locatio
 	
     $scope.login = function() {
         if ($scope.staffID !== undefined) {
-            if (/^\w+$/.test($scope.staffID) && $scope.staffID.length === 5) {
-                firebase.database().ref('logincheck/' + $scope.staffID).on('value', function(data) {
-                    if (data.val() !== null) {
-                        if (data.val().status === "Active") {
-                            $scope.email = data.val().email;
-                            $scope.auth.$signInWithEmailAndPassword($scope.email, $scope.password).then(function(firebaseUser) {
-                                console.log("Signed in as:", firebaseUser.uid);
-                                $scope.firebaseUser = firebaseUser;
-                            }).catch(function(error) {
-                                $scope.firebaseUser = null;
-                                console.error("Authentication failed:", error);
-                                var message = '';
-                                switch (error.code) { /* edit */
-                                    case 'auth/invalid-email':
-                                        $scope.passwordErrorMessage = null;
-                                        $scope.staffIDErrorMessage = "auth/invalid-id";
-                                        break;
-                                    case 'auth/user-not-found':
-                                        $scope.passwordErrorMessage = null;
-                                        $scope.staffIDErrorMessage = "auth/user-not-found";
-                                        break;
-                                    case 'auth/wrong-password':
-                                        $scope.passwordErrorMessage = "auth/wrong-password";
-                                        $scope.staffIDErrorMessage = null;
-                                        break;
-                                    case 'auth/too-many-requests':
-                                        $scope.passwordErrorMessage = null;
-                                        $scope.staffIDErrorMessage = null;
-                                        $scope.notify("auth/too-many-requests", "danger");
-                                        break;
-                                    default:
-                                        $scope.passwordErrorMessage = null;
-                                        $scope.staffIDErrorMessage = null;
-                                        $scope.notify(error.code, "danger");
-                                        break;
-                                }
-                            }); //end of $scope.auth.$signInWithEmailAndPassword()
+            if (/^[A-Z][0-9]{4}/.test($scope.staffID)) {
+                if ($scope.password !== undefined) {
+                    firebase.database().ref('logincheck/' + $scope.staffID).on('value', function(data) {
+                        if (data.val() !== null) {
+                            if (data.val().status === "Active") {
+                                $scope.email = data.val().email;
+                                $scope.auth.$signInWithEmailAndPassword($scope.email, $scope.password).then(function(firebaseUser) {
+                                    console.log("Signed in as:", firebaseUser.uid);
+                                    $scope.firebaseUser = firebaseUser;
+                                }).catch(function(error) {
+                                    $scope.firebaseUser = null;
+                                    console.error("Authentication failed:", error);
+                                    var message = '';
+                                    switch (error.code) { /* edit */
+                                        case 'auth/invalid-email':
+                                            $scope.passwordErrorMessage = null;
+                                            $scope.staffIDErrorMessage = "auth/invalid-id";
+                                            break;
+                                        case 'auth/user-not-found':
+                                            $scope.passwordErrorMessage = null;
+                                            $scope.staffIDErrorMessage = "auth/user-not-found";
+                                            break;
+                                        case 'auth/wrong-password':
+                                            $scope.passwordErrorMessage = "auth/wrong-password";
+                                            $scope.staffIDErrorMessage = null;
+                                            break;
+                                        case 'auth/too-many-requests':
+                                            $scope.passwordErrorMessage = null;
+                                            $scope.staffIDErrorMessage = null;
+                                            $scope.notify("auth/too-many-requests", "danger");
+                                            break;
+                                        default:
+                                            $scope.passwordErrorMessage = null;
+                                            $scope.staffIDErrorMessage = null;
+                                            $scope.notify(error.code, "danger");
+                                            break;
+                                    }
+                                }); //end of $scope.auth.$signInWithEmailAndPassword()
+                            } else {
+                                $scope.passwordErrorMessage = null;
+                                $scope.staffIDErrorMessage = null;
+                                $scope.notify("auth/account-not-available", "danger");
+                            } //end of if() //check staff active or inactive
                         } else {
                             $scope.passwordErrorMessage = null;
-                            $scope.staffIDErrorMessage = null;
-                            $scope.notify("auth/account-not-available", "danger");
-                        }
-                    } else {
-                        $scope.passwordErrorMessage = null;
-                        $scope.staffIDErrorMessage = "auth/no-matching-id";
-                        $scope.$apply();
-                    }
-                }); //end of firebase.database().ref()
+                            $scope.staffIDErrorMessage = "auth/no-matching-id";
+                            $scope.$apply();
+                        } //end of if() //cannot find email from database
+                    }); //end of firebase.database().ref() //get email from database
+                } else {
+                    $scope.passwordErrorMessage = "auth/no-password-entered";
+                    $scope.staffIDErrorMessage = null;
+                } //end of if() //check password empty
             } else {
                 $scope.passwordErrorMessage = null;
                 $scope.staffIDErrorMessage = "auth/invalid-id";
-            }
+            } //end of if() //regex staffID test
         }
     }; //end of $scope.login()
     

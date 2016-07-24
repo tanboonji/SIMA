@@ -171,6 +171,9 @@ html, body {
     float: right;
     margin-top: 18px;
 }
+.navbar .profile .logout-btn {
+    margin-left: 5px;
+}
 
 /* General - Body */
 .title {

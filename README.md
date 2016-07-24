@@ -4,13 +4,17 @@
 - Button click feedback
 - Facilities (view/delete/update)
 - Staff (list/add/view/delete/update)
-- When logging in for the first time, update displayName and photoUrl
-- Enter keyboard button for search
+- When logging in for the first time, update displayName and photoUrl (not needed?)
 - Staff role, then hide add button if not admin
 - Security control depending on staff role
-- Profile info on navigation bar
 - Login error message (customize the message)
 - Error message for everything?
+
+### Important things to do:
+- Timestamp for data
+- Profile for navigation
+- Search function for facilities
+- Enter keyboard button for search
 
 ### Things half done:
 - Projects (list)

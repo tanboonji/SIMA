@@ -13,6 +13,10 @@
 				</ul>
 			</div>
 			<div class="profile" id="profile">
+                Hello {{user.name}}
+                <button class="logout-btn" type="button" ng-click="logout()">
+                    Log Out
+                </button>
 			</div>
 		</div>
 	</nav>
@@ -34,20 +38,13 @@
                 	ngf-drag-over-class="dragover" ngf-multiple="false" ngf-allow-dir="true" 
                     accept="image/*" ngf-pattern="image/*" ngf-validate="size:{max: '5MB'}">
                 	Drag facility photo here or click here to upload<br/>
-                    (Max file size is 5MB)
+                    (Max file size is 5MB)<br/><br/>
+                    {{photoStatus}}<br/>
+                    {{photoProgress}}
            		</div>
                 <div ngf-no-file-drop>File drag and drop is not supported for this browser</div>
             </div>
-            <div class="col-md-6">
-            	
-            </div>
             <img ngf-src="photo" ngf-resize="{width: 250, height: 250}" ngf-no-object-url="false"/>
-            <div>
-            {{photoStatus}}
-            </div>
-            <div>
-            {{photoProgress}}
-            </div>
         </div>
         <div class="row margin-top-25">
         	<label class="control-label col-md-2">Checklist</label>
@@ -63,7 +60,7 @@
                     <div ng-repeat="q in c.question">
                         <div class="question-group col-md-9 force-col-padding">
                             <span class="group-addon">{{q.no}}.</span>
-                            <input type="text" class="form-control group-input"  ng-model="q.name"
+                            <input type="text" class="form-control group-input" ng-model="q.name"
                                 placeholder="Enter question name">
                             <span class="glyphicon glyphicon-remove group-delete" aria-hidden="true"
                             	ng-click="deleteQuestion(c,q)"></span>
@@ -92,11 +89,23 @@
         </div>
         <div class="row margin-top-5 margin-bottom-50">
         	<div class="col-md-offset-2 col-md-10">
-                <button class="btn btn-primary" type="button" ng-click="goToFacilities()">
+                <button class="btn btn-primary" type="button" ng-click="goToFacilities()" ng-show="buttonChange">
+                    <span class="glyphicon glyphicon-chevron-left button-icon" aria-hidden="true"></span>
+                    Back
+                </button>
+                <button class="btn btn-warning" type="button" ng-click="goToEditFacility()" ng-show="buttonChange">
+                    <span class="glyphicon glyphicon-pencil button-icon" aria-hidden="true"></span>
+                    Edit
+                </button>
+                <button class="btn btn-success" type="button" ng-click="goToNewFacility()" ng-show="buttonChange">
+                    <span class="glyphicon glyphicon-plus button-icon" aria-hidden="true"></span>
+                    New
+                </button>
+                <button class="btn btn-primary" type="button" ng-click="goToFacilities()" ng-show="!buttonChange">
                     <span class="glyphicon glyphicon-remove button-icon" aria-hidden="true"></span>
                     Cancel
                 </button>
-                <button class="btn btn-success" type="button" ng-click="addFacility()">
+                <button class="btn btn-success" type="button" ng-click="addFacility()" ng-show="!buttonChange">
                     <span class="glyphicon glyphicon-plus button-icon" aria-hidden="true"></span>
                     Add
                 </button>

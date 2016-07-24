@@ -13,6 +13,10 @@
 				</ul>
 			</div>
 			<div class="profile" id="profile">
+                Hello {{user.name}}
+                <button class="logout-btn" type="button" ng-click="logout()">
+                    Log Out
+                </button>
 			</div>
 		</div>
 	</nav>
@@ -20,6 +24,7 @@
 
 <div class="projects container">
 	<h3 class="title">Projects</h3>
+    <!--
     <div class="row">
     	<div class="col-md-12">
             <button type="button" class="btn btn-success pull-left" ng-click="goToAddProject()">
@@ -71,4 +76,5 @@
             </tbody>
         </table>
     </div>
+    -->
 </div>
