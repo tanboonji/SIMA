@@ -12,9 +12,9 @@
 
 ### Important things to do:
 - Timestamp for data
-- Profile for navigation
-- Search function for facilities
-- Enter keyboard button for search
+- Profile for navigation (done)
+- Search function for facilities (done)
+- Enter keyboard button for search (done)
 
 ### Things half done:
 - Projects (list)

@@ -1,4 +1,52 @@
 {
-  ".read": true,
-  ".write": true
+  "rules": {
+   	   "facility":{ ".read": true, ".write" : true},
+          "project":{ ".read": true, ".write" : true, ".indexOn": "CM"},
+            "category":{ ".read": true, ".write" : true},
+          "projectfacility":{ ".read": true, ".write" : true},
+              "record":{ ".read": true, ".write" : true},
+            
+      // only write here if admin (add new staff, delete)
+      "staff": {
+       ".read": "auth !=null",
+       ".write": "root.child('admin').child(auth.uid).exists()",
+      ".indexOn": ["role","status"],
+          "$staff": {
+            //if staff themself (edit) or admin
+            ".write": "root.child('admin/'+ auth.uid).exists() || root.child('staff/'+$staff + '/authID').val() == auth.uid"
+           }
+       },
+      
+       "adminstaff": {
+       ".read": "auth !=null",
+       ".write": "root.child('admin').child(auth.uid).exists()",
+          "$staff": {
+            //if adminstaff themself (edit)
+            ".write": "root.child('admin/'+ auth.uid).exists() || root.child('staff/'+$staff+'/authID').val() == auth.uid"
+           }
+       },
+       // only write here if admin (should be super-admin or admin for HO)
+       "admin": {
+          ".read": "auth != null",
+            ".write": "true"
+  			},
+         
+        "count":{
+        	"$count": {
+            //can read/write counts only if is admin
+             ".read": "root.child('admin/'+ auth.uid).exists() && auth != null",
+             ".write": "root.child('admin/'+ auth.uid).exists()"
+          }
+        },
+        
+        "logincheck": {
+       ".read": "true",
+       ".write": "root.child('admin/'+ auth.uid).exists()",
+         "$logincheck": {
+              //can read/write counts only if is admin
+               ".read": "root.child('admin/'+ auth.uid).exists() && auth != null",
+               ".write": "root.child('admin/'+ auth.uid).exists() || root.child('logincheck/'+$logincheck+'/ID').val() == root.child('staff/'+ auth.uid + '/ID').val()"
+            }
+        }
+}
 }

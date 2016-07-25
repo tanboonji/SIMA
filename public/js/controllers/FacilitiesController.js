@@ -180,51 +180,32 @@ app.controller('FacilitiesController', ['$routeParams', '$scope', '$location', '
     
     /***** List *****/
     
-//    $scope.refreshFacilityList = function() {
-//        firebase.database().ref('facility').once('value').then(function (snapshot, error) {
-//            console.log("test1");
-//            $scope.facilitiesList = Object.values(snapshot.val());
-//            //$scope.facilitiesListRef = snapshot.val();
-//            //$scope.facilitiesList = [];
-//            //$scope.facilitiesList = Object.keys(snapshot.val()).map(function(k) { return o[k] });
-//            /*for (var i = 0; i < snapshot.val().length; i++) {
-//                $scope.facilitiesList[i]['name'] = $scope.facilitiesListRef[i].name;
-//                $scope.facilitiesList[i]['photoURL'] = $scope.facilitiesListRef[i].photoURL;
-//                $scope.facilitiesList[i]['ID'] =  $scope.facilitiesListRef[i].ID;
-//                $scope.facilitiesList[i]['deletedBy'] =  $scope.facilitiesListRef[i].deletedBy;
-//                $scope.facilitiesList[i]['deletedAt'] =  $scope.facilitiesListRef[i].deletedAt;
-//            }*/
-//            console.log("test2");
-//            angular.forEach($scope.facilitiesList, function(facilityValue, key) {
-//                if (facilityValue.deletedAt !== undefined) {
-//                    facilityValue.deleted = true;
-//                }
-//            }); //end of angular.forEach()
-//            console.log("test3");
-//            console.log($scope.facilitiesList);
-//            $scope.$apply();
-//            console.log("test4");
-//        }).catch(function(error) {
-//            if (error.code === "PERMISSION_DENIED") {
-//                $scope.notify("auth/no-access-permission", "danger"); /* edit */
-//            }
-//        }); //end of firebase.database().ref()
-//    }; //end of $scope.refreshFacilityList
-    
-//    $scope.refreshFacilityList();
-	
     var ref = firebase.database().ref().child("facility");
-//    ref.on("child_changed", function() {
-//        $scope.refreshFacilityList();
-//    });
-//    ref.on("child_added", function() {
-//        $scope.refreshFacilityList();
-//    });
-//    ref.on("child_removed", function() {
-//        $scope.refreshFacilityList();
-//    });
     
-    $scope.facilitiesList = $firebaseArray(ref);
+    $scope.refreshFacilityList = function() {
+        firebase.database().ref('facility').once('value').then(function (snapshot, error) {
+            var tempList = [];
+            angular.forEach(snapshot.val(), function(facilityValue, key) {
+                var tempFacility = facilityValue;
+                tempList.push(facilityValue);
+            });
+            $scope.facilitiesList = tempList;
+            angular.forEach($scope.facilitiesList, function(facilityValue, key) {
+                if (facilityValue.deletedAt !== undefined) {
+                    facilityValue.deleted = true;
+                }
+            }); //end of angular.forEach()
+            $scope.$apply();
+        }).catch(function(error) {
+            if (error.code === "PERMISSION_DENIED") {
+                $scope.notify("auth/no-access-permission", "danger"); /* edit */
+            }
+        }); //end of firebase.database().ref()
+    }; //end of $scope.refreshFacilityList
+    
+    ref.on('value', function() {
+        $scope.refreshFacilityList();
+    });
         
     Date.prototype.dayNow = function () { 
         return ((this.getDate() < 10)?"0":"") + this.getDate() + "/" +(((this.getMonth()+1) < 10)?"0":"") + 
