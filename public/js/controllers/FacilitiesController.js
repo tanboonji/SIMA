@@ -22,7 +22,7 @@ app.controller('FacilitiesController', ['$routeParams', '$scope', '$location', '
     $scope.auth.$onAuthStateChanged(function(firebaseUser) {
         $scope.firebaseUser = firebaseUser;
         if ($scope.firebaseUser === null) {
-            $location.path('/login');
+            $location.path('/login').search("facilityID",null).search("edit",null).search("add",null);
         } else {
             firebase.database().ref("staff/" + $scope.firebaseUser.uid).once("value").then(function(snapshot) {
                 if (snapshot.val() !== null) {
@@ -60,18 +60,18 @@ app.controller('FacilitiesController', ['$routeParams', '$scope', '$location', '
     }
         
     $scope.goToAddFacility = function() {
-        $location.path('/add-facility').search("facilityID",null);
+        $location.path('/add-facility').search("facilityID",null).search("edit",null).search("add",null);
     }; //end of $scope.goToAddFacility()
         
     $scope.goToFacilities = function() {
-        $location.path('/facilities').search("facilityID",null);
+        $location.path('/facilities').search("facilityID",null).search("edit",null).search("add",null);
     }; //end of $scope.goToFacilities()
     
     $scope.goToEditFacility = function() {
         if ($scope.facilityID !== undefined) {
-            $location.path("/edit-facility").search("facilityID",$scope.facilityID);
+            $location.path("/edit-facility").search("facilityID",$scope.facilityID).search("edit",null).search("add",null);
         } else {
-            $location.path("/edit-facility").search("facilityID",$scope.facility.ID);
+            $location.path("/edit-facility").search("facilityID",$scope.facility.ID).search("edit",null).search("add",null);
         }
     }; //end of $scope.goToEditFacility()
         
@@ -83,12 +83,9 @@ app.controller('FacilitiesController', ['$routeParams', '$scope', '$location', '
         var newCategory = {name:"", formID:0, no:1, questionCount:0, question:[newQuestion]};
         $scope.checklist = [];
         $scope.checklist.push(newCategory);
-        $scope.buttonChange = false;
         $scope.photoStatus = undefined;
         $scope.photoProgress = undefined;
     }; //end of $scope.goToNewFacility()
-        
-    $scope.buttonChange = false;
         
     /***** Checklist *****/
         
@@ -208,8 +205,8 @@ app.controller('FacilitiesController', ['$routeParams', '$scope', '$location', '
     });
         
     Date.prototype.dayNow = function () { 
-        return ((this.getDate() < 10)?"0":"") + this.getDate() + "/" +(((this.getMonth()+1) < 10)?"0":"") + 
-            (this.getMonth()+1) + "/" + this.getFullYear();
+        return (this.getFullYear( + "/" + (((this.getMonth()+1) < 10)?"0":"") + (this.getMonth()+1) + "/" + 
+            (this.getDate() < 10)?"0":"") + this.getDate());
     }
     Date.prototype.timeNow = function () {
         return ((this.getHours() < 10)?"0":"") + this.getHours() + ":" + ((this.getMinutes() < 10)?"0":"") + 
@@ -248,131 +245,186 @@ app.controller('FacilitiesController', ['$routeParams', '$scope', '$location', '
             }
         }); //end of firebase.database().ref()
     }; //end of $scope.restoreFacility()
+        
+    if ($routeParams.add !== undefined) {
+        $scope.notify("Successfully added \"" +$routeParams.add + "\" facility","success");
+    }
+        
+    if ($routeParams.edit !== undefined) {
+        $scope.notify("Successfully saved \"" +$routeParams.edit + "\" facility","success");
+    }
 
     /***** Add *****/
     
     $scope.addFacility = function() {
         
-        $scope.categoryAdded = [];
-        
-        firebase.database().ref('count').once('value').then(function (snapshot, error) {
-            if (snapshot.val().questionCount !== null && snapshot.val().categoryCount !== null) {
-                
-                $scope.questionAlphabet = snapshot.val().questionCount.alphabet;
-                $scope.categoryAlphabet = snapshot.val().categoryCount.alphabet;
-                $scope.facilityAlphabet = snapshot.val().facilityCount.alphabet;
-                $scope.questionCount = snapshot.val().questionCount.count;
-                $scope.categoryCount = snapshot.val().categoryCount.count;
-                $scope.facilityCount = snapshot.val().facilityCount.count;
-                
-                $scope.facilityCount++;
-                
-                angular.forEach($scope.checklist, function(categoryValue, key) {
-                    $scope.categoryCount++;
-                    $scope.categoryAdded.push($scope.categoryAlphabet + $scope.categoryCount);
-                    
-                    firebase.database().ref('category/' + $scope.categoryAlphabet + $scope.categoryCount).set({
-                        name: categoryValue.name,
-                        ID: $scope.categoryAlphabet + $scope.categoryCount
-                    }).then(function() {
-                        firebase.database().ref('count/categoryCount').set({
-                            count: $scope.categoryCount,
-                            alphabet: $scope.categoryAlphabet
-                        });
-                    }).catch(function(error) {
-                        console.log(error);
-                        if (error.code === "PERMISSION_DENIED") {
-							$scope.notify("auth/no-access-permission", "danger"); /* edit */
-                        }
-                    }); //end of firebase.database().ref()
-                    
-                    angular.forEach(categoryValue.question, function(questionValue, key) {
-                        $scope.questionCount++;
-                        firebase.database().ref('category/' + $scope.categoryAlphabet + $scope.categoryCount + '/question/' + 
-                            $scope.questionAlphabet + $scope.questionCount).set({
-                            name: questionValue.name,
-                            ID: $scope.questionAlphabet + $scope.questionCount,
-                            type: questionValue.type
-                        }).then(function() {
-                            firebase.database().ref('count/questionCount').set({
-                                count: $scope.questionCount,
-                                alphabet: $scope.questionAlphabet
-                            });
-                        }).catch(function(error) {
-                            if (error.code === "PERMISSION_DENIED") {
-                                $scope.notify("auth/no-access-permission","danger"); /* edit */
-                            }
-                        }); //end of firebase.database().ref()
-                    }); //end of angular.forEach()
-                }); //end of angular.forEach()
-                
-                var uploadTask = $scope.facilitiesRef.child($scope.facilityAlphabet + $scope.facilityCount).put($scope.photo);
-                
-                uploadTask.on(firebase.storage.TaskEvent.STATE_CHANGED, function(snapshot) {
-                    var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-                    $scope.photoProgress = 'Upload is ' + progress + '% done';
-
-                    switch (snapshot.state) {
-                        case firebase.storage.TaskState.PAUSED:
-                            $scope.photoStatus = 'Upload is paused';
-                            break;
-                        case firebase.storage.TaskState.RUNNING:
-                            $scope.photoStatus = 'Upload is running';
-                            break;
-                    }
-                }, function(error) {
-                    switch (error.code) {
-                        case 'storage/unauthorized':
-                            $scope.photoStatus = 'User does not have permission to access the object';
-                            break;
-                        case 'storage/canceled':
-                            $scope.photoStatus = 'User canceled the upload';
-                            break;
-                        case 'storage/unknown':
-                            $scope.photoStatus = 'Unknown error occurred';
-                            break;
-                    }
-                }, function() {
-                    $scope.downloadURL = uploadTask.snapshot.downloadURL;
-                    
-                    firebase.database().ref('facility/' + $scope.facilityAlphabet + $scope.facilityCount).set({
-                        name: $scope.name,
-                        ID: $scope.facilityAlphabet + $scope.facilityCount,
-                        photoURL: $scope.downloadURL
-                    }).then(function() {
-                        firebase.database().ref('count/facilityCount').set({
-                            count: $scope.facilityCount,
-                            alphabet: $scope.facilityAlphabet
-                        });
-                        
-                        angular.forEach($scope.categoryAdded, function(categoryValue, key) {
-                            firebase.database().ref('facility/' + $scope.facilityAlphabet + $scope.facilityCount + '/category/' + categoryValue)
-                                .set(categoryValue).then(function() {
-                                $scope.facilityID = "" + $scope.facilityAlphabet + $scope.facilityCount;
-                                $scope.notify("Successfully added \"" + $scope.name + "\" facility","success");
-                                $scope.buttonChange = true;
-                                $scope.$apply();
-                            }).catch(function(error) {
-                                if (error.code === "PERMISSION_DENIED") {
-                                    $scope.notify("auth/no-access-permission","danger"); /* edit */
+        if ($scope.name === undefined) {
+            $scope.facilityNameEmpty = true;
+            $scope.facilityPhotoEmpty = false;
+            angular.forEach($scope.checklist, function(categoryValue, key) {
+                categoryValue.error = false;
+            }); //end of angular.forEach()
+        } else if ($scope.photo === undefined) {
+            $scope.facilityNameEmpty = false;
+            $scope.facilityPhotoEmpty = true;
+            angular.forEach($scope.checklist, function(categoryValue, key) {
+                categoryValue.error = false;
+            }); //end of angular.forEach()
+        } else {
+            var error = false;
+            $scope.facilityNameEmpty = false;
+            $scope.facilityPhotoEmpty = false;
+            angular.forEach($scope.checklist, function(categoryValue, key) {
+                categoryValue.error = false;
+            }); //end of angular.forEach()
+            angular.forEach($scope.checklist, function(categoryValue, key) {
+                if (!error) {
+                    if (categoryValue.name === undefined || categoryValue.name === "") {
+                        categoryValue.error = true;
+                        error = true;
+                    } else {
+                        angular.forEach(categoryValue.question, function(questionValue, key) {
+                            if (!error) {
+                                if (questionValue.name === undefined || questionValue.name === "") {
+                                    categoryValue.error = true;
+                                    error = true;
                                 }
-                            });
+                            }
                         }); //end of angular.forEach()
-                    }).catch(function(error) {
-                        console.log(error);
-                        if (error.code === "PERMISSION_DENIED") {
-                            $scope.notify("auth/no-access-permission", "danger"); /* edit */
-                        }
-                    }); //end of firebase.database().ref()
-                }); //end of uploadTask.on()
-            } else {
-                $scope.notify("auth/count-does-not-exist", "danger"); /* edit */
-            } //end of if()
-        }).catch(function(error) {
-            if (error.code === "PERMISSION_DENIED") {
-                $scope.notify("auth/no-access-permission", "danger"); /* edit */
+                    }
+                }
+            }); //end of angular.forEach()
+            
+            if (!error) {
+                $scope.categoryAdded = [];
+        
+                firebase.database().ref('count').once('value').then(function (snapshot, error) {
+                    if (snapshot.val().questionCount !== null && snapshot.val().categoryCount !== null) {
+
+                        $scope.questionAlphabet = snapshot.val().questionCount.alphabet;
+                        $scope.categoryAlphabet = snapshot.val().categoryCount.alphabet;
+                        $scope.facilityAlphabet = snapshot.val().facilityCount.alphabet;
+                        $scope.questionCount = snapshot.val().questionCount.count;
+                        $scope.categoryCount = snapshot.val().categoryCount.count;
+                        $scope.facilityCount = snapshot.val().facilityCount.count;
+
+                        $scope.facilityCount++;
+
+                        angular.forEach($scope.checklist, function(categoryValue, key) {
+                            $scope.categoryCount++;
+                            $scope.categoryAdded.push($scope.categoryAlphabet + $scope.categoryCount);
+
+                            firebase.database().ref('category/' + $scope.categoryAlphabet + $scope.categoryCount).set({
+                                name: categoryValue.name,
+                                ID: $scope.categoryAlphabet + $scope.categoryCount
+                            }).then(function() {
+                                firebase.database().ref('count/categoryCount').set({
+                                    count: $scope.categoryCount,
+                                    alphabet: $scope.categoryAlphabet
+                                });
+                            }).catch(function(error) {
+                                console.log(error);
+                                if (error.code === "PERMISSION_DENIED") {
+                                    $scope.notify("auth/no-access-permission", "danger"); /* edit */
+                                }
+                            }); //end of firebase.database().ref()
+
+                            angular.forEach(categoryValue.question, function(questionValue, key) {
+                                $scope.questionCount++;
+                                firebase.database().ref('category/' + $scope.categoryAlphabet + $scope.categoryCount + '/question/' + 
+                                    $scope.questionAlphabet + $scope.questionCount).set({
+                                    name: questionValue.name,
+                                    ID: $scope.questionAlphabet + $scope.questionCount,
+                                    type: questionValue.type
+                                }).then(function() {
+                                    firebase.database().ref('count/questionCount').set({
+                                        count: $scope.questionCount,
+                                        alphabet: $scope.questionAlphabet
+                                    });
+                                }).catch(function(error) {
+                                    if (error.code === "PERMISSION_DENIED") {
+                                        $scope.notify("auth/no-access-permission","danger"); /* edit */
+                                    }
+                                }); //end of firebase.database().ref()
+                            }); //end of angular.forEach()
+                        }); //end of angular.forEach()
+
+                        var uploadTask = $scope.facilitiesRef.child($scope.facilityAlphabet + $scope.facilityCount).put($scope.photo);
+
+                        uploadTask.on(firebase.storage.TaskEvent.STATE_CHANGED, function(snapshot) {
+                            var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                            $scope.photoProgress = 'Upload is ' + progress + '% done';
+
+                            switch (snapshot.state) {
+                                case firebase.storage.TaskState.PAUSED:
+                                    $scope.photoStatus = 'Upload is paused';
+                                    break;
+                                case firebase.storage.TaskState.RUNNING:
+                                    $scope.photoStatus = 'Upload is running';
+                                    break;
+                            }
+                        }, function(error) {
+                            switch (error.code) {
+                                case 'storage/unauthorized':
+                                    $scope.photoStatus = 'User does not have permission to access the object';
+                                    break;
+                                case 'storage/canceled':
+                                    $scope.photoStatus = 'User canceled the upload';
+                                    break;
+                                case 'storage/unknown':
+                                    $scope.photoStatus = 'Unknown error occurred';
+                                    break;
+                            }
+                        }, function() {
+                            $scope.downloadURL = uploadTask.snapshot.downloadURL;
+
+                            firebase.database().ref('facility/' + $scope.facilityAlphabet + $scope.facilityCount).set({
+                                name: $scope.name,
+                                ID: $scope.facilityAlphabet + $scope.facilityCount,
+                                photoURL: $scope.downloadURL
+                            }).then(function() {
+                                firebase.database().ref('count/facilityCount').set({
+                                    count: $scope.facilityCount,
+                                    alphabet: $scope.facilityAlphabet
+                                });
+
+                                var error = false;
+                                
+                                angular.forEach($scope.categoryAdded, function(categoryValue, key) {
+                                    firebase.database().ref('facility/' + $scope.facilityAlphabet + $scope.facilityCount + 
+                                        '/category/' + categoryValue)
+                                        .set(categoryValue).then(function() {
+                                        //do nothing
+                                    }).catch(function(error) {
+                                        error = true;
+                                        if (error.code === "PERMISSION_DENIED") {
+                                            $scope.notify("auth/no-access-permission","danger"); /* edit */
+                                        }
+                                    });
+                                }); //end of angular.forEach()
+                                
+                                if (!error) {
+                                    $location.path("/facilities").search("add",$scope.name);
+                                    $route.reload();
+                                }
+                                
+                            }).catch(function(error) {
+                                console.log(error);
+                                if (error.code === "PERMISSION_DENIED") {
+                                    $scope.notify("auth/no-access-permission", "danger"); /* edit */
+                                }
+                            }); //end of firebase.database().ref()
+                        }); //end of uploadTask.on()
+                    } else {
+                        $scope.notify("auth/count-does-not-exist", "danger"); /* edit */
+                    } //end of if()
+                }).catch(function(error) {
+                    if (error.code === "PERMISSION_DENIED") {
+                        $scope.notify("auth/no-access-permission", "danger"); /* edit */
+                    }
+                }); //end of firebase.database().ref()
             }
-        }); //end of firebase.database().ref()
+        } 
     }; //end of $scope.addFacility()
     
     /***** View *****/
@@ -425,62 +477,14 @@ app.controller('FacilitiesController', ['$routeParams', '$scope', '$location', '
     }; //end of $scope.viewFacility()
         
     /***** Edit *****/
-        
+    
     $scope.reloadFacility = function() {
         firebase.database().ref("facility/" + $scope.facilityID).once("value").then(function(snapshot) {
             if (snapshot.val() != null) {
                 $scope.facility = snapshot.val();
                 $scope.photoURL = $scope.facility.photoURL;
                 $scope.checklist = [];
-                $scope.categoryCount = -1;
-                
-                angular.forEach($scope.facility.category, function(categoryID, key) {
-                    firebase.database().ref("category/" + categoryID).once("value").then(function(snapshot) {
-                        if (snapshot.val() != null) {
-                            $scope.addEmptyCategory();
-                            $scope.checklist[$scope.categoryCount].name = snapshot.val().name;
-                            $scope.checklist[$scope.categoryCount].ID = snapshot.val().ID;
-                            $scope.checklist[$scope.categoryCount].no = $scope.categoryCount+1;
-                            $scope.checklist[$scope.categoryCount].formID = $scope.categoryCount;
-                            $scope.checklist[$scope.categoryCount].show = true;
-
-                            angular.forEach(snapshot.val().question, function(questionValue, key) {
-                                $scope.addEmptyQuestion();
-                                var questionCount = $scope.checklist[$scope.categoryCount].questionCount;
-                                $scope.checklist[$scope.categoryCount].question[questionCount].name = questionValue.name;
-                                $scope.checklist[$scope.categoryCount].question[questionCount].ID = questionValue.ID;
-                                $scope.checklist[$scope.categoryCount].question[questionCount].type = questionValue.type;
-                                $scope.$apply();
-                            }); //end of angular.forEach()
-                        } else {
-                            $scope.notify("category-not-found","danger"); /* edit */
-                        } //end of if()
-                    }).catch(function(error) {
-                        if (error.code === "PERMISSION_DENIED") {
-                            $scope.notify("auth/no-access-permission", "danger"); /* edit */
-                        }
-                    }); //end of firebase.database().ref()
-                }); //end of angular.forEach()
-                
-                $scope.$apply();
-            } else {
-                $scope.notify("facility-not-found","danger"); /* edit */
-            } //end of if()
-        }).catch(function(error) {
-            if (error.code === "PERMISSION_DENIED") {
-                $scope.notify("auth/no-access-permission", "danger"); /* edit */
-            }
-        }); //end of firebase.database().ref()
-    };
-    
-    if ($routeParams.facilityID !== undefined) {
-        $scope.facilityID = $routeParams.facilityID;
-        firebase.database().ref("facility/" + $scope.facilityID).once("value").then(function(snapshot) {
-            if (snapshot.val() != null) {
-                $scope.facility = snapshot.val();
-                $scope.photoURL = $scope.facility.photoURL;
-                $scope.checklist = [];
-                $scope.categoryCount = -1;
+                $scope.categoryCount = -1;;
                 
                 if ($scope.facility.deletedAt !== undefined) {
                     $scope.facilityDeleted = true;
@@ -523,212 +527,260 @@ app.controller('FacilitiesController', ['$routeParams', '$scope', '$location', '
                 $scope.notify("auth/no-access-permission", "danger"); /* edit */
             }
         }); //end of firebase.database().ref()
-    }; //end of if()
+    }; //end of $scope.reloadFacility()
+    
+    if ($routeParams.facilityID !== undefined) {
+        $scope.facilityID = $routeParams.facilityID;
+        var facilityRef = firebase.database().ref().child("facility/" + $scope.facilityID);
+        
+        facilityRef.on('value', function() {
+            $scope.reloadFacility();
+        });
+    };
         
     $scope.saveFacility = function() {
-        
-        $scope.categoryAdded = [];
-        
-        firebase.database().ref('count').once('value').then(function (snapshot, error) {
-            if (snapshot.val().questionCount !== null && snapshot.val().categoryCount !== null) {
-                
-                $scope.questionAlphabet = snapshot.val().questionCount.alphabet;
-                $scope.categoryAlphabet = snapshot.val().categoryCount.alphabet;
-                $scope.questionCount = snapshot.val().questionCount.count;
-                $scope.categoryCount = snapshot.val().categoryCount.count;
-                
-                angular.forEach($scope.checklist, function(categoryValue, key) {
-                    if (categoryValue.show === false && categoryValue.ID !== undefined) {
-                        var categoryRef = firebase.database().ref('category/' + categoryValue.ID);
-                        categoryRef.remove().then(function() {
-                            //do nothing
-                        }).catch(function(error) {
-                            console.log(error); /* Edit */
-                        }); //categoryRef.remove() //delete category from firebase
-                    } else if (categoryValue.show === true) {
-                        if (categoryValue.ID !== undefined) {
-                            $scope.categoryAdded.push(categoryValue.ID);
-                            firebase.database().ref('category/' + categoryValue.ID).set({
-                                ID: categoryValue.ID,
-                                name: categoryValue.name
-                            }).then(function() {
-                                //do nothing
-                            }).catch(function(error) {
-                                console.log(error);
-                                if (error.code === "PERMISSION_DENIED") {
-                                    $scope.notify("auth/no-access-permission", "danger"); /* edit */
+        if ($scope.facility.name === undefined) {
+            $scope.facilityNameEmpty = true;
+            $scope.facilityPhotoEmpty = false;
+            angular.forEach($scope.checklist, function(categoryValue, key) {
+                categoryValue.error = false;
+            }); //end of angular.forEach()
+        } else if ($scope.facility.photoURL === undefined) {
+            $scope.facilityNameEmpty = false;
+            $scope.facilityPhotoEmpty = true;
+            angular.forEach($scope.checklist, function(categoryValue, key) {
+                categoryValue.error = false;
+            }); //end of angular.forEach()
+        } else {
+            var error = false;
+            $scope.facilityNameEmpty = false;
+            $scope.facilityPhotoEmpty = false;
+            angular.forEach($scope.checklist, function(categoryValue, key) {
+                categoryValue.error = false;
+            }); //end of angular.forEach()
+            angular.forEach($scope.checklist, function(categoryValue, key) {
+                if (!error) {
+                    if (categoryValue.name === undefined || categoryValue.name === "") {
+                        categoryValue.error = true;
+                        error = true;
+                    } else {
+                        angular.forEach(categoryValue.question, function(questionValue, key) {
+                            if (!error) {
+                                if (questionValue.name === undefined || questionValue.name === "") {
+                                    categoryValue.error = true;
+                                    error = true;
                                 }
-                            }); //end of firebase.database().ref()
-                            
-                            var questionRef = firebase.database().ref('category/' + categoryValue.ID + '/question');
-                            questionRef.remove().then(function() {
-                                //do nothing
-                            }).catch(function(error) {
-                                console.log(error); /* Edit */
-                            }); //categoryRef.remove() //removing existing questions
+                            }
+                        }); //end of angular.forEach()
+                    }
+                }
+            }); //end of angular.forEach()
+            
+            if (!error) {
+                $scope.categoryAdded = [];
+        
+                firebase.database().ref('count').once('value').then(function (snapshot, error) {
+                    if (snapshot.val().questionCount !== null && snapshot.val().categoryCount !== null) {
 
-                            angular.forEach(categoryValue.question, function(questionValue, key) {
-                                $scope.questionCount++;
-                                firebase.database().ref('category/' + categoryValue.ID + '/question/' + 
-                                    $scope.questionAlphabet + $scope.questionCount).set({
-                                    name: questionValue.name,
-                                    ID: $scope.questionAlphabet + $scope.questionCount,
-                                    type: questionValue.type
-                                }).then(function() {
-                                    firebase.database().ref('count/questionCount').set({
-                                        count: $scope.questionCount,
-                                        alphabet: $scope.questionAlphabet
-                                    });
-                                }).catch(function(error) {
-                                    if (error.code === "PERMISSION_DENIED") {
-                                        $scope.notify("auth/no-access-permission","danger"); /* edit */
-                                    }
-                                }); //end of firebase.database().ref() //adding question to firebase
-                            }); //end of angular.forEach() //looping through question in category
-                        } else {
-                            $scope.categoryCount++;
-                            $scope.categoryAdded.push($scope.categoryAlphabet + $scope.categoryCount);
-                            firebase.database().ref('category/' + $scope.categoryAlphabet + $scope.categoryCount).set({
-                                name: categoryValue.name,
-                                ID: $scope.categoryAlphabet + $scope.categoryCount
-                            }).then(function() {
-                                firebase.database().ref('count/categoryCount').set({
-                                    count: $scope.categoryCount,
-                                    alphabet: $scope.categoryAlphabet
-                                });
-                            }).catch(function(error) {
-                                console.log(error);
-                                if (error.code === "PERMISSION_DENIED") {
-                                    $scope.notify("auth/no-access-permission", "danger"); /* edit */
-                                }
-                            }); //end of firebase.database().ref()
+                        $scope.questionAlphabet = snapshot.val().questionCount.alphabet;
+                        $scope.categoryAlphabet = snapshot.val().categoryCount.alphabet;
+                        $scope.questionCount = snapshot.val().questionCount.count;
+                        $scope.categoryCount = snapshot.val().categoryCount.count;
 
-                            angular.forEach(categoryValue.question, function(questionValue, key) {
-                                $scope.questionCount++;
-                                firebase.database().ref('category/' + $scope.categoryAlphabet + $scope.categoryCount + '/question/' + 
-                                    $scope.questionAlphabet + $scope.questionCount).set({
-                                    name: questionValue.name,
-                                    ID: $scope.questionAlphabet + $scope.questionCount,
-                                    type: questionValue.type
-                                }).then(function() {
-                                    firebase.database().ref('count/questionCount').set({
-                                        count: $scope.questionCount,
-                                        alphabet: $scope.questionAlphabet
-                                    });
-                                }).catch(function(error) {
-                                    if (error.code === "PERMISSION_DENIED") {
-                                        $scope.notify("auth/no-access-permission","danger"); /* edit */
-                                    }
-                                }); //end of firebase.database().ref() //adding question to firebase
-                            }); //end of angular.forEach() //looping through question in category
-                        } //end of if() //check if new or existing category
-                    } //end of if() //check if category is deleted
-                }); //end of angular.forEach() //looping through category in checklist
-                
-                if ($scope.facility.photoURL !== $scope.photoURL) {
-                    var uploadTask = $scope.facilitiesRef.child($scope.facility.ID).put($scope.facility.photoURL);
-
-                    uploadTask.on(firebase.storage.TaskEvent.STATE_CHANGED, function(snapshot) {
-                        var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-                        $scope.photoProgress = 'Upload is ' + progress + '% done';
-
-                        switch (snapshot.state) {
-                            case firebase.storage.TaskState.PAUSED:
-                                $scope.photoStatus = 'Upload is paused';
-                                break;
-                            case firebase.storage.TaskState.RUNNING:
-                                $scope.photoStatus = 'Upload is running';
-                                break;
-                        }
-                    }, function(error) {
-                        switch (error.code) {
-                            case 'storage/unauthorized':
-                                $scope.photoStatus = 'User does not have permission to access the object';
-                                break;
-                            case 'storage/canceled':
-                                $scope.photoStatus = 'User canceled the upload';
-                                break;
-                            case 'storage/unknown':
-                                $scope.photoStatus = 'Unknown error occurred';
-                                break;
-                        }
-                    }, function() {
-                        $scope.downloadURL = uploadTask.snapshot.downloadURL;
-
-                        firebase.database().ref('facility/' + $scope.facility.ID).set({
-                            ID: $scope.facility.ID,
-                            name: $scope.facility.name,
-                            photoURL: $scope.downloadURL
-                        }).then(function() {
-                            var categoryRef = firebase.database().ref('facility/' + $scope.facility.ID + '/category');
-                            categoryRef.remove().then(function() {
-                                //do nothing
-                            }).catch(function(error) {
-                                console.log(error); /* Edit */
-                            }); //categoryRef.remove() //removing existing questions
-
-                            var error = false;
-                            angular.forEach($scope.categoryAdded, function(categoryValue, key) {
-                                firebase.database().ref('facility/' + $scope.facility.ID + '/category/' + categoryValue)
-                                    .set(categoryValue)
-                                .then(function() {
+                        angular.forEach($scope.checklist, function(categoryValue, key) {
+                            if (categoryValue.show === false && categoryValue.ID !== undefined) {
+                                var categoryRef = firebase.database().ref('category/' + categoryValue.ID);
+                                categoryRef.remove().then(function() {
                                     //do nothing
                                 }).catch(function(error) {
-                                    error = true;
-                                    if (error.code === "PERMISSION_DENIED") {
-                                        $scope.notify("auth/no-access-permission","danger"); /* edit */
-                                    }
-                                });
-                            }); //end of angular.forEach()
-                            if (!error) {
-                                $scope.notify("Successfully saved \"" + $scope.facility.name + "\" facility","success");
-                                $scope.reloadFacility();
-                            }
-                        }).catch(function(error) {
-                            console.log(error);
-                            if (error.code === "PERMISSION_DENIED") {
-                                $scope.notify("auth/no-access-permission", "danger"); /* edit */
-                            }
-                        }); //end of firebase.database().ref()
-                    }); //end of uploadTask.on()
-                } else {
-                    firebase.database().ref('facility/' + $scope.facility.ID).set({
-                        ID: $scope.facility.ID,
-                        name: $scope.facility.name,
-                        photoURL: $scope.facility.photoURL
-                    }).then(function() {
-                        var error = false;
-                        angular.forEach($scope.categoryAdded, function(categoryValue, key) {
-                            firebase.database().ref('facility/' + $scope.facility.ID + '/category/' + categoryValue)
-                                .set(categoryValue)
-                            .then(function() {
-                                //do nothing
-                            }).catch(function(error) {
-                                error = true;
-                                if (error.code === "PERMISSION_DENIED") {
-                                    $scope.notify("auth/no-access-permission","danger"); /* edit */
+                                    console.log(error); /* Edit */
+                                }); //categoryRef.remove() //delete category from firebase
+                            } else if (categoryValue.show === true) {
+                                if (categoryValue.ID !== undefined) {
+                                    $scope.categoryAdded.push(categoryValue.ID);
+                                    firebase.database().ref('category/' + categoryValue.ID).set({
+                                        ID: categoryValue.ID,
+                                        name: categoryValue.name
+                                    }).then(function() {
+                                        //do nothing
+                                    }).catch(function(error) {
+                                        console.log(error);
+                                        if (error.code === "PERMISSION_DENIED") {
+                                            $scope.notify("auth/no-access-permission", "danger"); /* edit */
+                                        }
+                                    }); //end of firebase.database().ref()
+
+                                    var questionRef = firebase.database().ref('category/' + categoryValue.ID + '/question');
+                                    questionRef.remove().then(function() {
+                                        //do nothing
+                                    }).catch(function(error) {
+                                        console.log(error); /* Edit */
+                                    }); //categoryRef.remove() //removing existing questions
+
+                                    angular.forEach(categoryValue.question, function(questionValue, key) {
+                                        $scope.questionCount++;
+                                        firebase.database().ref('category/' + categoryValue.ID + '/question/' + 
+                                            $scope.questionAlphabet + $scope.questionCount).set({
+                                            name: questionValue.name,
+                                            ID: $scope.questionAlphabet + $scope.questionCount,
+                                            type: questionValue.type
+                                        }).then(function() {
+                                            firebase.database().ref('count/questionCount').set({
+                                                count: $scope.questionCount,
+                                                alphabet: $scope.questionAlphabet
+                                            });
+                                        }).catch(function(error) {
+                                            if (error.code === "PERMISSION_DENIED") {
+                                                $scope.notify("auth/no-access-permission","danger"); /* edit */
+                                            }
+                                        }); //end of firebase.database().ref() //adding question to firebase
+                                    }); //end of angular.forEach() //looping through question in category
+                                } else {
+                                    $scope.categoryCount++;
+                                    $scope.categoryAdded.push($scope.categoryAlphabet + $scope.categoryCount);
+                                    firebase.database().ref('category/' + $scope.categoryAlphabet + $scope.categoryCount).set({
+                                        name: categoryValue.name,
+                                        ID: $scope.categoryAlphabet + $scope.categoryCount
+                                    }).then(function() {
+                                        firebase.database().ref('count/categoryCount').set({
+                                            count: $scope.categoryCount,
+                                            alphabet: $scope.categoryAlphabet
+                                        });
+                                    }).catch(function(error) {
+                                        console.log(error);
+                                        if (error.code === "PERMISSION_DENIED") {
+                                            $scope.notify("auth/no-access-permission", "danger"); /* edit */
+                                        }
+                                    }); //end of firebase.database().ref()
+
+                                    angular.forEach(categoryValue.question, function(questionValue, key) {
+                                        $scope.questionCount++;
+                                        firebase.database().ref('category/' + $scope.categoryAlphabet + $scope.categoryCount + '/question/' + 
+                                            $scope.questionAlphabet + $scope.questionCount).set({
+                                            name: questionValue.name,
+                                            ID: $scope.questionAlphabet + $scope.questionCount,
+                                            type: questionValue.type
+                                        }).then(function() {
+                                            firebase.database().ref('count/questionCount').set({
+                                                count: $scope.questionCount,
+                                                alphabet: $scope.questionAlphabet
+                                            });
+                                        }).catch(function(error) {
+                                            if (error.code === "PERMISSION_DENIED") {
+                                                $scope.notify("auth/no-access-permission","danger"); /* edit */
+                                            }
+                                        }); //end of firebase.database().ref() //adding question to firebase
+                                    }); //end of angular.forEach() //looping through question in category
+                                } //end of if() //check if new or existing category
+                            } //end of if() //check if category is deleted
+                        }); //end of angular.forEach() //looping through category in checklist
+
+                        if ($scope.facility.photoURL !== $scope.photoURL) {
+                            var uploadTask = $scope.facilitiesRef.child($scope.facility.ID).put($scope.facility.photoURL);
+
+                            uploadTask.on(firebase.storage.TaskEvent.STATE_CHANGED, function(snapshot) {
+                                var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                                $scope.photoProgress = 'Upload is ' + progress + '% done';
+
+                                switch (snapshot.state) {
+                                    case firebase.storage.TaskState.PAUSED:
+                                        $scope.photoStatus = 'Upload is paused';
+                                        break;
+                                    case firebase.storage.TaskState.RUNNING:
+                                        $scope.photoStatus = 'Upload is running';
+                                        break;
                                 }
-                            });
-                        }); //end of angular.forEach()
-                        if (!error) {
-                            $scope.notify("Successfully saved \"" + $scope.facility.name + "\" facility","success");
-                            $scope.reloadFacility();
-                        }
-                    }).catch(function(error) {
-                        console.log(error);
-                        if (error.code === "PERMISSION_DENIED") {
-                            $scope.notify("auth/no-access-permission", "danger"); /* edit */
-                        }
-                    }); //end of firebase.database().ref()
-                } //end of if() //check if facility image changed
-            } else {
-                $scope.notify("auth/count-does-not-exist", "danger"); /* edit */
-            } //end of if()
-        }).catch(function(error) {
-            if (error.code === "PERMISSION_DENIED") {
-                $scope.notify("auth/no-access-permission", "danger"); /* edit */
+                            }, function(error) {
+                                switch (error.code) {
+                                    case 'storage/unauthorized':
+                                        $scope.photoStatus = 'User does not have permission to access the object';
+                                        break;
+                                    case 'storage/canceled':
+                                        $scope.photoStatus = 'User canceled the upload';
+                                        break;
+                                    case 'storage/unknown':
+                                        $scope.photoStatus = 'Unknown error occurred';
+                                        break;
+                                }
+                            }, function() {
+                                $scope.downloadURL = uploadTask.snapshot.downloadURL;
+
+                                firebase.database().ref('facility/' + $scope.facility.ID).set({
+                                    ID: $scope.facility.ID,
+                                    name: $scope.facility.name,
+                                    photoURL: $scope.downloadURL
+                                }).then(function() {
+                                    var categoryRef = firebase.database().ref('facility/' + $scope.facility.ID + '/category');
+                                    categoryRef.remove().then(function() {
+                                        //do nothing
+                                    }).catch(function(error) {
+                                        console.log(error); /* Edit */
+                                    }); //categoryRef.remove() //removing existing questions
+
+                                    var error = false;
+                                    angular.forEach($scope.categoryAdded, function(categoryValue, key) {
+                                        firebase.database().ref('facility/' + $scope.facility.ID + '/category/' + categoryValue)
+                                            .set(categoryValue)
+                                        .then(function() {
+                                            //do nothing
+                                        }).catch(function(error) {
+                                            error = true;
+                                            if (error.code === "PERMISSION_DENIED") {
+                                                $scope.notify("auth/no-access-permission","danger"); /* edit */
+                                            }
+                                        });
+                                    }); //end of angular.forEach()
+                                    if (!error) {
+                                        $location.path("/facilities").search("edit",$scope.facility.name).search("facilityID",null);
+                                        $route.reload();
+                                    }
+                                }).catch(function(error) {
+                                    console.log(error);
+                                    if (error.code === "PERMISSION_DENIED") {
+                                        $scope.notify("auth/no-access-permission", "danger"); /* edit */
+                                    }
+                                }); //end of firebase.database().ref()
+                            }); //end of uploadTask.on()
+                        } else {
+                            firebase.database().ref('facility/' + $scope.facility.ID).set({
+                                ID: $scope.facility.ID,
+                                name: $scope.facility.name,
+                                photoURL: $scope.facility.photoURL
+                            }).then(function() {
+                                var error = false;
+                                angular.forEach($scope.categoryAdded, function(categoryValue, key) {
+                                    firebase.database().ref('facility/' + $scope.facility.ID + '/category/' + categoryValue)
+                                        .set(categoryValue)
+                                    .then(function() {
+                                        //do nothing
+                                    }).catch(function(error) {
+                                        error = true;
+                                        if (error.code === "PERMISSION_DENIED") {
+                                            $scope.notify("auth/no-access-permission","danger"); /* edit */
+                                        }
+                                    });
+                                }); //end of angular.forEach()
+                                if (!error) {
+                                    $location.path("/facilities").search("edit",$scope.facility.name).search("facilityID",null);
+                                    $route.reload();
+                                }
+                            }).catch(function(error) {
+                                console.log(error);
+                                if (error.code === "PERMISSION_DENIED") {
+                                    $scope.notify("auth/no-access-permission", "danger"); /* edit */
+                                }
+                            }); //end of firebase.database().ref()
+                        } //end of if() //check if facility image changed
+                    } else {
+                        $scope.notify("auth/count-does-not-exist", "danger"); /* edit */
+                    } //end of if()
+                }).catch(function(error) {
+                    if (error.code === "PERMISSION_DENIED") {
+                        $scope.notify("auth/no-access-permission", "danger"); /* edit */
+                    }
+                }); //end of firebase.database().ref()
             }
-        }); //end of firebase.database().ref()
+        }
     }; //end of $scope.saveFacility()
         
     $scope.refreshChecklist = function() {

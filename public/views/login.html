@@ -5,7 +5,7 @@
 	<div class="login-popup">
 		<h3>Admin Portal Login</h3>
 		<div class="content">
-			<form id="myForm">
+			<form name="myForm">
 				<input ng-model="staffID" type="text" class="input-text" id="staffID" placeholder="Staff ID" required/>
 				<div class="error-message" ng-show="staffIDErrorMessage!=null">{{staffIDErrorMessage}}</div>
 				<div class="error-empty" ng-show="staffIDErrorMessage==null">&nbsp;</div>

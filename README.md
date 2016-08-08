@@ -12,9 +12,12 @@
 
 ### Important things to do:
 - Timestamp for data
+- Checking category name and question name unique
 - Profile for navigation (done)
 - Search function for facilities (done)
 - Enter keyboard button for search (done)
+
+- col-xs & col-sm & col-md & col-lg
 
 ### Things half done:
 - Projects (list)

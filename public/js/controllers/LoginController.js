@@ -90,6 +90,9 @@ app.controller('LoginController', ['$routeParams', '$route', '$scope', '$locatio
                 $scope.passwordErrorMessage = null;
                 $scope.staffIDErrorMessage = "auth/invalid-id";
             } //end of if() //regex staffID test
+        } else {
+            $scope.passwordErrorMessage = null;
+            $scope.staffIDErrorMessage = "auth/no-id-entered";
         }
     }; //end of $scope.login()
     

@@ -32,6 +32,8 @@
   			},
          
         "count":{
+          ".read": "root.child('admin/'+ auth.uid).exists() && auth != null",
+             ".write": "root.child('admin/'+ auth.uid).exists()",
         	"$count": {
             //can read/write counts only if is admin
              ".read": "root.child('admin/'+ auth.uid).exists() && auth != null",

@@ -24,16 +24,19 @@
 
 <div class="add-facility container">
 	<h3 class="title">Add Facility</h3>
-    <div class="form-horizontal">
+    <form class="form-horizontal">
         <div class="row">
-            <label class="control-label col-md-2">Facility Name</label>
-            <div class="col-md-6">
-                <input type="text" ng-model="name" class="form-control"/>
+            <label class="control-label col-md-2">Name</label>
+            <div class="col-md-6" ng-class="{'has-error': facilityNameEmpty}">
+                <input type="text" ng-model="name" class="form-control" placeholder="Enter facility name" required/>
+                <span ng-show="facilityNameEmpty" class="help-block margin-bottom-0">
+                    Facility name is required.
+                </span>
             </div>
         </div>
         <div class="row margin-top-25">
         	<label class="control-label col-md-2">Photo</label>
-            <div class="col-md-6">
+            <div class="col-md-6" ng-class="{'has-error': facilityPhotoEmpty}">
             	<div ngf-drop ngf-select ng-model="photo" class="dropbox col-md-12" 
                 	ngf-drag-over-class="dragover" ngf-multiple="false" ngf-allow-dir="true" 
                     accept="image/*" ngf-pattern="image/*" ngf-validate="size:{max: '5MB'}">
@@ -44,16 +47,22 @@
            		</div>
                 <div ngf-no-file-drop>File drag and drop is not supported for this browser</div>
             </div>
-            <img ngf-src="photo" ngf-resize="{width: 250, height: 250}" ngf-no-object-url="false"/>
+            <div class="col-md-4 force-col-padding">
+                <img ngf-src="photo" ngf-resize="{width: 250, height: 250}" ngf-no-object-url="false"
+                     style="max-width:250px;max-height:250px"/>
+            </div>
+            <div class="col-md-offset-2 col-md-10 has-error" ng-show="facilityPhotoEmpty">
+                <span class="help-block margin-bottom-0">Facility photo is required.</span>
+            </div>
         </div>
         <div class="row margin-top-25">
         	<label class="control-label col-md-2">Checklist</label>
             <div class="col-md-6">
-            	<div class="category-group" ng-repeat="c in checklist">
+            	<div ng-class="{'category-group-error': c.error}" class="category-group-without-padding" ng-repeat="c in checklist">
                 	<div class="category-group-title">
                         <span class="group-addon">{{c.no}}.</span>
                         <input type="text" class="form-control group-input" ng-model="c.name"
-                        	placeholder="Enter category name">
+                        	placeholder="Enter category name" required>
                         <span class="glyphicon glyphicon-remove group-delete" aria-hidden="true"
                         	ng-click="deleteCategory(c)"></span>
                     </div>
@@ -61,7 +70,7 @@
                         <div class="question-group col-md-9 force-col-padding">
                             <span class="group-addon">{{q.no}}.</span>
                             <input type="text" class="form-control group-input" ng-model="q.name"
-                                placeholder="Enter question name">
+                                placeholder="Enter question name" required>
                             <span class="glyphicon glyphicon-remove group-delete" aria-hidden="true"
                             	ng-click="deleteQuestion(c,q)"></span>
                         </div>
@@ -76,40 +85,31 @@
                             </div>
                         </div>
                     </div>
-                    <button class="btn btn-default add-question-btn" type="button" ng-click="addQuestion(c)">
+                    <button class="btn btn-default add-question-btn-with-margin" type="button" ng-click="addQuestion(c)">
                     	<span class="glyphicon glyphicon-plus button-icon" aria-hidden="true"></span>
                         Add Question
                     </button>
+                    <div class="has-error category-error" ng-show="c.error">
+                        <span class="help-block">Category or question name is required.</span>
+                    </div>
             	</div>
-                <button class="btn btn-default margin-bottom-20" type="button" ng-click="addCategory()">
+                <button class="btn btn-default" type="button" ng-click="addCategory()">
                     <span class="glyphicon glyphicon-plus button-icon" aria-hidden="true"></span>
                     Add Category
                 </button>
             </div>
         </div>
-        <div class="row margin-top-5 margin-bottom-50">
+        <div class="row margin-top-25 margin-bottom-50">
         	<div class="col-md-offset-2 col-md-10">
-                <button class="btn btn-primary" type="button" ng-click="goToFacilities()" ng-show="buttonChange">
-                    <span class="glyphicon glyphicon-chevron-left button-icon" aria-hidden="true"></span>
-                    Back
-                </button>
-                <button class="btn btn-warning" type="button" ng-click="goToEditFacility()" ng-show="buttonChange">
-                    <span class="glyphicon glyphicon-pencil button-icon" aria-hidden="true"></span>
-                    Edit
-                </button>
-                <button class="btn btn-success" type="button" ng-click="goToNewFacility()" ng-show="buttonChange">
-                    <span class="glyphicon glyphicon-plus button-icon" aria-hidden="true"></span>
-                    New
-                </button>
-                <button class="btn btn-primary" type="button" ng-click="goToFacilities()" ng-show="!buttonChange">
+                <button class="btn btn-primary" type="button" ng-click="goToFacilities()">
                     <span class="glyphicon glyphicon-remove button-icon" aria-hidden="true"></span>
                     Cancel
                 </button>
-                <button class="btn btn-success" type="button" ng-click="addFacility()" ng-show="!buttonChange">
+                <button class="btn btn-success" type="submit" ng-click="addFacility()">
                     <span class="glyphicon glyphicon-plus button-icon" aria-hidden="true"></span>
                     Add
                 </button>
             </div>
         </div>
-    </div>
+    </form>
 </div>

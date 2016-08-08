@@ -1,5 +1,11 @@
 /* CSS document */
 
+/* Dashboard - Body */ /* edit */
+.dashboard .search {
+    float: right;
+    margin-top: 20px;
+}
+
 /* General - Overlay */
 .overlay input[type="radio"][disabled], .overlay .radio label {
     cursor: default;
@@ -46,6 +52,12 @@
     margin-bottom: 13px;
     padding-bottom: 13px;
 }
+.category-group-error {
+    border: 1px solid #a94442 !important;
+}
+.category-error .help-block {
+    margin: -5px 0 7px 10px;
+}
 .category-group-without-padding {
     border: 1px solid #ccc;
     border-radius: 4px;
@@ -59,6 +71,18 @@
     position: relative;
     border-collapse: separate;
 }
+.category-group-title .group-addon {
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+}
+.category-group-title .no-border {
+    border-right: 0;
+    border-radius: 0 4px 0 0;
+}
+.question-group .no-border {
+    border-right: 0;
+    border-radius: 0 4px 4px 0;
+}
 .group-addon {
     padding: 6px 12px;
     font-weight: 400;
@@ -68,6 +92,7 @@
     display: table-cell;
     width: 1%;
     vertical-align: middle;
+    border-radius: 4px 0 0 4px;
     /* extra */
     white-space: nowrap;
 }
@@ -99,6 +124,9 @@
 }
 .add-question-btn {
     margin: 10px 0 0 10px;
+}
+.add-question-btn-with-margin {
+    margin: 10px 0 10px 10px;
 }
 .question-radio {
     margin-right: 26px;
@@ -182,8 +210,8 @@ html, body {
     margin-bottom: 20px;
     font-size: 22px;
 }
-.search { /* edit */
-    
+.table > tbody > tr > td {
+    vertical-align: middle;
 }
 .button-icon {
     padding-right: 5px;
@@ -200,6 +228,11 @@ html, body {
     margin-left: 0px;
     margin-rgiht: 0px;
 }
+.dropdown-style {
+    display: inline-block;
+    min-width: 160px;
+    max-width: 160px;
+}
 .dropdown-text-left {
     text-align: left;
     display: inline-block;
@@ -208,6 +241,9 @@ html, body {
 .dropdown-text-right {
     text-align: right;
     display: inline-block;
+}
+.dropdown-menu li {
+    cursor: pointer;
 }
 .has-icon .form-control {
     padding-left: 34px;
@@ -224,8 +260,18 @@ html, body {
     text-align: center;
     pointer-events: none;
 }
+.has-error .dropbox {
+    border: 2px dashed #a94442;
+    color: #a94442;
+}
 .margin-right-15 {
     margin-right: 15px;
+}
+.margin-top-0 {
+    margin-top: 0;
+}
+.margin-top--5 {
+    margin-top: -5px;
 }
 .margin-top-25 {
     margin-top: 25px;
@@ -245,6 +291,9 @@ html, body {
 .margin-top-20 {
     margin-top: 20px;
 }
+.margin-bottom-0 {
+    margin-bottom: 0;
+}
 .margin-bottom-50 {
     margin-bottom: 50px;
 }
@@ -256,19 +305,6 @@ html, body {
 }
 .margin-bottom-25 {
     margin-bottom: 25px;
-}
-
-/* Projects - Dropdown */ /* edit */
-.projects .dropdown-style {
-    display: inline-block;
-    min-width: 160px;
-    max-width: 160px;
-}
-
-/* Dashboard - Body */ /* edit */
-.dashboard .search {
-    float: right;
-    margin-top: 20px;
 }
 
 /* Facilities */

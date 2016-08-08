@@ -72,13 +72,13 @@
                     <div class="category-group-without-padding" ng-repeat="c in checklist">
                         <div class="category-group-title">
                             <span class="group-addon">{{c.no}}.</span>
-                            <input type="text" class="form-control group-input" ng-model="c.name"
+                            <input type="text" class="form-control group-input no-border" ng-model="c.name"
                                 placeholder="Enter category name" disabled>
                         </div>
                         <div ng-repeat="q in c.question">
                             <div class="question-group col-lg-9 col-md-9 force-col-padding">
                                 <span class="group-addon">{{q.no}}.</span>
-                                <input type="text" class="form-control group-input"  ng-model="q.name"
+                                <input type="text" class="form-control group-input no-border"  ng-model="q.name"
                                     placeholder="Enter question name" disabled>
                             </div>
                             <div class="question-radio col-lg-2 col-md-2 force-col-padding">

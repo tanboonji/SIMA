@@ -40,4 +40,107 @@ app.controller('StaffController', ['$scope', '$location', '$firebaseAuth', '$fir
         $scope.auth.$signOut();
     }
     
+    var ref = firebase.database().ref().child("staff");
+	$scope.staffList = $firebaseArray(ref);
+	
+	$scope.sortByList = ['Id', 'Name'];
+	$scope.sortByItem = 'Id';
+	
+	$scope.sortByItemSelected = function(itemSelected) {
+		$scope.sortByItem = itemSelected;
+	};
+        
+    $scope.statusList = ['Active', 'Inactive', 'Deleted'];
+	$scope.status = '--Status--';
+        
+    $scope.statusItemSelected = function(itemSelected) {
+		$scope.status = itemSelected;
+        
+        if ($scope.status === "Inactive") {
+            $scope.showStaffStatusMessage = true;
+        } else {
+            $scope.showStaffStatusMessage = false;
+        }
+	};
+        
+    $scope.roleList = ['HO', 'BUH', 'TM', 'CM'];
+	$scope.role = '--Role--';
+        
+    $scope.roleItemSelected = function(itemSelected) {
+		$scope.role = itemSelected;
+	};
+	
+	$scope.goToAddStaff = function() {
+		$location.path('/add-staff');
+	};
+        
+    $scope.goToEditStaff = function() {
+		$location.path('/edit-staff');
+	};
+        
+    $scope.goToStaff = function() {
+		$location.path('/staff');
+	};
+        
+    /***** Add *****/
+        
+    $scope.addStaff = function() {
+        
+        if ($scope.name === undefined) {
+            console.log("name");
+            $scope.staffNameEmpty = true;
+            $scope.staffContactEmpty = false;
+            $scope.staffEmailEmpty = false;
+            $scope.staffRoleEmpty = false;
+            $scope.staffStatusEmpty = false;
+            $scope.staffStatusMessageEmpty = false;
+        } else if ($scope.contact === undefined) {
+            $scope.staffNameEmpty = false;
+            $scope.staffContactEmpty = true;
+            $scope.staffEmailEmpty = false;
+            $scope.staffRoleEmpty = false;
+            $scope.staffStatusEmpty = false;
+            $scope.staffStatusMessageEmpty = false;
+        } else if ($scope.email === undefined) {
+            $scope.staffNameEmpty = false;
+            $scope.staffContactEmpty = false;
+            $scope.staffEmailEmpty = true;
+            $scope.staffRoleEmpty = false;
+            $scope.staffStatusEmpty = false;
+            $scope.staffStatusMessageEmpty = false;
+        } else if ($scope.role === "--Role--") {
+            $scope.staffNameEmpty = false;
+            $scope.staffContactEmpty = false;
+            $scope.staffEmailEmpty = false;
+            $scope.staffRoleEmpty = true;
+            $scope.staffStatusEmpty = false;
+            $scope.staffStatusMessageEmpty = false;
+        } else if ($scope.status === "--Status--") {
+            $scope.staffNameEmpty = false;
+            $scope.staffContactEmpty = false;
+            $scope.staffEmailEmpty = false;
+            $scope.staffRoleEmpty = false;
+            $scope.staffStatusEmpty = true;
+            $scope.staffStatusMessageEmpty = false;
+        } else if ($scope.status === "Inactive" && $scope.statusMessage === undefined) {
+            $scope.staffNameEmpty = false;
+            $scope.staffContactEmpty = false;
+            $scope.staffEmailEmpty = false;
+            $scope.staffRoleEmpty = false;
+            $scope.staffStatusEmpty = false;
+            $scope.staffStatusMessageEmpty = true;
+        } else {
+            $scope.staffNameEmpty = false;
+            $scope.staffContactEmpty = false;
+            $scope.staffEmailEmpty = false;
+            $scope.staffRoleEmpty = false;
+            $scope.staffStatusEmpty = false;
+            $scope.staffStatusMessageEmpty = false;
+            
+            /* Success Code */
+            console.log("Success");
+        } 
+            
+    }; //end of $scope.addFacility()
+    
 }]);

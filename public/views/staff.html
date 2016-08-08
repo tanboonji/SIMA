@@ -26,7 +26,7 @@
 	<h3 class="title">Staff</h3>
     <div class="row">
     	<div class="col-md-12">
-            <button type="button" class="btn btn-success pull-left" ng-click="goToAddProject()">
+            <button type="button" class="btn btn-success pull-left" ng-click="goToAddStaff()">
                 <span class="glyphicon glyphicon-plus button-icon" aria-hidden="true"></span>
                 Add
             </button>
@@ -50,6 +50,16 @@
                         <li ng-repeat="s in sortByList"><a ng-click="sortByItemSelected(s)">{{s}}</a></li>
                     </ul>
                 </div>
+                <div class="btn-group">
+                    <button type="button" class="btn btn-default dropdown-toggle dropdown-style" 
+                    	data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                        <div class="dropdown-text-left">{{sortByItem}}&nbsp;</div>
+                        <span class="caret dropdown-text-right"></span>
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li ng-repeat="s in sortByList"><a ng-click="sortByItemSelected(s)">{{s}}</a></li>
+                    </ul>
+                </div>
             </div>
         </div>
     </div>
@@ -57,20 +67,29 @@
     	<table class="col-md-12 table table-hover table-bordered">
         	<thead>
         	<tr>
-            	<td>Id</td>
+            	<td>ID</td>
                 <td>Name</td>
-                <td>BUH</td>
-                <td>TM</td>
-                <td>CM</td>
+                <td>Contact</td>
+                <td>Email</td>
+                <td>Role</td>
+                <td>Status</td>
+                <td></td>
             </tr>
             </thead>
             <tbody>
-            <tr ng-repeat="p in projectsList">
-            	<td>{{p.MCSTS}}</td>
-                <td>{{p.name}}</td>
-                <td>{{p.BUH}}</td>
-                <td>{{p.TM}}</td>
-                <td>{{p.CM}}</td>
+            <tr ng-repeat="s in staffList">
+            	<td>{{s.ID}}</td>
+                <td>{{s.name}}</td>
+                <td>{{s.phone}}</td>
+                <td>{{s.email}}</td>
+                <td>{{s.role}}</td>
+                <td>{{s.status}}</td>
+                <td>
+                    <button class="btn btn-default pull-right" type="button" ng-click="goToEditStaff(s)">
+                        <span class="glyphicon glyphicon-pencil button-icon" aria-hidden="true"></span>
+                        Edit
+                    </button>
+                </td>
             </tr>
             </tbody>
         </table>

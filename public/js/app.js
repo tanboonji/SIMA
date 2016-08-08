@@ -30,7 +30,15 @@ app.config(function($routeProvider){
 			controller: 'StaffController',
 			templateUrl: 'views/staff.html'
 		})
+        .when('/add-staff', {
+			controller: 'StaffController',
+			templateUrl: 'views/add-staff.html'
+		})
 		.when('/facilities', {
+			controller: 'FacilitiesController',
+			templateUrl: 'views/facilities.html'
+		})
+		.when('/facilities?:add?:edit', {
 			controller: 'FacilitiesController',
 			templateUrl: 'views/facilities.html'
 		})
