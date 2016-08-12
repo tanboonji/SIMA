@@ -75,7 +75,7 @@ app.controller('FacilitiesController', ['$routeParams', '$scope', '$location', '
         }
     }; //end of $scope.goToEditFacility()
         
-    $scope.goToNewFacility = function() {
+    $scope.goToNewFacility = function() { /*****check-code*****/
         $scope.name = undefined;
         $scope.photo = undefined;
         $scope.categoryCount = 0;

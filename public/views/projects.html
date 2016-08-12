@@ -24,13 +24,17 @@
 
 <div class="projects container">
 	<h3 class="title">Projects</h3>
-    
     <div class="row">
     	<div class="col-md-12">
             <button type="button" class="btn btn-success pull-left" ng-click="goToAddProject()">
                 <span class="glyphicon glyphicon-plus button-icon" aria-hidden="true"></span>
                 Add
             </button>
+            <div class="pull-left col-md-4 force-col-margin force-col-padding has-icon">
+                <span class="glyphicon glyphicon-search form-control-icon"></span>
+                <input type="text" class="form-control" placeholder="Search for..." ng-model="query">
+            </div>
+<!--
             <div class="pull-left col-md-4 force-col-margin force-col-padding input-group">
                 <input type="text" class="form-control" placeholder="Search for...">
                 <div class="input-group-btn">
@@ -39,6 +43,7 @@
                     </button>
                 </div>
             </div>
+-->
             <div class="pull-right">
                 <label for="">Sort By:&nbsp;</label>
                 <div class="btn-group">
@@ -63,18 +68,97 @@
                 <td>BUH</td>
                 <td>TM</td>
                 <td>CM</td>
+                <td class="col-md-2"></td>
             </tr>
             </thead>
             <tbody>
-            <tr ng-repeat="p in projectsList">
+            <tr ng-repeat="p in projectsList | filter:search | filter:isdeleted" ng-click="viewProject(p)" ng-show="!p.deleted">
             	<td>{{p.MCSTS}}</td>
                 <td>{{p.name}}</td>
-                <td>{{p.BUH}}</td>
-                <td>{{p.TM}}</td>
-                <td>{{p.CM}}</td>
+                <td>{{p.BUHName}}</td>
+                <td>{{p.TMName}}</td>
+                <td>{{p.CMName}}</td>
+                <td>
+                    <div class="pull-right">
+                        <button class="btn btn-default" type="button" ng-click="viewProject(p)">
+                            <span class="glyphicon glyphicon-eye-open button-icon" aria-hidden="true"></span>
+                            View
+                        </button>
+                        <button class="btn btn-default" type="button" ng-click="goToEditProject(p)">
+                            <span class="glyphicon glyphicon-pencil button-icon" aria-hidden="true"></span>
+                            Edit
+                        </button>
+                    </div>
+                </td>
             </tr>
             </tbody>
         </table>
     </div>
-    
+</div>
+
+<div class="overlay" ng-show="overlay">
+    <div class="overlay-popup">
+        <div class="form-horizontal">
+            <div class="row">
+                <div class="col-md-12 col-lg-12 header">
+                    <h3>{{project.name}}</h3>
+                </div>
+            </div>
+<!--
+            <div class="row">
+                <div class="col-md-12 col-lg-12">
+                    <div class="category-group-without-padding" ng-repeat="c in checklist">
+                        <div class="category-group-title">
+                            <span class="group-addon">{{c.no}}.</span>
+                            <input type="text" class="form-control group-input no-border" ng-model="c.name"
+                                placeholder="Enter category name" disabled>
+                        </div>
+                        <div ng-repeat="q in c.question">
+                            <div class="question-group col-lg-9 col-md-9 force-col-padding">
+                                <span class="group-addon">{{q.no}}.</span>
+                                <input type="text" class="form-control group-input no-border"  ng-model="q.name"
+                                    placeholder="Enter question name" disabled>
+                            </div>
+                            <div class="question-radio col-lg-2 col-md-2 force-col-padding">
+                                <div class="radio radio-first">
+                                    <label><input type="radio" value="MCQ" ng-model="q.type"
+                                        name="questionType-{{c.formID}}-{{q.formID}}" disabled>MCQ</label>
+                                </div>
+                                <div class="radio radio-last">
+                                    <label><input type="radio" value="Short Answer" ng-model="q.type"
+                                        name="questionType-{{c.formID}}-{{q.formID}}" disabled>Short Ans</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="force-height-10">JustNeededSomeExtraSpaceForStyleIssue.ToBeEdited</div>
+                    </div>
+                </div>
+            </div>
+-->
+            <div class="row margin-bottom-20 margin-top-7">
+                <div class="col-md-12 col-lg-12">
+                    <button class="btn btn-primary" type="button" ng-click="closeOverlay()">
+                        <span class="glyphicon glyphicon-remove button-icon" aria-hidden="true"></span>
+                        Close
+                    </button>
+                    <button class="btn btn-danger" type="button" ng-click="deleteFacility()" ng-show="!facilityDeleted">
+                        <span class="glyphicon glyphicon-trash button-icon" aria-hidden="true"></span>
+                        Delete
+                    </button>
+                    <button class="btn btn-warning" type="button" ng-click="goToEditFacility()" ng-show="!facilityDeleted">
+                        <span class="glyphicon glyphicon-pencil button-icon" aria-hidden="true"></span>
+                        Edit
+                    </button>
+                    <button class="btn btn-danger" type="button" ng-show="facilityDeleted" disabled>
+                        <span class="glyphicon glyphicon-trash button-icon" aria-hidden="true"></span>
+                        Deleted
+                    </button>
+                    <button class="btn btn-warning" type="button" ng-click="restoreFacility()" ng-show="facilityDeleted">
+                        <span class="glyphicon glyphicon-repeat button-icon" aria-hidden="true"></span>
+                        Restore
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>

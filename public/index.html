@@ -28,6 +28,13 @@
     <!-- Bootstrap Notify & Animate CSS -->
     <script src="js/bootstrap-notify.min.js"></script>
     <link rel="stylesheet" type="text/css" href="css/animate.css"/>
+    <!-- Dragula -->
+    <script src="js/dragula.min.js"></script>
+    <script src="js/angular-dragula.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="css/dragula.min.css"/>
+    <!-- MagicSuggest -->
+    <script src="js/magicsuggest-min.js"></script>
+    <link rel="stylesheet" type="text/css" href="css/magicsuggest-min.css"/>
 </head>
 
 <body ng-view>
@@ -50,6 +57,7 @@
 		storageBucket: "kfpam-sima.appspot.com",
 	};
 	firebase.initializeApp(config);
+    var secondaryApp = firebase.initializeApp(config, "Secondary");
 </script>
 
 </html>

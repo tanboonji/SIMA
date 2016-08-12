@@ -24,31 +24,236 @@
 
 <div class="add-project container">
 	<h3 class="title">Add Project</h3>
-    <!--<div class="row">
-    	<button type="button" class="btn btn-success force-col-margin pull-left" ng-click="addProject()">
-  			<span class="glyphicon glyphicon-plus button-icon" aria-hidden="true">
-            </span>Add
-		</button>
-        <div class="pull-left col-md-4 force-col-margin force-col-padding input-group">
-            <input type="text" class="form-control" placeholder="Search for...">
-            <div class="input-group-btn">
-                <button class="btn btn-primary" type="button">
-                    <span class="glyphicon glyphicon-search button-icon" aria-hidden="true"></span>Search
-                </button>
-	        </div>
-        </div>
-        <div class="pull-right margin-right">
-        	<label for="">Sort By:&nbsp;</label>
-			<div class="btn-group">
-                <button type="button" class="btn btn-default dropdown-toggle dropdown-style" data-toggle="dropdown"
-                    aria-haspopup="true" aria-expanded="true">
-                    <div class="dropdown-text-left">{{selectedItem}}&nbsp;</div>
-                    <span class="caret dropdown-text-right"></span>
-                </button>
-                <ul class="dropdown-menu">
-                    <li ng-repeat="a in sortByList"><a ng-click="dropdownItemSelected(a)">{{a}}</a></li>
-                </ul>
+    <form class="form-horizontal">
+        <div class="row">
+            <label class="control-label col-md-2">MCSTS</label>
+            <div class="col-md-6">
+                <input type="text" ng-model="MCSTS" class="form-control" placeholder="Enter project MCSTS (if available)"/>
             </div>
         </div>
-    </div>-->
+        <div class="row margin-top-25">
+            <label class="control-label col-md-2">Name</label>
+            <div class="col-md-6" ng-class="{'has-error': projectNameEmpty}">
+                <input type="text" ng-model="name" class="form-control" placeholder="Enter project name" required/>
+                <span ng-show="projectNameEmpty" class="help-block margin-bottom-0">
+                    Project name is required.
+                </span>
+            </div>
+        </div>
+        <div class="row margin-top-25">
+            <label class="control-label col-md-2">Address</label>
+            <div class="col-md-6" ng-class="{'has-error': projectAddressEmpty}">
+                <input type="text" ng-model="address" class="form-control" placeholder="Enter project address" required/>
+                <span ng-show="projectAddressEmpty" class="help-block margin-bottom-0">
+                    Project address is required.
+                </span>
+            </div>
+        </div>
+        
+        <div class="row margin-top-25">
+            <label class="control-label col-md-2">BUH</label>
+            <div class="col-md-6" ng-class="{'has-error': projectBUHEmpty}">
+                <div id="magicsuggestBUH">
+                    <div class="ms-ctn form-control">
+                        <input type="text" class="form-control">
+                        <div class="ms-trigger">
+                            <div class="ms-trigger-ico">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <span ng-show="projectBUHEmpty" class="help-block margin-bottom-0">
+                    Project BUH is required.
+                </span>
+            </div>
+<!--
+            <div class="col-md-6" ng-class="{'has-error': projectBUHEmpty}">
+                <input type="text" ng-model="BUH" class="form-control" placeholder="Enter project BUH" required/>
+                <span ng-show="projectBUHEmpty" class="help-block margin-bottom-0" id="projectBUH">
+                    Project BUH is required.
+                </span>
+            </div>
+-->
+        </div>
+        <div class="row margin-top-25">
+            <label class="control-label col-md-2">TM</label>
+            <div class="col-md-6" ng-class="{'has-error': projectTMEmpty}">
+                <div id="magicsuggestTM">
+                    <div class="ms-ctn form-control">
+                        <input type="text" class="form-control">
+                        <div class="ms-trigger">
+                            <div class="ms-trigger-ico">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <span ng-show="projectTMEmpty" class="help-block margin-bottom-0">
+                    Project TM is required.
+                </span>
+            </div>
+<!--
+            <div class="col-md-6" ng-class="{'has-error': projectTMEmpty}">
+                <input type="text" ng-model="TM" class="form-control" placeholder="Enter project TM" required/>
+                <span ng-show="projectTMEmpty" class="help-block margin-bottom-0" id="projectTM">
+                    Project TM is required.
+                </span>
+            </div>
+-->
+        </div>
+        <div class="row margin-top-25">
+            <label class="control-label col-md-2">CM</label>
+            <div class="col-md-6" ng-class="{'has-error': projectCMEmpty}">
+                <div id="magicsuggestCM">
+                    <div class="ms-ctn form-control">
+                        <input type="text" class="form-control">
+                        <div class="ms-trigger">
+                            <div class="ms-trigger-ico">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <span ng-show="projectCMEmpty" class="help-block margin-bottom-0">
+                    Project CM is required.
+                </span>
+            </div>
+<!--
+            <div class="col-md-6" ng-class="{'has-error': projectCMEmpty}">
+                <input type="text" ng-model="CM" class="form-control" placeholder="Enter project CM" required/>
+                <span ng-show="projectCMEmpty" class="help-block margin-bottom-0" id="projectCM">
+                    Project CM is required.
+                </span>
+            </div>
+-->
+        </div>
+<!--
+        <div class="container">
+            <div class="row">
+                <div class="col-md-3">
+                    <div id="left">
+                        <div>Left</div>
+                        <div>Right</div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-3">
+                    <div id="right">
+                        <div>Up</div>
+                        <div>Down</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+-->
+        <div class="row margin-top-25">
+        	<label class="control-label col-md-2">Checklist</label>
+            <div class="col-md-10">
+                <div class="col-md-3 project-group-left" ng-class="{'facility-left-error': checklistEmpty}">
+                    <div class="col-md-12 force-col-padding margin-top-13 margin-bottom-13 has-icon">
+                        <span class="glyphicon glyphicon-search form-control-icon"></span>
+                        <input type="text" class="form-control" placeholder="Search for..." ng-model="searchFacility.name">
+                    </div>
+                    <div class="col-md-12 force-col-padding">
+                        <div id="left">
+                            <div class="facility-list-item" ng-repeat="f in facilityList | filter:searchFacility" 
+                                 id="{{f.name}}" ng-click="moveFacility(f)">
+                                {{f.name}}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-9 force-col-padding project-group-right" ng-class="{'facility-right-error': checklistEmpty}">
+                    <div class="col-md-12 margin-top-13">
+                        <div id="right">
+                            <div class="col-md-12 facility-group" ng-repeat="f in facilityAddedList" id="{{f.name}}" 
+                                 ng-class="{'category-group-error': f.error}">
+                                <div class="category-group-title margin-bottom-13">
+                                    <span class="facility-group-title">{{f.name}}</span>
+                                    <div class="btn-group facility-frequency">
+                                        <button type="button" class="btn btn-default dropdown-toggle dropdown-style" 
+                                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                                            <div class="dropdown-text-left">{{f.frequency}}</div>
+                                            <span class="caret dropdown-text-right"></span>
+                                        </button>
+                                        <ul class="dropdown-menu">
+                                            <li ng-repeat="s in frequencyList"><a ng-click="frequencyItemSelected(f,s)">{{s}}</a></li>
+                                        </ul>
+                                    </div>
+                                    <span class="glyphicon glyphicon-remove facility-group-delete" aria-hidden="true"
+                                        ng-click="deleteFacility(f)"></span>
+                                </div>
+                                <div class="margin-left-10 margin-right-10 margin-bottom-13">
+                                    <div ng-class="{'category-group-error': c.error}" class="category-group-without-padding" 
+                                         ng-repeat="c in f.checklist">
+                                        <div class="category-group-title">
+                                            <span class="group-addon">{{c.no}}.</span>
+                                            <input type="text" class="form-control group-input" ng-model="c.name"
+                                                placeholder="Enter category name" required>
+                                            <span class="glyphicon glyphicon-remove group-delete" aria-hidden="true"
+                                                ng-click="deleteCategory(f,c)"></span>
+                                        </div>
+                                        <div ng-repeat="q in c.question">
+                                            <div class="question-group col-md-9 force-col-padding">
+                                                <span class="group-addon">{{q.no}}.</span>
+                                                <input type="text" class="form-control group-input" ng-model="q.name"
+                                                    placeholder="Enter question name" required>
+                                                <span class="glyphicon glyphicon-remove group-delete" aria-hidden="true"
+                                                    ng-click="deleteQuestion(c,q)"></span>
+                                            </div>
+                                            <div class="question-radio col-md-2 force-col-padding">
+                                                <div class="radio radio-first">
+                                                    <label><input type="radio" value="MCQ" ng-model="q.type"
+                                                        name="questionType-{{c.formID}}-{{q.formID}}">MCQ</label>
+                                                </div>
+                                                <div class="radio radio-last">
+                                                    <label><input type="radio" value="Short Answer" ng-model="q.type"
+                                                        name="questionType-{{c.formID}}-{{q.formID}}">Short Ans</label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <button class="btn btn-default add-question-btn-with-margin" type="button" ng-click="addQuestion(c)">
+                                            <span class="glyphicon glyphicon-plus button-icon" aria-hidden="true"></span>
+                                            Add Question
+                                        </button>
+                                        <div class="has-error category-error" ng-show="c.error">
+                                            <span class="help-block">Category or question name is required.</span>
+                                        </div>
+                                    </div>
+                                    <button class="btn btn-default" type="button" ng-click="addCategory(f)">
+                                        <span class="glyphicon glyphicon-plus button-icon" aria-hidden="true"></span>
+                                        Add Category
+                                    </button>
+                                </div>
+                                <div class="has-error category-error" ng-show="f.error">
+                                    <span class="help-block">Facility frequency is required.</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-offset-2 has-error facility-error" ng-show="checklistEmpty">
+                <span class="help-block">Facility frequency is required / category or question name is required.</span>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-offset-2 facility-note" ng-show="!checklistEmpty">
+                <span class="help-block">Note: 'Add Category' and 'Add Question' buttons will not work if you click and drag them.</span>
+            </div>
+        </div>
+        <div class="row margin-top-25 margin-bottom-50">
+        	<div class="col-md-offset-2 col-md-10">
+                <button class="btn btn-primary" type="button" ng-click="goToProjects()">
+                    <span class="glyphicon glyphicon-remove button-icon" aria-hidden="true"></span>
+                    Cancel
+                </button>
+                <button class="btn btn-success" type="submit" ng-click="validateProject()">
+                    <span class="glyphicon glyphicon-plus button-icon" aria-hidden="true"></span>
+                    Add
+                </button>
+            </div>
+        </div>
+    </form>
 </div>

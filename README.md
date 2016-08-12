@@ -37,3 +37,17 @@
 
 ### Firebase:
 - Timestamp for data (deletedat/deletedby/createdat/createdby/updatedat/updatedby)
+
+### Common things:
+- Internet connection
+- Button feedback
+- Bootstrap col-xs & col-sm & col-md & col-lg
+
+###
+Staff
+Edit Profile
+Project
+Dashboard
+Facility
+Login
+Admin

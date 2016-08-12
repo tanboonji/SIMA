@@ -1,5 +1,5 @@
-app.controller('StaffController', ['$scope', '$location', '$firebaseAuth', '$firebaseObject', 
-	'$firebaseArray', function($scope, $location, $firebaseAuth, $firebaseObject, $firebaseArray){
+app.controller('StaffController', ['$routeParams', '$scope', '$location', '$firebaseAuth', '$firebaseObject', 
+	'$firebaseArray', function($routeParams, $scope, $location, $firebaseAuth, $firebaseObject, $firebaseArray){
 	
 	$scope.auth = $firebaseAuth();
 	
@@ -87,7 +87,6 @@ app.controller('StaffController', ['$scope', '$location', '$firebaseAuth', '$fir
     $scope.addStaff = function() {
         
         if ($scope.name === undefined) {
-            console.log("name");
             $scope.staffNameEmpty = true;
             $scope.staffContactEmpty = false;
             $scope.staffEmailEmpty = false;
