@@ -26,6 +26,14 @@ app.config(function($routeProvider){
 			controller: 'ProjectsController',
 			templateUrl: 'views/add-project.html'
 		})
+		.when('/edit-project', {
+			controller: 'ProjectsController',
+			templateUrl: 'views/edit-project.html'
+		})
+		.when('/edit-project?:projectID', {
+			controller: 'ProjectsController',
+			templateUrl: 'views/edit-project.html'
+		})
 		.when('/staff', {
 			controller: 'StaffController',
 			templateUrl: 'views/staff.html'
@@ -34,6 +42,18 @@ app.config(function($routeProvider){
 			controller: 'StaffController',
 			templateUrl: 'views/add-staff.html'
 		})
+        .when('/edit-staff', {
+            controller: 'StaffController',
+            templateUrl: 'views/edit-staff.html'
+        })
+        .when('/edit-staff?:staffID', {
+            controller: 'StaffController',
+            templateUrl: 'views/edit-staff.html'
+        })
+        .when('/edit-profile', {
+            controller: 'StaffController',
+            templateUrl: 'views/edit-profile.html'
+        })
 		.when('/facilities', {
 			controller: 'FacilitiesController',
 			templateUrl: 'views/facilities.html'
@@ -54,6 +74,22 @@ app.config(function($routeProvider){
 			controller: 'FacilitiesController',
 			templateUrl: 'views/edit-facility.html'
 		})
+        .when('/admin', {
+            controller: 'AdminController',
+            templateUrl: 'views/admin.html'
+        })
+        .when('/add-admin', {
+            controller: 'AdminController',
+            templateUrl: 'views/add-admin.html'
+        })
+        .when('/edit-admin', {
+            controller: 'AdminController',
+            templateUrl: 'views/edit-admin.html'
+        })
+        .when('/edit-admin?:adminID', {
+            controller: 'AdminController',
+            templateUrl: 'views/edit-admin.html'
+        })
 		.otherwise({
 			redirectTo: '/login'
 		});

@@ -30,18 +30,18 @@
 </header>
 
 <div class="add-project container">
-	<h3 class="title">Add Project</h3>
+	<h3 class="title">Edit Project</h3>
     <form class="form-horizontal">
         <div class="row">
             <label class="control-label col-md-2">MCSTS</label>
             <div class="col-md-6">
-                <input type="text" ng-model="MCSTS" class="form-control" placeholder="Enter project MCSTS (if available)"/>
+                <input type="text" ng-model="project.MCSTS" class="form-control" placeholder="Enter project MCSTS (if available)"/>
             </div>
         </div>
         <div class="row margin-top-25">
             <label class="control-label col-md-2">Name</label>
             <div class="col-md-6" ng-class="{'has-error': projectNameEmpty}">
-                <input type="text" ng-model="name" class="form-control" placeholder="Enter project name" required/>
+                <input type="text" ng-model="project.name" class="form-control" placeholder="Enter project name" required/>
                 <span ng-show="projectNameEmpty" class="help-block margin-bottom-0">
                     Project name is required.
                 </span>
@@ -50,7 +50,7 @@
         <div class="row margin-top-25">
             <label class="control-label col-md-2">Address</label>
             <div class="col-md-6" ng-class="{'has-error': projectAddressEmpty}">
-                <input type="text" ng-model="address" class="form-control" placeholder="Enter project address" required/>
+                <input type="text" ng-model="project.address" class="form-control" placeholder="Enter project address" required/>
                 <span ng-show="projectAddressEmpty" class="help-block margin-bottom-0">
                     Project address is required.
                 </span>
@@ -163,7 +163,7 @@
                     <div class="col-md-12 force-col-padding">
                         <div id="left">
                             <div class="facility-list-item" ng-repeat="f in facilityList | filter:searchFacility" 
-                                 id="{{f.name}}" ng-click="moveFacility(f)" ng-show="!f.deleted">
+                                 id="{{f.name}}" ng-click="moveProjectFacility(f)" ng-show="!f.deleted">
                                 {{f.name}}
                             </div>
                         </div>
@@ -172,8 +172,8 @@
                 <div class="col-md-9 force-col-padding project-group-right" ng-class="{'facility-right-error': checklistEmpty}">
                     <div class="col-md-12 margin-top-13">
                         <div id="right">
-                            <div class="col-md-12 facility-group" ng-repeat="f in facilityAddedList" id="{{f.name}}" 
-                                 ng-class="{'category-group-error': f.error}">
+                            <div class="col-md-12 facility-group" ng-repeat="f in project.projectFacilityList" id="{{f.name}}" 
+                                 ng-class="{'category-group-error': f.error}" ng-show="!f.deleted">
                                 <div class="category-group-title margin-bottom-13">
                                     <span class="facility-group-title">{{f.name}}</span>
                                     <div class="btn-group facility-frequency">
@@ -187,25 +187,25 @@
                                         </ul>
                                     </div>
                                     <span class="glyphicon glyphicon-remove facility-group-delete" aria-hidden="true"
-                                        ng-click="deleteFacility(f)"></span>
+                                        ng-click="deleteProjectFacility(f)"></span>
                                 </div>
                                 <div class="margin-left-10 margin-right-10 margin-bottom-13">
                                     <div ng-class="{'category-group-error': c.error}" class="category-group-without-padding" 
-                                         ng-repeat="c in f.checklist">
+                                         ng-repeat="c in f.checklist" ng-show="!c.deleted">
                                         <div class="category-group-title">
                                             <span class="group-addon">{{c.no}}.</span>
                                             <input type="text" class="form-control group-input" ng-model="c.name"
-                                                placeholder="Enter category name" required>
+                                                placeholder="Enter category name" ng-required="!c.deleted">
                                             <span class="glyphicon glyphicon-remove group-delete" aria-hidden="true"
-                                                ng-click="deleteCategory(f,c)"></span>
+                                                ng-click="deleteProjectCategory(f,c)"></span>
                                         </div>
-                                        <div ng-repeat="q in c.question">
+                                        <div ng-repeat="q in c.questionList">
                                             <div class="question-group col-md-9 force-col-padding">
                                                 <span class="group-addon">{{q.no}}.</span>
                                                 <input type="text" class="form-control group-input" ng-model="q.name"
-                                                    placeholder="Enter question name" required>
+                                                    placeholder="Enter question name" ng-required="!c.deleted">
                                                 <span class="glyphicon glyphicon-remove group-delete" aria-hidden="true"
-                                                    ng-click="deleteQuestion(c,q)"></span>
+                                                    ng-click="deleteProjectQuestion(c,q)"></span>
                                             </div>
                                             <div class="question-radio col-md-2 force-col-padding">
                                                 <div class="radio radio-first">
@@ -218,7 +218,7 @@
                                                 </div>
                                             </div>
                                         </div>
-                                        <button class="btn btn-default add-question-btn-with-margin" type="button" ng-click="addQuestion(c)">
+                                        <button class="btn btn-default add-question-btn-with-margin" type="button" ng-click="addProjectQuestion(c)">
                                             <span class="glyphicon glyphicon-plus button-icon" aria-hidden="true"></span>
                                             Add Question
                                         </button>
@@ -226,7 +226,7 @@
                                             <span class="help-block">Category or question name is required.</span>
                                         </div>
                                     </div>
-                                    <button class="btn btn-default" type="button" ng-click="addCategory(f)">
+                                    <button class="btn btn-default" type="button" ng-click="addProjectCategory(f)">
                                         <span class="glyphicon glyphicon-plus button-icon" aria-hidden="true"></span>
                                         Add Category
                                     </button>
@@ -251,6 +251,31 @@
             </div>
         </div>
         <div class="row margin-top-25 margin-bottom-50">
+            <div class="col-md-offset-2 col-md-10">
+                <button class="btn btn-primary" type="button" ng-click="goToProjects()">
+                    <span class="glyphicon glyphicon-remove button-icon" aria-hidden="true"></span>
+                    Cancel
+                </button>
+                <button class="btn btn-danger" type="button" ng-click="deleteProject()" ng-show="!project.deleted">
+                    <span class="glyphicon glyphicon-trash button-icon" aria-hidden="true"></span>
+                    Delete
+                </button>
+                <button class="btn btn-success" type="submit" ng-click="validateEditProject()" ng-show="!project.deleted">
+                    <span class="glyphicon glyphicon-floppy-disk button-icon" aria-hidden="true"></span>
+                    Save
+                </button>
+                <button class="btn btn-danger" type="button" ng-show="project.deleted" disabled>
+                    <span class="glyphicon glyphicon-trash button-icon" aria-hidden="true"></span>
+                    Deleted
+                </button>
+                <button class="btn btn-warning" type="button" ng-click="restoreProject()" ng-show="project.deleted">
+                    <span class="glyphicon glyphicon-repeat button-icon" aria-hidden="true"></span>
+                    Restore
+                </button>
+            </div>
+        </div>
+<!--
+        <div class="row margin-top-25 margin-bottom-50">
         	<div class="col-md-offset-2 col-md-10">
                 <button class="btn btn-primary" type="button" ng-click="goToProjects()">
                     <span class="glyphicon glyphicon-remove button-icon" aria-hidden="true"></span>
@@ -262,5 +287,6 @@
                 </button>
             </div>
         </div>
+-->
     </form>
 </div>

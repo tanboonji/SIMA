@@ -1,0 +1,99 @@
+<header>
+	<nav class="navbar navbar-default navbar-static-top">
+		<div class="container">
+			<a href="#/dashboard">
+            	<img src="images/knight-frank-logo.png" alt="Knight Frank" style="max-height:50px"/>
+            </a>
+			<div class="nav-menu">
+				<ul>
+					<li><a href="#/dashboard">Dashboard</a></li>
+ 					<li><a href="#/projects">Projects</a></li>
+					<li class="selected"><a href="#/staff">Staff</a></li>
+					<li><a href="#/facilities">Facilities</a></li>
+				</ul>
+			</div>
+			<div class="profile" id="profile">
+                Hello {{user.showName}}
+                <button class="logout-btn" type="button" ng-click="logout()">
+                    Log Out
+                </button>
+			</div>
+		</div>
+	</nav>
+</header>
+
+<div class="staff container">
+	<h3 class="title">Staff</h3>
+    <div class="row">
+    	<div class="col-md-12">
+            <button type="button" class="btn btn-success pull-left" ng-click="goToAddStaff()">
+                <span class="glyphicon glyphicon-plus button-icon" aria-hidden="true"></span>
+                Add
+            </button>
+            <div class="pull-left col-md-4 force-col-margin force-col-padding has-icon">
+                <span class="glyphicon glyphicon-search form-control-icon"></span>
+                <input type="text" class="form-control" placeholder="Search for..." ng-model="query">
+            </div>
+            <div class="pull-right">
+                <label for="">Sort By:&nbsp;</label>
+                <div class="btn-group">
+                    <button type="button" class="btn btn-default dropdown-toggle dropdown-style" 
+                    	data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                        <div class="dropdown-text-left">{{sortByRoleItem}}&nbsp;</div>
+                        <span class="caret dropdown-text-right"></span>
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li ng-repeat="s in sortByRoleList"><a ng-click="sortByRoleItemSelected(s)">{{s}}</a></li>
+                    </ul>
+                </div>
+                <div class="btn-group">
+                    <button type="button" class="btn btn-default dropdown-toggle dropdown-style" 
+                    	data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                        <div class="dropdown-text-left">{{sortByDeletedItem}}&nbsp;</div>
+                        <span class="caret dropdown-text-right"></span>
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li ng-repeat="s in sortByDeletedList"><a ng-click="sortByDeletedItemSelected(s)">{{s}}</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="margin-top-25">
+    	<table class="col-md-12 table table-hover table-bordered">
+        	<thead>
+        	<tr>
+            	<td>ID</td>
+                <td>Name</td>
+                <td>Contact</td>
+                <td>Email</td>
+                <td>Role</td>
+                <td>Status</td>
+                <td class="col-md-2"></td>
+            </tr>
+            </thead>
+            <tbody>
+            <tr ng-repeat="s in staffList | filter:search | filter:isdeleted | filter:isrole" ng-click="viewStaff(s)">
+            	<td>{{s.ID}}</td>
+                <td>{{s.name}}</td>
+                <td>{{s.phone}}</td>
+                <td>{{s.email}}</td>
+                <td>{{s.role}}</td>
+                <td>{{s.status}}</td>
+                <td>
+                    <div class="pull-right">
+                        <button class="btn btn-default" type="button" ng-click="viewStaff(s)">
+                            <span class="glyphicon glyphicon-eye-open button-icon" aria-hidden="true"></span>
+                            View
+                        </button>
+                        <button class="btn btn-default" type="button" ng-click="goToEditStaff(s)">
+                            <span class="glyphicon glyphicon-pencil button-icon" aria-hidden="true"></span>
+                            Edit
+                        </button>
+                    </div>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>

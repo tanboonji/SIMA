@@ -29,13 +29,19 @@
     </nav>
 </header>
 
-<div class="add-staff container" ng-init=initAdd()>
-    <h3 class="title">Add Staff</h3>
-    <form class="form-horizontal">
+<div class="edit-staff container">
+    <h3 class="title">Edit Staff</h3>
+    <form class="form-horizontal" id="staffform">
         <div class="row">
+            <label class="control-label col-md-2">ID</label>
+            <div class="col-md-6">
+                <input type="text" ng-model="staff.ID" class="form-control" disabled/>
+            </div>
+        </div>
+        <div class="row margin-top-25">
             <label class="control-label col-md-2">Email</label>
             <div class="col-md-6" ng-class="{'has-error': staffEmailEmpty}">
-                <input type="email" ng-model="staff.email" class="form-control" placeholder="Enter staff email" required/>
+                <input type="email" ng-model="staff.email" class="form-control" placeholder="Enter staff email" disabled/>
                 <span ng-show="staffEmailEmpty" class="help-block margin-bottom-0">
                     Staff email is required.
                 </span>
@@ -75,7 +81,7 @@
                     <span class="caret dropdown-text-right"></span>
                 </button>
                 <ul class="dropdown-menu col-sm-4">
-                    <li ng-repeat="x in statusListSmall"><a ng-click="selectStatusValue(x)">{{x}}</a></li>
+                    <li ng-repeat="x in statusList"><a ng-click="selectStatusValue(x)">{{x}}</a></li>
                 </ul>
             </div>
         </div>
@@ -106,8 +112,8 @@
                 <button class="btn btn-primary" type="button" ng-click="goToStaff()">
                     <span class="glyphicon glyphicon-remove button-icon" aria-hidden="true"></span> Cancel
                 </button>
-                <button class="btn btn-success" type="submit" ng-click="addStaff()">
-                    <span class="glyphicon glyphicon-plus button-icon" aria-hidden="true"></span> Add
+                <button class="btn btn-success" type="submit" ng-click="saveStaff()">
+                    <span class="glyphicon glyphicon-floppy-disk button-icon" aria-hidden="true"></span> Save
                 </button>
             </div>
         </div>

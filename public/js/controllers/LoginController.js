@@ -1,12 +1,25 @@
-app.controller('LoginController', ['$routeParams', '$route', '$scope', '$location', '$firebaseAuth', 
-    function($routeParams, $route, $scope, $location, $firebaseAuth){
+app.controller('LoginController', ['$rootScope', '$routeParams', '$route', '$scope', '$location', '$firebaseAuth', 
+    function($rootScope, $routeParams, $route, $scope, $location, $firebaseAuth){
     
     $scope.auth = $firebaseAuth();
     
     $scope.auth.$onAuthStateChanged(function(firebaseUser) {
         $scope.firebaseUser = firebaseUser;
         if ($scope.firebaseUser !== null) {
-            $location.path('/dashboard');
+            firebase.database().ref('admin/' + $scope.firebaseUser.uid).once('value').then(function (snapshot, error) {
+                if (snapshot.val() != null) {
+                    if (snapshot.val().isSuperAdmin) {
+                        $location.path('/admin');
+                        $route.reload();
+                    } else {
+                        $location.path('/dashboard');
+                        $route.reload();
+                    }
+                } else {
+                    $location.path('/dashboard');
+                    $route.reload();
+                }
+            });
         }
     }); //end of $scope.auth.$onAuthStateChanged()
     
@@ -75,6 +88,7 @@ app.controller('LoginController', ['$routeParams', '$route', '$scope', '$locatio
                                 $scope.passwordErrorMessage = null;
                                 $scope.staffIDErrorMessage = null;
                                 $scope.notify("auth/account-not-available", "danger");
+                                $scope.$apply();
                             } //end of if() //check staff active or inactive
                         } else {
                             $scope.passwordErrorMessage = null;
@@ -112,13 +126,11 @@ app.controller('LoginController', ['$routeParams', '$route', '$scope', '$locatio
                                 switch (error.code) { /* edit */
                                     case 'auth/invalid-email':
                                         $scope.passwordErrorMessage = null;
-                                        $scope.staffIDErrorMessage = null;
-                                        $scope.notify(error.code, "danger");
+                                        $scope.staffIDErrorMessage = "auth/invalid-email";
                                         break;
                                     case 'auth/user-not-found':
                                         $scope.passwordErrorMessage = null;
-                                        $scope.staffIDErrorMessage = null;
-                                        $scope.notify(error.code, "danger");
+                                        $scope.staffIDErrorMessage = "auth/user-not-found";
                                         break;
                                     default:
                                         $scope.passwordErrorMessage = null;
@@ -126,11 +138,13 @@ app.controller('LoginController', ['$routeParams', '$route', '$scope', '$locatio
                                         $scope.notify(error.code, "danger");
                                         break;
                                 }
+                                $scope.$apply();
                             }); //end of $scope.auth.$sendPasswordResetEmail()
                         } else {
                             $scope.passwordErrorMessage = null;
                             $scope.staffIDErrorMessage = null;
                             $scope.notify("auth/account-not-available", "danger");
+                            $scope.$apply();
                         }
                     } else {
                         $scope.passwordErrorMessage = null;
@@ -149,13 +163,11 @@ app.controller('LoginController', ['$routeParams', '$route', '$scope', '$locatio
                     switch (error.code) { /* edit */
                         case 'auth/invalid-email':
                             $scope.passwordErrorMessage = null;
-                            $scope.staffIDErrorMessage = null;
-                            $scope.notify(error.code, "danger");
+                            $scope.staffIDErrorMessage = "auth/invalid-email";
                             break;
                         case 'auth/user-not-found':
                             $scope.passwordErrorMessage = null;
-                            $scope.staffIDErrorMessage = null;
-                            $scope.notify(error.code, "danger");
+                            $scope.staffIDErrorMessage = "auth/user-not-found";
                             break;
                         default:
                             $scope.passwordErrorMessage = null;
@@ -163,6 +175,7 @@ app.controller('LoginController', ['$routeParams', '$route', '$scope', '$locatio
                             $scope.notify(error.code, "danger");
                             break;
                     }
+                    $scope.$apply();
                 }); //end of $scope.auth.$sendPasswordResetEmail()
             } else {
                 $scope.passwordErrorMessage = null;

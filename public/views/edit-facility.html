@@ -1,23 +1,30 @@
 <header>
 	<nav class="navbar navbar-default navbar-static-top">
 		<div class="container">
-			<a href="#/dashboard">
-            	<img src="images/knight-frank-logo.png" alt="Knight Frank" style="max-height:50px"/>
+            <a href="#/dashboard" ng-show="!user.isSuperAdmin">
+                <img src="images/knight-frank-logo.png" alt="Knight Frank" style="max-height:50px"/>
             </a>
-			<div class="nav-menu">
-				<ul>
-					<li><a href="#/dashboard">Dashboard</a></li>
- 					<li><a href="#/projects">Projects</a></li>
-					<li><a href="#/staff">Staff</a></li>
-					<li class="selected"><a href="#/facilities">Facilities</a></li>
-				</ul>
-			</div>
-			<div class="profile" id="profile">
-                Hello {{user.name}}
+            <a href="#/admin" ng-show="user.isSuperAdmin">
+                <img src="images/knight-frank-logo.png" alt="Knight Frank" style="max-height:50px"/>
+            </a>
+            <div class="nav-menu">
+                <ul>
+                    <li ng-show="user.isCM"><a href="#/dashboard">Dashboard</a></li>
+                    <li ng-show="user.isBUH"><a href="#/projects">Projects</a></li>
+                    <li ng-show="user.isAdmin"><a href="#/staff">Staff</a></li>
+                    <li class="selected" ng-show="user.isAdmin"><a href="#/facilities">Facilities</a></li>
+                    <li ng-show="user.isSuperAdmin"><a href="#/admin">Admin</a></li>
+                </ul>
+            </div>
+            <div class="profile" id="profile">
+                Hello
+                <a href="#/edit-profile">
+                    <span class="profile-link">{{user.showName}}</span>
+                </a>
                 <button class="logout-btn" type="button" ng-click="logout()">
                     Log Out
                 </button>
-			</div>
+            </div>
 		</div>
 	</nav>
 </header>
@@ -58,11 +65,12 @@
         <div class="row margin-top-25">
             <label class="control-label col-md-2">Checklist</label>
             <div class="col-md-6">
-                <div ng-class="{'category-group-error': c.error}" class="category-group-without-padding" ng-repeat="c in checklist" ng-show="c.show">
+                <div ng-class="{'category-group-error': c.error}" class="category-group-without-padding" 
+                     ng-repeat="c in checklist" ng-show="!c.deleted">
                     <div class="category-group-title">
                         <span class="group-addon">{{c.no}}.</span>
                         <input type="text" class="form-control group-input" ng-model="c.name"
-                            placeholder="Enter category name" required>
+                            placeholder="Enter category name" ng-required="!c.deleted">
                         <span class="glyphicon glyphicon-remove group-delete" aria-hidden="true"
                             ng-click="removeCategory(c)"></span>
                     </div>
@@ -70,7 +78,7 @@
                         <div class="question-group col-md-9 force-col-padding">
                             <span class="group-addon">{{q.no}}.</span>
                             <input type="text" class="form-control group-input" ng-model="q.name"
-                                placeholder="Enter question name" required>
+                                placeholder="Enter question name" ng-required="!c.deleted">
                             <span class="glyphicon glyphicon-remove group-delete" aria-hidden="true"
                                 ng-click="deleteQuestion(c,q)"></span>
                         </div>
@@ -93,7 +101,7 @@
                         <span class="help-block">Category or question name is required.</span>
                     </div>
                 </div>
-                <button class="btn btn-default margin-bottom-20" type="button" ng-click="addEditCategory()">
+                <button class="btn btn-default margin-bottom-20" type="button" ng-click="addCategory()">
                     <span class="glyphicon glyphicon-plus button-icon" aria-hidden="true"></span>
                     Add Category
                 </button>
@@ -109,19 +117,19 @@
                     <span class="glyphicon glyphicon-remove button-icon" aria-hidden="true"></span>
                     Cancel
                 </button>
-                <button class="btn btn-danger" type="button" ng-click="deleteFacility()" ng-show="!facilityDeleted">
+                <button class="btn btn-danger" type="button" ng-click="deleteFacility()" ng-show="!facility.deleted">
                     <span class="glyphicon glyphicon-trash button-icon" aria-hidden="true"></span>
                     Delete
                 </button>
-                <button class="btn btn-success" type="submit" ng-click="saveFacility()" ng-show="!facilityDeleted">
+                <button class="btn btn-success" type="submit" ng-click="validateEditForm()" ng-show="!facility.deleted">
                     <span class="glyphicon glyphicon-floppy-disk button-icon" aria-hidden="true"></span>
                     Save
                 </button>
-                <button class="btn btn-danger" type="button" ng-show="facilityDeleted" disabled>
+                <button class="btn btn-danger" type="button" ng-show="facility.deleted" disabled>
                     <span class="glyphicon glyphicon-trash button-icon" aria-hidden="true"></span>
                     Deleted
                 </button>
-                <button class="btn btn-warning" type="button" ng-click="restoreFacility()" ng-show="facilityDeleted">
+                <button class="btn btn-warning" type="button" ng-click="restoreFacility()" ng-show="facility.deleted">
                     <span class="glyphicon glyphicon-repeat button-icon" aria-hidden="true"></span>
                     Restore
                 </button>

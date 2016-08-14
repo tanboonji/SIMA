@@ -774,6 +774,7 @@ if (typeof jQuery === 'undefined') {
     }
 
     var $parent = selector && $(selector)
+//    var $parent = selector === '#' ? $('') : selector && $(selector)
 
     return $parent && $parent.length ? $parent : $this.parent()
   }

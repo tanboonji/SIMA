@@ -1,0 +1,112 @@
+<header>
+	<nav class="navbar navbar-default navbar-static-top">
+		<div class="container">
+			<a href="#/dashboard">
+            	<img src="images/knight-frank-logo.png" alt="Knight Frank" style="max-height:50px"/>
+            </a>
+			<div class="nav-menu">
+				<ul>
+					<li><a href="#/dashboard">Dashboard</a></li>
+ 					<li><a href="#/projects">Projects</a></li>
+					<li class="selected"><a href="#/staff">Staff</a></li>
+					<li><a href="#/facilities">Facilities</a></li>
+				</ul>
+			</div>
+			<div class="profile" id="profile">
+                Hello {{user.showName}}
+                <button class="logout-btn" type="button" ng-click="logout()">
+                    Log Out
+                </button>
+			</div>
+		</div>
+	</nav>
+</header>
+
+<div class="add-staff container">
+	<h3 class="title">Add Staff</h3>
+    <form class="form-horizontal">
+        <div class="row">
+            <label class="control-label col-md-2">Name</label>
+            <div class="col-md-6" ng-class="{'has-error': staffNameEmpty}">
+                <input type="text" ng-model="name" class="form-control" placeholder="Enter staff name" required/>
+                <span ng-show="staffNameEmpty" class="help-block margin-bottom-0">
+                    Staff name is required.
+                </span>
+            </div>
+        </div>
+        <div class="row margin-top-25">
+        	<label class="control-label col-md-2">Contact No.</label>
+            <div class="col-md-6" ng-class="{'has-error': staffContactEmpty}">
+                <input type="text" ng-model="contact" class="form-control" placeholder="Enter staff contact no." required/>
+                <span ng-show="staffContactEmpty" class="help-block margin-bottom-0">
+                    Staff contact no. is required.
+                </span>
+            </div>
+        </div>
+        <div class="row margin-top-25">
+        	<label class="control-label col-md-2">Email</label>
+            <div class="col-md-6" ng-class="{'has-error': staffEmailEmpty}">
+                <input type="text" ng-model="email" class="form-control" placeholder="Enter staff email" required/>
+                <span ng-show="staffEmailEmpty" class="help-block margin-bottom-0">
+                    Staff email is required.
+                </span>
+            </div>
+        </div>
+        <div class="row margin-top-25">
+            <label class="control-label col-md-2">Role</label>
+            <div class="col-md-6" ng-class="{'has-error': staffRoleEmpty}">
+                <div class="btn-group">
+                    <button type="button" class="btn btn-default dropdown-toggle dropdown-style dropdown" 
+                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                        <div class="dropdown-text-left">{{role}}</div>
+                        <span class="caret dropdown-text-right"></span>
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li ng-repeat="r in roleList"><a ng-click="roleItemSelected(r)">{{r}}</a></li>
+                    </ul>
+                </div>
+                <span ng-show="staffRoleEmpty" class="help-block margin-bottom-0">
+                    Staff role is required.
+                </span>
+            </div>
+        </div>
+        <div class="row margin-top-25">
+            <label class="control-label col-md-2">Status</label>
+            <div class="col-md-6" ng-class="{'has-error': staffStatusEmpty}">
+                <div class="btn-group">
+                    <button type="button" class="btn btn-default dropdown-toggle dropdown-style dropdown" 
+                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                        <div class="dropdown-text-left">{{status}}</div>
+                        <span class="caret dropdown-text-right"></span>
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li ng-repeat="s in statusList"><a ng-click="statusItemSelected(s)">{{s}}</a></li>
+                    </ul>
+                </div>
+                <span ng-show="staffStatusEmpty" class="help-block margin-bottom-0">
+                    Staff status is required.
+                </span>
+            </div>
+        </div>
+        <div class="row margin-top-10" ng-show="showStaffStatusMessage">
+            <div class="col-md-offset-2 col-md-6" ng-class="{'has-error': staffStatusMessageEmpty}">
+                <input type="text" ng-model="statusMessage" class="form-control" placeholder="Enter status details"/>
+                <span ng-show="staffStatusMessageEmpty" class="help-block margin-bottom-0">
+                    Status message is required.
+                </span>
+            </div>
+        </div>
+        <div class="row margin-top-25 margin-bottom-50">
+        	<div class="col-md-offset-2 col-md-10">
+                <button class="btn btn-primary" type="button" ng-click="goToStaff()">
+                    <span class="glyphicon glyphicon-remove button-icon" aria-hidden="true"></span>
+                    Cancel
+                </button>
+                <button class="btn btn-success" type="submit" ng-click="addStaff()">
+                    <span class="glyphicon glyphicon-plus button-icon" aria-hidden="true"></span>
+                    Add
+                </button>
+            </div>
+        </div>
+    </form>
+</div>

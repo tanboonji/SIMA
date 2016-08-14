@@ -1,23 +1,30 @@
 <header>
 	<nav class="navbar navbar-default navbar-static-top">
 		<div class="container">
-			<a href="#/dashboard">
-            	<img src="images/knight-frank-logo.png" alt="Knight Frank" style="max-height:50px"/>
+            <a href="#/dashboard" ng-show="!user.isSuperAdmin">
+                <img src="images/knight-frank-logo.png" alt="Knight Frank" style="max-height:50px"/>
             </a>
-			<div class="nav-menu">
-				<ul>
-					<li><a href="#/dashboard">Dashboard</a></li>
- 					<li><a href="#/projects">Projects</a></li>
-					<li><a href="#/staff">Staff</a></li>
-					<li class="selected"><a href="#/facilities">Facilities</a></li>
-				</ul>
-			</div>
-			<div class="profile" id="profile">
-                Hello {{user.name}}
+            <a href="#/admin" ng-show="user.isSuperAdmin">
+                <img src="images/knight-frank-logo.png" alt="Knight Frank" style="max-height:50px"/>
+            </a>
+            <div class="nav-menu">
+                <ul>
+                    <li ng-show="user.isCM"><a href="#/dashboard">Dashboard</a></li>
+                    <li ng-show="user.isBUH"><a href="#/projects">Projects</a></li>
+                    <li ng-show="user.isAdmin"><a href="#/staff">Staff</a></li>
+                    <li class="selected" ng-show="user.isAdmin"><a href="#/facilities">Facilities</a></li>
+                    <li ng-show="user.isSuperAdmin"><a href="#/admin">Admin</a></li>
+                </ul>
+            </div>
+            <div class="profile" id="profile">
+                Hello
+                <a href="#/edit-profile">
+                    <span class="profile-link">{{user.showName}}</span>
+                </a>
                 <button class="logout-btn" type="button" ng-click="logout()">
                     Log Out
                 </button>
-			</div>
+            </div>
 		</div>
 	</nav>
 </header>
@@ -105,7 +112,7 @@
                     <span class="glyphicon glyphicon-remove button-icon" aria-hidden="true"></span>
                     Cancel
                 </button>
-                <button class="btn btn-success" type="submit" ng-click="addFacility()">
+                <button class="btn btn-success" type="submit" ng-click="validateAddForm()">
                     <span class="glyphicon glyphicon-plus button-icon" aria-hidden="true"></span>
                     Add
                 </button>
