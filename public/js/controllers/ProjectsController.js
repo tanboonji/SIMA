@@ -448,16 +448,20 @@ app.controller('ProjectsController', ['$rootScope', '$route', '$routeParams', '$
                     $scope.facilityAddedList[0].category = facilityValue.category;
                 });
                 $scope.facilityAddedList[0].categoryCount = -1;
-                $scope.facilityAddedList[0].checklist = [{questionCount:-1, question:[]}];
+                $scope.facilityAddedList[0].checklist = [];
                 angular.forEach($scope.facilityAddedList[0].category, function(categoryID, key) {
                     firebase.database().ref("category/" + categoryID).once("value").then(function(snapshot) {
                         if (snapshot.val() != null) {
                             $scope.facilityAddedList[0].categoryCount++;
+                            console.log($scope.facilityAddedList[0].categoryCount);
+                            $scope.facilityAddedList[0].checklist.push({});
                             var categoryCount = $scope.facilityAddedList[0].categoryCount;
                             $scope.facilityAddedList[0].checklist[categoryCount].name = snapshot.val().name;
                             $scope.facilityAddedList[0].checklist[categoryCount].ID = snapshot.val().ID;
                             $scope.facilityAddedList[0].checklist[categoryCount].no = categoryCount+1;
                             $scope.facilityAddedList[0].checklist[categoryCount].formID = categoryCount;
+                            $scope.facilityAddedList[0].checklist[categoryCount].questionCount = -1;
+                            $scope.facilityAddedList[0].checklist[categoryCount].question = [];
 
                             angular.forEach(snapshot.val().question, function(questionValue, key) {
                                 $scope.facilityAddedList[0].checklist[categoryCount].question.push({});
@@ -495,128 +499,165 @@ app.controller('ProjectsController', ['$rootScope', '$route', '$routeParams', '$
     
     $scope.validateProject = function() {
         
-        if ($scope.name === undefined) {
-            $scope.projectNameEmpty = true;
-            $scope.projectAddressEmpty = false;
-            $scope.projectBUHEmpty = false;
-            $scope.projectTMEmpty = false;
-            $scope.projectCMEmpty = false;
-            $scope.checklistEmpty = false;
-            angular.forEach($scope.facilityAddedList, function(facilityValue, key) {
-                facilityValue.error = false;
-                angular.forEach(facilityValue.checklist, function(categoryValue, key) {
-                    categoryValue.error = false;
-                });
-            });
-        } else if ($scope.address === undefined) {
-            $scope.projectNameEmpty = false;
-            $scope.projectAddressEmpty = true;
-            $scope.projectBUHEmpty = false;
-            $scope.projectTMEmpty = false;
-            $scope.projectCMEmpty = false;
-            $scope.checklistEmpty = false;
-            angular.forEach($scope.facilityAddedList, function(facilityValue, key) {
-                facilityValue.error = false;
-                angular.forEach(facilityValue.checklist, function(categoryValue, key) {
-                    categoryValue.error = false;
-                });
-            });
-        } else if ($scope.BUH.getValue().length === 0) {
-            $scope.projectNameEmpty = false;
-            $scope.projectAddressEmpty = false;
-            $scope.projectBUHEmpty = true;
-            $scope.projectTMEmpty = false;
-            $scope.projectCMEmpty = false;
-            $scope.checklistEmpty = false;
-            angular.forEach($scope.facilityAddedList, function(facilityValue, key) {
-                facilityValue.error = false;
-                angular.forEach(facilityValue.checklist, function(categoryValue, key) {
-                    categoryValue.error = false;
-                });
-            });
-        } else if ($scope.TM.getValue().length === 0) {
-            $scope.projectNameEmpty = false;
-            $scope.projectAddressEmpty = false;
-            $scope.projectBUHEmpty = false;
-            $scope.projectTMEmpty = true;
-            $scope.projectCMEmpty = false;
-            $scope.checklistEmpty = false;
-            angular.forEach($scope.facilityAddedList, function(facilityValue, key) {
-                facilityValue.error = false;
-                angular.forEach(facilityValue.checklist, function(categoryValue, key) {
-                    categoryValue.error = false;
-                });
-            });
-        } else if ($scope.CM.getValue().length === 0) {
-            $scope.projectNameEmpty = false;
-            $scope.projectAddressEmpty = false;
-            $scope.projectBUHEmpty = false;
-            $scope.projectTMEmpty = false;
-            $scope.projectCMEmpty = true;
-            $scope.checklistEmpty = false;
-            angular.forEach($scope.facilityAddedList, function(facilityValue, key) {
-                facilityValue.error = false;
-                angular.forEach(facilityValue.checklist, function(categoryValue, key) {
-                    categoryValue.error = false;
-                });
-            });
-        } else {
-            var error = false;
-            $scope.projectNameEmpty = false;
-            $scope.projectAddressEmpty = false;
-            $scope.projectBUHEmpty = false;
-            $scope.projectTMEmpty = false;
-            $scope.projectCMEmpty = false;
-            $scope.checklistEmpty = false;
-            angular.forEach($scope.facilityAddedList, function(facilityValue, key) {
-                facilityValue.error = false;
-                angular.forEach(facilityValue.checklist, function(categoryValue, key) {
-                    categoryValue.error = false;
-                });
-            });
-            
-            angular.forEach($scope.facilityAddedList, function(facilityValue, key) {
-                if (!error) {
-                    if (facilityValue.frequency === "--Frequency--") {
-                        $scope.checklistEmpty = true;
-                        facilityValue.error = true;
-                        error = true;
-                    } else {
-                        angular.forEach(facilityValue.checklist, function(categoryValue, key) {
-                            if (!error) {
-                                if (categoryValue.name === undefined || categoryValue.name === "") {
-                                    $scope.checklistEmpty = true;
-                                    categoryValue.error = true;
-                                    error = true;
-                                } else {
-                                    angular.forEach(categoryValue.question, function(questionValue, key) {
-                                        if (!error) {
-                                            if (questionValue.name === undefined || questionValue.name === "") {
-                                                $scope.checklistEmpty = true;
-                                                categoryValue.error = true;
-                                                error = true;
-                                            }
-                                        }
-                                    });
-                                }
-                            }
-                        });
-                    }
+        $scope.MCSTSError = false;
+        console.log($scope.MCSTS);
+        if ($scope.MCSTS !== undefined && $scope.MCSTS !== "") {
+            if (!/^\d*(\.?)\d+$/.test($scope.MCSTS)) {
+                $scope.MCSTSError = true;
+                $scope.projectMCSTSInvalid = true;
+                $scope.projectMCSTSLength = false;
+            } else {
+                if (!/^[0-9]{4}$/.test($scope.MCSTS)) {
+                    $scope.MCSTSError = true;
+                    $scope.projectMCSTSInvalid = false;
+                    $scope.projectMCSTSLength = true;
+                } else {
+                    $scope.projectMCSTSInvalid = false;
+                    $scope.projectMCSTSLength = false;
                 }
-            });
-            
-            if (!error) {
-                var BUH = $scope.BUH.getValue()[0];
-                $scope.BUHName = BUH.substr(8);
-                $scope.BUHID = BUH.substr(1,5);
-                var TM = $scope.TM.getValue()[0];
-                $scope.TMName = TM.substr(8);
-                $scope.TMID = TM.substr(1,5);
-                var CM = $scope.CM.getValue()[0];
-                $scope.CMName = CM.substr(8);
-                $scope.CMID = CM.substr(1,5);
-                $scope.addProject();
             }
+        } else {
+            $scope.projectMCSTSInvalid = false;
+            $scope.projectMCSTSLength = false;
+        }
+        
+        if (!$scope.MCSTSError) {
+            if ($scope.name === undefined) {
+                $scope.projectNameEmpty = true;
+                $scope.projectAddressEmpty = false;
+                $scope.projectBUHEmpty = false;
+                $scope.projectTMEmpty = false;
+                $scope.projectCMEmpty = false;
+                $scope.checklistEmpty = false;
+                angular.forEach($scope.facilityAddedList, function(facilityValue, key) {
+                    facilityValue.error = false;
+                    angular.forEach(facilityValue.checklist, function(categoryValue, key) {
+                        categoryValue.error = false;
+                    });
+                });
+            } else if ($scope.address === undefined) {
+                $scope.projectNameEmpty = false;
+                $scope.projectAddressEmpty = true;
+                $scope.projectBUHEmpty = false;
+                $scope.projectTMEmpty = false;
+                $scope.projectCMEmpty = false;
+                $scope.checklistEmpty = false;
+                angular.forEach($scope.facilityAddedList, function(facilityValue, key) {
+                    facilityValue.error = false;
+                    angular.forEach(facilityValue.checklist, function(categoryValue, key) {
+                        categoryValue.error = false;
+                    });
+                });
+            } else if ($scope.BUH.getValue().length === 0) {
+                $scope.projectNameEmpty = false;
+                $scope.projectAddressEmpty = false;
+                $scope.projectBUHEmpty = true;
+                $scope.projectTMEmpty = false;
+                $scope.projectCMEmpty = false;
+                $scope.checklistEmpty = false;
+                angular.forEach($scope.facilityAddedList, function(facilityValue, key) {
+                    facilityValue.error = false;
+                    angular.forEach(facilityValue.checklist, function(categoryValue, key) {
+                        categoryValue.error = false;
+                    });
+                });
+            } else if ($scope.TM.getValue().length === 0) {
+                $scope.projectNameEmpty = false;
+                $scope.projectAddressEmpty = false;
+                $scope.projectBUHEmpty = false;
+                $scope.projectTMEmpty = true;
+                $scope.projectCMEmpty = false;
+                $scope.checklistEmpty = false;
+                angular.forEach($scope.facilityAddedList, function(facilityValue, key) {
+                    facilityValue.error = false;
+                    angular.forEach(facilityValue.checklist, function(categoryValue, key) {
+                        categoryValue.error = false;
+                    });
+                });
+            } else if ($scope.CM.getValue().length === 0) {
+                $scope.projectNameEmpty = false;
+                $scope.projectAddressEmpty = false;
+                $scope.projectBUHEmpty = false;
+                $scope.projectTMEmpty = false;
+                $scope.projectCMEmpty = true;
+                $scope.checklistEmpty = false;
+                angular.forEach($scope.facilityAddedList, function(facilityValue, key) {
+                    facilityValue.error = false;
+                    angular.forEach(facilityValue.checklist, function(categoryValue, key) {
+                        categoryValue.error = false;
+                    });
+                });
+            } else {
+                var error = false;
+                $scope.projectNameEmpty = false;
+                $scope.projectAddressEmpty = false;
+                $scope.projectBUHEmpty = false;
+                $scope.projectTMEmpty = false;
+                $scope.projectCMEmpty = false;
+                $scope.checklistEmpty = false;
+                angular.forEach($scope.facilityAddedList, function(facilityValue, key) {
+                    facilityValue.error = false;
+                    angular.forEach(facilityValue.checklist, function(categoryValue, key) {
+                        categoryValue.error = false;
+                    });
+                });
+
+                angular.forEach($scope.facilityAddedList, function(facilityValue, key) {
+                    if (!error) {
+                        if (facilityValue.frequency === "--Frequency--") {
+                            $scope.checklistEmpty = true;
+                            facilityValue.error = true;
+                            error = true;
+                        } else {
+                            angular.forEach(facilityValue.checklist, function(categoryValue, key) {
+                                if (!error) {
+                                    if (categoryValue.name === undefined || categoryValue.name === "") {
+                                        $scope.checklistEmpty = true;
+                                        categoryValue.error = true;
+                                        error = true;
+                                    } else {
+                                        angular.forEach(categoryValue.question, function(questionValue, key) {
+                                            if (!error) {
+                                                if (questionValue.name === undefined || questionValue.name === "") {
+                                                    $scope.checklistEmpty = true;
+                                                    categoryValue.error = true;
+                                                    error = true;
+                                                }
+                                            }
+                                        });
+                                    }
+                                }
+                            });
+                        }
+                    }
+                });
+
+                if (!error) {
+                    var BUH = $scope.BUH.getValue()[0];
+                    $scope.BUHName = BUH.substr(8);
+                    $scope.BUHID = BUH.substr(1,5);
+                    var TM = $scope.TM.getValue()[0];
+                    $scope.TMName = TM.substr(8);
+                    $scope.TMID = TM.substr(1,5);
+                    var CM = $scope.CM.getValue()[0];
+                    $scope.CMName = CM.substr(8);
+                    $scope.CMID = CM.substr(1,5);
+                    $scope.addProject();
+                }
+            }
+        } else {
+            $scope.projectNameEmpty = false;
+            $scope.projectAddressEmpty = false;
+            $scope.projectBUHEmpty = false;
+            $scope.projectTMEmpty = false;
+            $scope.projectCMEmpty = false;
+            $scope.checklistEmpty = false;
+            angular.forEach($scope.facilityAddedList, function(facilityValue, key) {
+                facilityValue.error = false;
+                angular.forEach(facilityValue.checklist, function(categoryValue, key) {
+                    categoryValue.error = false;
+                });
+            });
         }
     } //end of $scope.validateProject()
         

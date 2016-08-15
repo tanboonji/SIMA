@@ -55,6 +55,6 @@
                ".read": "root.child('admin/'+ auth.uid).exists() && auth != null",
                ".write": "root.child('admin/'+ auth.uid).exists() || root.child('logincheck/'+$logincheck+'/ID').val() == root.child('staff/'+ auth.uid + '/ID').val()"
             }
-        }
-}
+    }
+  }
 }

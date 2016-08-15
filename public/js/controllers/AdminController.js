@@ -387,10 +387,12 @@ app.controller('AdminController', ['$route', '$rootScope', '$routeParams', '$sco
                         }
                     });
                 } else 
-                    //not super admin
+                    //(#error)not super admin
+                    console.log("auth-not-super-admin");
                     $scope.notify("You do not have the permission to access this function (Error #006)", "danger");
             } else
-                //if user not admin
+                //(#error)if user not admin
+                console.log("auth-not-super-admin");
                 $scope.notify("You do not have the permission to access this function (Error #006)", "danger");
         });
     }; //end of $scope.reloadAdmin()

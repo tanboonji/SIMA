@@ -1,8 +1,12 @@
 app.controller('DashboardController', ['$rootScope', '$route', '$routeParams', '$scope', '$location', '$firebaseAuth', '$firebaseObject', 
 	'$firebaseArray', function($rootScope, $route, $routeParams, $scope, $location, $firebaseAuth, $firebaseObject, $firebaseArray){
 	
-	/***** General *****/
-        
+	/********************
+    ****** General ******
+    ********************/
+    
+    //bootstrap-notify
+    //show pop-up notification
     $scope.notify = function(message, type) {
         $.notify({
             message: message
@@ -15,7 +19,11 @@ app.controller('DashboardController', ['$rootScope', '$route', '$routeParams', '
             timer: 5000,
             newest_on_top: true
         });
-    }; //end of notify()
+    };
+        
+    /*********************
+    *** Authentication ***
+    *********************/
         
 	$scope.auth = $firebaseAuth();
 	
