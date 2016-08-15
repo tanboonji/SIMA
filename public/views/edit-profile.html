@@ -36,22 +36,22 @@
             <form>
                 <h4>Update Password</h4>
                 <div ng-class="{'has-error': pwdEmpty1}">
-                    <input class="form-control col-sm-6 margin-top-7 margin-bottom-10" 
+                    <input class="form-control col-sm-6 margin-top-7" 
                            placeholder="New Password" type="password" ng-model="newPassword">
-                    <span ng-show="passwordEmpty" class="help-block margin-bottom-10"> Field must not be blank!</span>
-                    <span ng-show="passwordLength" class="help-block margin-bottom-10"> Password must be at least 6 characters long</span>
+                    <span ng-show="passwordEmpty" class="help-block margin-bottom-0"> Field must not be blank!</span>
+                    <span ng-show="passwordLength" class="help-block margin-bottom-0"> Password must be at least 6 characters long</span>
                 </div>
                 <div ng-class="{'has-error': pwdEmpty2}">
-                    <input class="form-control col-sm-6 margin-bottom-15" placeholder="Confirm new Password" 
+                    <input class="form-control col-sm-6 margin-top-10" placeholder="Confirm new Password" 
                            type="password" ng-model="confirmPassword">
-                    <span ng-show="passwordEmpty2" class="help-block margin-bottom-10"> Field must not be blank!</span>
-                    <span ng-show="passwordMatch" class="help-block margin-bottom-10"> Passwords do not match!</span>
-                    <span ng-show="passwordLength2" class="help-block margin-bottom-10">  Password must be at least 6 characters long</span>
+                    <span ng-show="passwordEmpty2" class="help-block margin-bottom-0"> Field must not be blank!</span>
+                    <span ng-show="passwordMatch" class="help-block margin-bottom-0"> Passwords do not match!</span>
+                    <span ng-show="passwordLength2" class="help-block margin-bottom-0">  Password must be at least 6 characters long</span>
                 </div>
-                <button class="btn btn-primary" type="button" ng-click="popupform = !popupform">
+                <button class="btn btn-primary margin-top-15" type="button" ng-click="popupform = !popupform">
                     <span class="glyphicon glyphicon-remove button-icon" aria-hidden="true"></span>Cancel
                 </button>
-                <button class="btn btn-success" type="submit" ng-click="updatePassword()">
+                <button class="btn btn-success margin-top-15" type="submit" ng-click="updatePassword()">
                     <span class="glyphicon glyphicon-floppy-disk button-icon" aria-hidden="true"></span>Update
                 </button>
             </form>

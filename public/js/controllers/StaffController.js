@@ -16,7 +16,7 @@ app.controller('StaffController', ['$route', '$rootScope', '$routeParams', '$sco
                 align: "center"
             },
             type: type,
-            timer: 5000,
+            timer: 2000,
             newest_on_top: true
         });
     };
@@ -26,6 +26,7 @@ app.controller('StaffController', ['$route', '$rootScope', '$routeParams', '$sco
     *********************/
         
 	$scope.auth = $firebaseAuth();
+    //authentication object to create users
     $scope.authObj = $firebaseAuth(secondaryApp.auth());
     
     //detech authentication state change (login/logout)
@@ -94,27 +95,38 @@ app.controller('StaffController', ['$route', '$rootScope', '$routeParams', '$sco
                             }).catch(function(error) {
                                 console.log(error);
                                 if (error.code === "PERMISSION_DENIED") {
-                                    //(#error)auth-no-access-permission
-                                    $scope.notify("You do not have the permission to access firebase database (Error #001)", "danger");
+                                    //(#error)firebase-permission-denied
+                                    $scope.notify("You do not have the permission to access this data (Error #001)", "danger");
+                                } else {
+                                    //(#error)unknown-error
+                                    $scope.notify("An unknown error has occured (Error #000)", "danger");
                                 }
                             });
                         } else {
                             //(#error)database-user-not-found
-                            $scope.notify("database-user-not-found (Error #002)", "danger"); /* edit */
+                            console.log("database-user-not-found");
+                            $scope.notify("User cannot be found in database (Error #002)", "danger");
                         }
                     }).catch(function(error) {
                         console.log(error);
                         if (error.code === "PERMISSION_DENIED") {
-                            //(#error)auth-no-access-permission
-                            $scope.notify("You do not have the permission to access firebase database (Error #001)", "danger");
+                            //(#error)firebase-permission-denied
+                            $scope.notify("You do not have the permission to access this data (Error #001)", "danger");
+                        } else {
+                            //(#error)database-user-not-found
+                            console.log("database-user-not-found");
+                            $scope.notify("User cannot be found in database (Error #002)", "danger");
                         }
                     });
                 }
             }).catch(function(error) {
                 console.log(error);
                 if (error.code === "PERMISSION_DENIED") {
-                    //(#error)auth-no-access-permission
-                    $scope.notify("You do not have the permission to access firebase database (Error #001)", "danger");
+                    //(#error)firebase-permission-denied
+                    $scope.notify("You do not have the permission to access this data (Error #001)", "danger");
+                } else {
+                    //(#error)unknown-error
+                    $scope.notify("An unknown error has occured (Error #000)", "danger");
                 }
             });
         } else {
@@ -139,7 +151,7 @@ app.controller('StaffController', ['$route', '$rootScope', '$routeParams', '$sco
         }
     };
         
-    $scope.checkRouting = function() {
+    $scope.checkSoftRouting = function() {
         if ($scope.user.isSuperAdmin) {
             if ($location.path() !== "/edit-profile") {
                 $location.path("/admin").search("staffID",null).search("edit",null).search("add",null);
@@ -250,7 +262,22 @@ app.controller('StaffController', ['$route', '$rootScope', '$routeParams', '$sco
 	};
         
     $scope.goToDashboard = function () {
-        $location.path('/dashboard');
+        $scope.firebaseUser = firebase.auth().currentUser;
+        firebase.database().ref('admin/' + $scope.firebaseUser.uid).once('value').then(function (snapshot, error) {
+            //if user is admin
+            if (snapshot.val() != null) {
+                if (snapshot.val().isSuperAdmin == true) {
+                    $location.path('/admin');
+                    $route.reload();
+                } else  {
+                    $location.path('/dashboard');
+                    $route.reload();
+                }
+            } else {
+                $location.path('/dashboard');
+                $route.reload();
+            }
+        });
     };
         
     /*******************
@@ -290,18 +317,26 @@ app.controller('StaffController', ['$route', '$rootScope', '$routeParams', '$sco
                 }).catch(function (error) {
                     console.log(error);
                     if (error.code === "PERMISSION_DENIED") {
-                        //(#error)auth-no-access-permission
-                        $scope.notify("You do not have the permission to access firebase database (Error #001)", "danger");
+                        //(#error)firebase-permission-denied
+                        $scope.notify("You do not have the permission to access this data (Error #001)", "danger");
+                    } else {
+                        //(#error)unknown-error
+                        $scope.notify("An unknown error has occured (Error #000)", "danger");
                     }
                 });
             } else {
-                $scope.notify("You do not have the permission to access this function (Error #006)", "danger");
+                //(#error)user-not-admin
+                console.log("user-not-admin");
+                $scope.notify("You do not have the permission to access this function (Error #008)", "danger");
             }
         }).catch(function (error) {
             console.log(error);
             if (error.code === "PERMISSION_DENIED") {
-                //(#error)auth-no-access-permission
-                $scope.notify("You do not have the permission to access firebase database (Error #001)", "danger");
+                //(#error)firebase-permission-denied
+                $scope.notify("You do not have the permission to access this data (Error #001)", "danger");
+            } else {
+                //(#error)unknown-error
+                $scope.notify("An unknown error has occured (Error #000)", "danger");
             }
         });
     }; //end of $scope.viewStaff()
@@ -340,8 +375,11 @@ app.controller('StaffController', ['$route', '$rootScope', '$routeParams', '$sco
         }).catch(function (error) {
             console.log(error);
             if (error.code === "PERMISSION_DENIED") {
-                //(#error)auth-no-access-permission
-                $scope.notify("You do not have the permission to access firebase database (Error #001)", "danger");
+                //(#error)firebase-permission-denied
+                $scope.notify("You do not have the permission to access this data (Error #001)", "danger");
+            } else {
+                //(#error)unknown-error
+                $scope.notify("An unknown error has occured (Error #000)", "danger");
             }
         });
     }; //end of $scope.refreshStaffList()
@@ -389,9 +427,11 @@ app.controller('StaffController', ['$route', '$rootScope', '$routeParams', '$sco
                         $scope.$apply();
                     }
                 });
-            } else
-            //if user not admin
-            $scope.notify("You do not have the permission to access this function (Error #006)", "danger");
+            } else {
+                //(#error)user-not-admin
+                console.log("user-not-admin");
+                $scope.notify("You do not have the permission to access this function (Error #008)", "danger");
+            }
         });
     }; //end of $scope.reloadStaff()
 
@@ -472,8 +512,11 @@ app.controller('StaffController', ['$route', '$rootScope', '$routeParams', '$sco
                 }).catch(function(error) {
                     console.log(error);
                     if (error.code === "PERMISSION_DENIED") {
-                        //(#error)auth-no-access-permission
-                        $scope.notify("You do not have the permission to access firebase database (Error #001)", "danger");
+                        //(#error)firebase-permission-denied
+                        $scope.notify("You do not have the permission to access this data (Error #001)", "danger");
+                    } else {
+                        //(#error)unknown-error
+                        $scope.notify("An unknown error has occured (Error #000)", "danger");
                     }
                 });
             }
@@ -494,8 +537,11 @@ app.controller('StaffController', ['$route', '$rootScope', '$routeParams', '$sco
             }).catch(function(error) {
                 console.log(error);
                 if (error.code === "PERMISSION_DENIED") {
-                    //(#error)auth-no-access-permission
-                    $scope.notify("You do not have the permission to access firebase database (Error #001)", "danger");
+                    //(#error)firebase-permission-denied
+                    $scope.notify("You do not have the permission to access this data (Error #001)", "danger");
+                } else {
+                    //(#error)unknown-error
+                    $scope.notify("An unknown error has occured (Error #000)", "danger");
                 }
             });
         }
@@ -562,10 +608,18 @@ app.controller('StaffController', ['$route', '$rootScope', '$routeParams', '$sco
         } else 
             defaultPhone();
 
-        if ($scope.staff.email === undefined)
+        $scope.adminEmailError = false;
+        
+        if ($scope.staff.email === undefined) {
+            $scope.adminEmailError = true;
             $scope.staffEmailEmpty = true;
-        else 
+        } else {
+            $scope.adminEmailError = false;
             $scope.staffEmailEmpty = false;
+        }
+        
+        $scope.adminEmailUsed = false;
+        $scope.adminEmailInvalid = false;
         
         if ($scope.staffStatusMessage) {
             if ($scope.staff.statusMessage === undefined || $scope.staff.statusMessage === "")
@@ -643,8 +697,11 @@ app.controller('StaffController', ['$route', '$rootScope', '$routeParams', '$sco
                                         }).catch(function(error) {
                                             console.log(error);
                                             if (error.code === "PERMISSION_DENIED") {
-                                                //(#error)auth-no-access-permission
-                                                $scope.notify("You do not have the permission to access firebase database (Error #001)", "danger");
+                                                //(#error)firebase-permission-denied
+                                                $scope.notify("You do not have the permission to access this data (Error #001)", "danger");
+                                            } else {
+                                                //(#error)unknown-error
+                                                $scope.notify("An unknown error has occured (Error #000)", "danger");
                                             }
                                         });
                                     } else {
@@ -656,25 +713,45 @@ app.controller('StaffController', ['$route', '$rootScope', '$routeParams', '$sco
                                 }).catch(function(error) {
                                     console.log(error);
                                     if (error.code === "PERMISSION_DENIED") {
-                                        //(#error)auth-no-access-permission
-                                        $scope.notify("You do not have the permission to access firebase database (Error #001)", "danger");
+                                        //(#error)firebase-permission-denied
+                                        $scope.notify("You do not have the permission to access this data (Error #001)", "danger");
+                                    } else {
+                                        //(#error)unknown-error
+                                        $scope.notify("An unknown error has occured (Error #000)", "danger");
                                     }
                                 });
                             }
                         }).catch(function(error) {
                             console.log(error);
                             if (error.code === "PERMISSION_DENIED") {
-                                //(#error)auth-no-access-permission
-                                $scope.notify("You do not have the permission to access firebase database (Error #001)", "danger");
+                                //(#error)firebase-permission-denied
+                                $scope.notify("You do not have the permission to access this data (Error #001)", "danger");
+                            } else if (error.code === "auth/email-already-in-use") {
+                                //(#error)auth-email-already-in-use
+                                $scope.adminEmailUsed = true;
+                                $scope.adminEmailError = true;
+                            } else if (error.code === "auth/email-already-in-use") {
+                                //(#error)auth-invalid-email
+                                $scope.adminEmailInvalid = true;
+                                $scope.adminEmailError = true;
+                            } else {
+                                //(#error)unknown-error
+                                $scope.notify("An unknown error has occured (Error #000)", "danger");
                             }
                         });
-                } else 
-                    $scope.notify("Failed to get new staff ID from firebase database (Error #007)", "danger");
+                } else {
+                    //(#error)database-cannot-get-new-staff-id
+                    console.log("database-cannot-get-new-staff-id");
+                    $scope.notify("An error occured when accessing firebase database (Error #009)", "danger");
+                }
             }).catch(function(error) {
                 console.log(error);
                 if (error.code === "PERMISSION_DENIED") {
-                    //(#error)auth-no-access-permission
-                    $scope.notify("You do not have the permission to access firebase database (Error #001)", "danger");
+                    //(#error)firebase-permission-denied
+                    $scope.notify("You do not have the permission to access this data (Error #001)", "danger");
+                } else {
+                    //(#error)unknown-error
+                    $scope.notify("An unknown error has occured (Error #000)", "danger");
                 }
             });
         }
@@ -752,7 +829,15 @@ app.controller('StaffController', ['$route', '$rootScope', '$routeParams', '$sco
                 $scope.popupform = !$scope.popupform;
             }).catch(function (error) {
                 console.log(error);
-                alert(error);
+                if (error.code === "auth/requires-recent-login")
+                    //(#error)auth-requires-recent-login
+                    alert(error);
+                else if (error.code === "auth/email-already-in-use")
+                    //(#error)auth-email-already-in-use
+                    alert(error);
+                else
+                    //(#error)unknown-auth-error
+                    $scope.notify("An unknown error has occured (Error #200)", "danger");
             });
         }
     }
@@ -816,7 +901,15 @@ app.controller('StaffController', ['$route', '$rootScope', '$routeParams', '$sco
                     });
                 }).catch(function(error) {
                     console.log(error);
-                    alert(error);
+                    if (error.code === "auth/requires-recent-login")
+                        //(#error)auth-requires-recent-login
+                        alert(error);
+                    else if (error.code === "auth/email-already-in-use")
+                        //(#error)auth-email-already-in-use
+                        alert(error);
+                    else
+                        //(#error)unknown-auth-error
+                        $scope.notify("An unknown error has occured (Error #200)", "danger");
                 });
             } else {
                 var newDate = new Date();
@@ -837,7 +930,15 @@ app.controller('StaffController', ['$route', '$rootScope', '$routeParams', '$sco
                     $route.reload();
                 }).catch(function(error) {
                     console.log(error);
-                    alert(error);
+                    if (error.code === "auth/requires-recent-login")
+                        //(#error)auth-requires-recent-login
+                        alert(error);
+                    else if (error.code === "auth/email-already-in-use")
+                        //(#error)auth-email-already-in-use
+                        alert(error);
+                    else
+                        //(#error)unknown-auth-error
+                        $scope.notify("An unknown error has occured (Error #200)", "danger");
                 });
             }
         });

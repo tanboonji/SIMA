@@ -1,8 +1,33 @@
 app.controller('LoginController', ['$rootScope', '$routeParams', '$route', '$scope', '$location', '$firebaseAuth', 
     function($rootScope, $routeParams, $route, $scope, $location, $firebaseAuth){
+        
+    /********************
+    ****** General ******
+    ********************/
     
+    //bootstrap-notify
+    //show pop-up notification
+    $scope.notify = function(message, type) {
+        $.notify({
+            message: message
+        },{
+            placement: {
+                from: "top",
+                align: "center"
+            },
+            type: type,
+            timer: 2000,
+            newest_on_top: true
+        });
+    };
+        
+    /*********************
+    *** Authentication ***
+    *********************/
+        
     $scope.auth = $firebaseAuth();
     
+    //detech authentication state change (login/logout)
     $scope.auth.$onAuthStateChanged(function(firebaseUser) {
         $scope.firebaseUser = firebaseUser;
         if ($scope.firebaseUser !== null) {
@@ -22,20 +47,6 @@ app.controller('LoginController', ['$rootScope', '$routeParams', '$route', '$sco
             });
         }
     });
-    
-    $scope.notify = function(message, type) {
-        $.notify({
-            message: message
-        },{
-            placement: {
-                from: "top",
-                align: "center"
-            },
-            type: type,
-            timer: 5000,
-            newest_on_top: true
-        });
-    }
     
     if ($routeParams.forget !== undefined) {
         $scope.notify("Thanks! Please check (" + $routeParams.forget + ") for a link to reset your password.", "success");
@@ -60,10 +71,10 @@ app.controller('LoginController', ['$rootScope', '$routeParams', '$route', '$sco
                                     $scope.firebaseUser = null;
                                     console.error("Authentication failed:", error);
                                     var message = '';
-                                    switch (error.code) { /* edit */
+                                    switch (error.code) {
                                         case 'auth/invalid-email':
                                             $scope.passwordErrorMessage = null;
-                                            $scope.staffIDErrorMessage = "Invalid Staff ID/Email";
+                                            $scope.staffIDErrorMessage = "Invalid Staff ID";
                                             break;
                                         case 'auth/user-not-found':
                                             $scope.passwordErrorMessage = null;
@@ -76,12 +87,14 @@ app.controller('LoginController', ['$rootScope', '$routeParams', '$route', '$sco
                                         case 'auth/too-many-requests':
                                             $scope.passwordErrorMessage = null;
                                             $scope.staffIDErrorMessage = null;
-                                            $scope.notify("You have tried too many times, please wait awhile before trying again", "danger");
+                                            //(#error)auth-too-many-requests
+                                            $scope.notify("You have tried too many times, please wait awhile before trying again (Error: #202)", "danger");
                                             break;
                                         default:
                                             $scope.passwordErrorMessage = null;
                                             $scope.staffIDErrorMessage = null;
-                                            $scope.notify(error.code, "danger");
+                                            //(#error)unknown-auth-error
+                                            $scope.notify("An unknown error has occured (Error #200)", "danger");
                                             break;
                                     }
                                 });
@@ -90,14 +103,15 @@ app.controller('LoginController', ['$rootScope', '$routeParams', '$route', '$sco
                                 console.log("auth/account-not-available");
                                 $scope.passwordErrorMessage = null;
                                 $scope.staffIDErrorMessage = null;
-                                $scope.notify("Your account is currently not available, please contact the administrator", "danger");
+                                //(#error)auth-account-not-available
+                                $scope.notify("Your account is currently not available, please contact the administrator (Error: #201)", "danger");
                                 $scope.$apply();
                             }
                         } else {
                             //cannot find email from database
                             console.log("auth/no-matching-id");
                             $scope.passwordErrorMessage = null;
-                            $scope.staffIDErrorMessage = "Invalid Staff ID/Email";
+                            $scope.staffIDErrorMessage = "Invalid Staff ID";
                             $scope.$apply();
                         }
                     });
@@ -111,13 +125,13 @@ app.controller('LoginController', ['$rootScope', '$routeParams', '$route', '$sco
                 //regex staffID test
                 console.log("auth/invalid-id");
                 $scope.passwordErrorMessage = null;
-                $scope.staffIDErrorMessage = "Invalid Staff ID/Email";
+                $scope.staffIDErrorMessage = "Invalid Staff ID";
             }
         } else {
             //empty staffID
             console.log("auth/no-id-entered");
             $scope.passwordErrorMessage = null;
-            $scope.staffIDErrorMessage = "Staff ID/Email is required";
+            $scope.staffIDErrorMessage = "Staff ID is required";
         }
     }; //end of $scope.login()
     
@@ -134,7 +148,7 @@ app.controller('LoginController', ['$rootScope', '$routeParams', '$route', '$sco
                             }, function(error) {
                                 console.error("Reset failed:", error);
                                 var message = '';
-                                switch (error.code) { /* edit */
+                                switch (error.code) {
                                     case 'auth/invalid-email':
                                         $scope.passwordErrorMessage = null;
                                         $scope.staffIDErrorMessage = "Invalid Staff ID/Email";
@@ -146,7 +160,8 @@ app.controller('LoginController', ['$rootScope', '$routeParams', '$route', '$sco
                                     default:
                                         $scope.passwordErrorMessage = null;
                                         $scope.staffIDErrorMessage = null;
-                                        $scope.notify(error.code, "danger");
+                                        //(#error)unknown-auth-error
+                                        $scope.notify("An unknown error has occured (Error #200)", "danger");
                                         break;
                                 }
                                 $scope.$apply();
@@ -155,7 +170,8 @@ app.controller('LoginController', ['$rootScope', '$routeParams', '$route', '$sco
                             console.log("auth/account-not-available");
                             $scope.passwordErrorMessage = null;
                             $scope.staffIDErrorMessage = null;
-                            $scope.notify("Your account is currently not available, please contact the administrator", "danger");
+                            //(#error)auth-account-not-available
+                            $scope.notify("Your account is currently not available, please contact the administrator (Error: #201)", "danger");
                             $scope.$apply();
                         }
                     } else {
@@ -173,7 +189,7 @@ app.controller('LoginController', ['$rootScope', '$routeParams', '$route', '$sco
                 }, function(error) {
                     console.error("Reset failed:", error);
                     var message = '';
-                    switch (error.code) { /* edit */
+                    switch (error.code) {
                         case 'auth/invalid-email':
                             $scope.passwordErrorMessage = null;
                             $scope.staffIDErrorMessage = "Invalid Staff ID/Email";
@@ -185,7 +201,8 @@ app.controller('LoginController', ['$rootScope', '$routeParams', '$route', '$sco
                         default:
                             $scope.passwordErrorMessage = null;
                             $scope.staffIDErrorMessage = null;
-                            $scope.notify(error.code, "danger");
+                            //(#error)unknown-auth-error
+                            $scope.notify("An unknown error has occured (Error #200)", "danger");
                             break;
                     }
                     $scope.$apply();
@@ -197,6 +214,10 @@ app.controller('LoginController', ['$rootScope', '$routeParams', '$route', '$sco
             }
         }
     };
+        
+    /********************
+    ****** Routing ******
+    ********************/
     
     $scope.goToForgetPassword = function() {
         $location.path('/forget-password').search('forget', null);

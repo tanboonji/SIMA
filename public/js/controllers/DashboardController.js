@@ -16,7 +16,7 @@ app.controller('DashboardController', ['$rootScope', '$route', '$routeParams', '
                 align: "center"
             },
             type: type,
-            timer: 5000,
+            timer: 2000,
             newest_on_top: true
         });
     };
@@ -26,7 +26,8 @@ app.controller('DashboardController', ['$rootScope', '$route', '$routeParams', '
     *********************/
         
 	$scope.auth = $firebaseAuth();
-	
+        
+	//detech authentication state change (login/logout)
 	$scope.auth.$onAuthStateChanged(function(firebaseUser) {
 		$scope.firebaseUser = firebaseUser;
 		if ($scope.firebaseUser === null) {
@@ -92,27 +93,37 @@ app.controller('DashboardController', ['$rootScope', '$route', '$routeParams', '
                             }).catch(function(error) {
                                 console.log(error);
                                 if (error.code === "PERMISSION_DENIED") {
-                                    //(#error)auth-no-access-permission
-                                    $scope.notify("You do not have the permission to access firebase database (Error #001)", "danger");
+                                    //(#error)firebase-permission-denied
+                                    $scope.notify("You do not have the permission to access this data (Error #001)", "danger");
+                                } else {
+                                    //(#error)unknown-error
+                                    $scope.notify("An unknown error has occured (Error #000)", "danger");
                                 }
                             });
                         } else {
                             //(#error)database-user-not-found
-                            $scope.notify("database-user-not-found (Error #002)", "danger"); /* edit */
+                            console.log("database-user-not-found");
+                            $scope.notify("User cannot be found in database (Error #002)", "danger");
                         }
                     }).catch(function(error) {
                         console.log(error);
                         if (error.code === "PERMISSION_DENIED") {
-                            //(#error)auth-no-access-permission
-                            $scope.notify("You do not have the permission to access firebase database (Error #001)", "danger");
+                            //(#error)firebase-permission-denied
+                            $scope.notify("You do not have the permission to access this data (Error #001)", "danger");
+                        } else {
+                            //(#error)unknown-error
+                            $scope.notify("An unknown error has occured (Error #000)", "danger");
                         }
                     });
                 }
             }).catch(function(error) {
                 console.log(error);
                 if (error.code === "PERMISSION_DENIED") {
-                    //(#error)auth-no-access-permission
-                    $scope.notify("You do not have the permission to access firebase database (Error #001)", "danger");
+                    //(#error)firebase-permission-denied
+                    $scope.notify("You do not have the permission to access this data (Error #001)", "danger");
+                } else {
+                    //(#error)unknown-error
+                    $scope.notify("An unknown error has occured (Error #000)", "danger");
                 }
             });
         } else {
@@ -141,10 +152,18 @@ app.controller('DashboardController', ['$rootScope', '$route', '$routeParams', '
         $scope.auth.$signOut();
     }
     
+    /*********************
+    ******** Date ********
+    *********************/
+    
     Date.prototype.dayNow = function () { 
         return (this.getFullYear() + (((this.getMonth()+1) < 10)?"0":"") + (this.getMonth()+1) + 
                 ((this.getDate() < 10)?"0":"") + this.getDate());
     }
+    
+    /********************
+    ** Search & Filter **
+    ********************/
     
     $scope.sortByDateList = ['All','Today','This Week','This Month'];
 	$scope.sortByDateItem = 'Today';
@@ -205,7 +224,9 @@ app.controller('DashboardController', ['$rootScope', '$route', '$routeParams', '
             return false;
     }
         
-    /***** List *****/
+    /*********************
+    *** Dashboard List ***
+    *********************/
         
     $scope.transformDate = function(date) {
         var year = date.substr(0,4);
@@ -240,7 +261,7 @@ app.controller('DashboardController', ['$rootScope', '$route', '$routeParams', '
                         recordValue.inspectionDate = $scope.transformDate(recordValue.date);
                         var projectID = recordValue.projectID;
                         recordValue.MCSTS = projectSnapshot.val()[projectID].MCSTS;
-                        if (recordValue.MCSTS === "")
+                        if (recordValue.MCSTS === "" || recordValue.MCSTS === undefined)
                             recordValue.MCSTS = "-";
                         recordValue.name = projectSnapshot.val()[projectID].name;
                         recordValue.BUH = recordValue.details.BUH;
@@ -302,27 +323,44 @@ app.controller('DashboardController', ['$rootScope', '$route', '$routeParams', '
                     });
                     $scope.$apply();
                 }).catch(function(error) {
+                    console.log(error);
                     if (error.code === "PERMISSION_DENIED") {
-                        $scope.notify("auth/no-access-permission", "danger"); /* edit */
+                        //(#error)firebase-permission-denied
+                        $scope.notify("You do not have the permission to access this data (Error #001)", "danger");
+                    } else {
+                        //(#error)unknown-error
+                        $scope.notify("An unknown error has occured (Error #000)", "danger");
                     }
-                }); //end of firebase.database().ref() //get staff data
+                });
             }).catch(function(error) {
+                console.log(error);
                 if (error.code === "PERMISSION_DENIED") {
-                    $scope.notify("auth/no-access-permission", "danger"); /* edit */
+                    //(#error)firebase-permission-denied
+                    $scope.notify("You do not have the permission to access this data (Error #001)", "danger");
+                } else {
+                    //(#error)unknown-error
+                    $scope.notify("An unknown error has occured (Error #000)", "danger");
                 }
-            }); //end of firebase.database().ref() //get project data
+            });
         }).catch(function(error) {
+            console.log(error);
             if (error.code === "PERMISSION_DENIED") {
-                $scope.notify("auth/no-access-permission", "danger"); /* edit */
+                //(#error)firebase-permission-denied
+                $scope.notify("You do not have the permission to access this data (Error #001)", "danger");
+            } else {
+                //(#error)unknown-error
+                $scope.notify("An unknown error has occured (Error #000)", "danger");
             }
-        }); //end of firebase.database().ref() //get record data
-    }; //end of $scope.refreshProjectList
+        });
+    }; //end of $scope.refreshProjectList()
 
     ref.on('value', function() {
         $scope.refreshRecordList();
     });
         
-    /***** View *****/
+    /*********************
+    *** Dashboard View ***
+    *********************/
     
     $scope.overlay = false;
     
@@ -343,4 +381,5 @@ app.controller('DashboardController', ['$rootScope', '$route', '$routeParams', '
         $scope.overlay = true;
         $scope.record = record;
     }
+    
 }]);
