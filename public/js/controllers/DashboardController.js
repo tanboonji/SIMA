@@ -24,7 +24,7 @@ app.controller('DashboardController', ['$rootScope', '$route', '$routeParams', '
 		if ($scope.firebaseUser === null) {
 			$location.path('/login');
 		} else {
-           $scope.checkUser();
+            $scope.checkUser();
         }
 	});
         
@@ -57,6 +57,7 @@ app.controller('DashboardController', ['$rootScope', '$route', '$routeParams', '
                     }
                     $rootScope.user.showName = $rootScope.user.name.toUpperCase();
                     $scope.user = $rootScope.user;
+                    $scope.checkSoftRouting();
                     $scope.$apply();
                 } else {
                     firebase.database().ref("adminstaff/" + $scope.firebaseUser.uid).once("value").then(function(snapshot) {
@@ -78,7 +79,7 @@ app.controller('DashboardController', ['$rootScope', '$route', '$routeParams', '
                                 }
                                 $rootScope.user.showName = $rootScope.user.name.toUpperCase();
                                 $scope.user = $rootScope.user;
-                                $scope.checkRouting();
+                                $scope.checkSoftRouting();
                                 $scope.$apply();
                             }).catch(function(error) {
                                 console.log(error);
@@ -115,6 +116,13 @@ app.controller('DashboardController', ['$rootScope', '$route', '$routeParams', '
     $scope.checkRouting = function() {
         if ($scope.user.isSuperAdmin) {
             alert("You do not have permission to view this webpage");
+            $location.path("/admin");
+            $route.reload();
+        }
+    };
+        
+    $scope.checkSoftRouting = function() {
+        if ($scope.user.isSuperAdmin) {
             $location.path("/admin");
             $route.reload();
         }
@@ -178,6 +186,15 @@ app.controller('DashboardController', ['$rootScope', '$route', '$routeParams', '
             angular.lowercase(r.BUHName).indexOf(angular.lowercase($scope.query) || '') !== -1 ||
             angular.lowercase(r.TMName).indexOf(angular.lowercase($scope.query) || '') !== -1 ||
             angular.lowercase(r.CMName).indexOf(angular.lowercase($scope.query) || '') !== -1);
+    }
+    
+    $scope.userrole = function(r) {
+        if ($scope.user.isAdmin)
+            return true;
+        else if (r.CMName === $scope.user.name || r.TMName === $scope.user.name || r.BUHName === $scope.user.name)
+            return true;
+        else
+            return false;
     }
         
     /***** List *****/

@@ -66,6 +66,7 @@ app.controller('AdminController', ['$route', '$rootScope', '$routeParams', '$sco
                     }
                     $rootScope.user.showName = $rootScope.user.name.toUpperCase();
                     $scope.user = $rootScope.user;
+                    $scope.checkSoftRouting();
                     $scope.$apply();
                 } else {
                     firebase.database().ref("adminstaff/" + $scope.firebaseUser.uid).once("value").then(function(snapshot) {
@@ -87,24 +88,31 @@ app.controller('AdminController', ['$route', '$rootScope', '$routeParams', '$sco
                                 }
                                 $rootScope.user.showName = $rootScope.user.name.toUpperCase();
                                 $scope.user = $rootScope.user;
-                                $scope.checkRouting();
+                                $scope.checkSoftRouting();
                                 $scope.$apply();
                             }).catch(function(error) {
                                 console.log(error);
                                 if (error.code === "PERMISSION_DENIED") {
                                     //(#error)auth-no-access-permission
                                     $scope.notify("You do not have the permission to access firebase database (Error #001)", "danger");
+                                } else {
+                                    //(#error)firebase-error
+                                    $scope.notify("An unknown firebase error occured (Error #010)", "danger");
                                 }
                             });
                         } else {
                             //(#error)database-user-not-found
-                            $scope.notify("database-user-not-found (Error #002)", "danger"); /* edit */
+                            console.log("database-user-not-found");
+                            $scope.notify("User cannot be found in database (Error #002)", "danger");
                         }
                     }).catch(function(error) {
                         console.log(error);
                         if (error.code === "PERMISSION_DENIED") {
                             //(#error)auth-no-access-permission
                             $scope.notify("You do not have the permission to access firebase database (Error #001)", "danger");
+                        } else {
+                            //(#error)firebase-error
+                            $scope.notify("An unknown firebase error occured (Error #010)", "danger");
                         }
                     });
                 }
@@ -113,6 +121,9 @@ app.controller('AdminController', ['$route', '$rootScope', '$routeParams', '$sco
                 if (error.code === "PERMISSION_DENIED") {
                     //(#error)auth-no-access-permission
                     $scope.notify("You do not have the permission to access firebase database (Error #001)", "danger");
+                } else {
+                    //(#error)firebase-error
+                    $scope.notify("An unknown firebase error occured (Error #010)", "danger");
                 }
             });
         } else {
@@ -124,6 +135,13 @@ app.controller('AdminController', ['$route', '$rootScope', '$routeParams', '$sco
     $scope.checkRouting = function() {
         if (!$scope.user.isSuperAdmin) {
             alert("You do not have permission to view this webpage");
+            $location.path("/dashboard").search("adminID",null).search("edit",null).search("add",null);
+            $route.reload();
+        }
+    };
+        
+    $scope.checkSoftRouting = function() {
+        if (!$scope.user.isSuperAdmin) {
             $location.path("/dashboard").search("adminID",null).search("edit",null).search("add",null);
             $route.reload();
         }
@@ -239,12 +257,16 @@ app.controller('AdminController', ['$route', '$rootScope', '$routeParams', '$sco
                             $scope.$apply();
                         } else
                             //(#error)database-no-access-permission
+                            console.log("database-no-access-permission");
                             $scope.notify("You do not have the permission to access this function (Error #006)", "danger");
                 }).catch(function (error) {
                     console.log(error);
                     if (error.code === "PERMISSION_DENIED") {
                         //(#error)auth-no-access-permission
                         $scope.notify("You do not have the permission to access firebase database (Error #001)", "danger");
+                    } else {
+                        //(#error)firebase-error
+                        $scope.notify("An unknown firebase error occured (Error #010)", "danger");
                     }
                 });
             } else
@@ -255,6 +277,9 @@ app.controller('AdminController', ['$route', '$rootScope', '$routeParams', '$sco
             if (error.code === "PERMISSION_DENIED") {
                 //(#error)auth-no-access-permission
                 $scope.notify("You do not have the permission to access firebase database (Error #001)", "danger");
+            } else {
+                //(#error)firebase-error
+                $scope.notify("An unknown firebase error occured (Error #010)", "danger");
             }
         });
     };
@@ -295,6 +320,9 @@ app.controller('AdminController', ['$route', '$rootScope', '$routeParams', '$sco
             if (error.code === "PERMISSION_DENIED") {
                 //(#error)auth-no-access-permission
                 $scope.notify("You do not have the permission to access firebase database (Error #001)", "danger");
+            } else {
+                //(#error)firebase-error
+                $scope.notify("An unknown firebase error occured (Error #010)", "danger");
             }
         });
     }; //end of $scope.refreshAdminList()
@@ -360,7 +388,7 @@ app.controller('AdminController', ['$route', '$rootScope', '$routeParams', '$sco
                     });
                 } else 
                     //not super admin
-                $scope.notify("You do not have the permission to access this function (Error #006)", "danger");
+                    $scope.notify("You do not have the permission to access this function (Error #006)", "danger");
             } else
                 //if user not admin
                 $scope.notify("You do not have the permission to access this function (Error #006)", "danger");
@@ -409,6 +437,12 @@ app.controller('AdminController', ['$route', '$rootScope', '$routeParams', '$sco
         
         var updates = {};
         if (!$scope.adminPhoneError && !$scope.adminNameError && !($scope.admin.authID === undefined) && !$scope.adminStatusEmpty) {
+            
+            var newDate = new Date();
+            var datetime = newDate.dayNow() + " @ " + newDate.timeNow();
+            
+            updates["/adminstaff/" + $scope.admin.authID + '/updatedAt'] = datetime;
+            updates["/adminstaff/" + $scope.admin.authID + '/updatedBy'] = $scope.user.ID;
             updates["/adminstaff/" + $scope.admin.authID + '/name'] = $scope.admin.name;
             updates["/adminstaff/" + $scope.admin.authID + '/status'] = $scope.admin.status;
             updates["/adminstaff/" + $scope.admin.authID + '/phone'] = $scope.admin.phone;
@@ -512,6 +546,9 @@ app.controller('AdminController', ['$route', '$rootScope', '$routeParams', '$sco
                                 
                                 if ($scope.newadmin.status !== "Inactive")
                                     $scope.newadmin.statusMessage = null;
+                                
+                                var newDate = new Date();
+                                var datetime = newDate.dayNow() + " @ " + newDate.timeNow();
 
                                 //once done, get generated uid and save in admin table
                                 firebase.database().ref('adminstaff/' + userData.uid).set({
@@ -521,7 +558,11 @@ app.controller('AdminController', ['$route', '$rootScope', '$routeParams', '$sco
                                     status: $scope.newadmin.status,
                                     phone: $scope.newadmin.phone,
                                     authID: userData.uid,
-                                    statusMessage: $scope.newadmin.statusMessage
+                                    statusMessage: $scope.newadmin.statusMessage,
+                                    updatedAt: datetime,
+                                    createdAt: datetime,
+                                    updatedBy: $scope.user.ID,
+                                    createdBy: $scope.user.ID
                                 }).then(function () {
                                     console.log(userData.uid + "--> Created");
                                     console.log($scope.firebaseUser.uid + "--> Current");

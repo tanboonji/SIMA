@@ -21,7 +21,7 @@
                 <a href="#/edit-profile">
                     <span class="profile-link">{{user.showName}}</span>
                 </a>
-                <button class="logout-btn" type="button" ng-click="logout()">
+                <button class="btn btn-default logout-btn" style="margin-top:-5px;" type="button" ng-click="logout()">
                     Log Out
                 </button>
             </div>
@@ -36,6 +36,12 @@
             <label class="control-label col-md-2">MCSTS</label>
             <div class="col-md-6">
                 <input type="text" ng-model="MCSTS" class="form-control" placeholder="Enter project MCSTS (if available)"/>
+                <span ng-show="projectMCSTSLength" class="help-block margin-bottom-0">
+                    MCSTS must be 4 digits in length.
+                </span>
+                <span ng-show="projectMCSTSValid" class="help-block margin-bottom-0">
+                    Phone number contains invalid characters, only digits allowed.
+                </span>
             </div>
         </div>
         <div class="row margin-top-25">
@@ -73,14 +79,6 @@
                     Project BUH is required.
                 </span>
             </div>
-<!--
-            <div class="col-md-6" ng-class="{'has-error': projectBUHEmpty}">
-                <input type="text" ng-model="BUH" class="form-control" placeholder="Enter project BUH" required/>
-                <span ng-show="projectBUHEmpty" class="help-block margin-bottom-0" id="projectBUH">
-                    Project BUH is required.
-                </span>
-            </div>
--->
         </div>
         <div class="row margin-top-25">
             <label class="control-label col-md-2">TM</label>
@@ -98,14 +96,6 @@
                     Project TM is required.
                 </span>
             </div>
-<!--
-            <div class="col-md-6" ng-class="{'has-error': projectTMEmpty}">
-                <input type="text" ng-model="TM" class="form-control" placeholder="Enter project TM" required/>
-                <span ng-show="projectTMEmpty" class="help-block margin-bottom-0" id="projectTM">
-                    Project TM is required.
-                </span>
-            </div>
--->
         </div>
         <div class="row margin-top-25">
             <label class="control-label col-md-2">CM</label>
@@ -123,35 +113,7 @@
                     Project CM is required.
                 </span>
             </div>
-<!--
-            <div class="col-md-6" ng-class="{'has-error': projectCMEmpty}">
-                <input type="text" ng-model="CM" class="form-control" placeholder="Enter project CM" required/>
-                <span ng-show="projectCMEmpty" class="help-block margin-bottom-0" id="projectCM">
-                    Project CM is required.
-                </span>
-            </div>
--->
         </div>
-<!--
-        <div class="container">
-            <div class="row">
-                <div class="col-md-3">
-                    <div id="left">
-                        <div>Left</div>
-                        <div>Right</div>
-                    </div>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-md-3">
-                    <div id="right">
-                        <div>Up</div>
-                        <div>Down</div>
-                    </div>
-                </div>
-            </div>
-        </div>
--->
         <div class="row margin-top-25">
         	<label class="control-label col-md-2">Checklist</label>
             <div class="col-md-10">

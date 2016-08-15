@@ -21,7 +21,7 @@ app.controller('LoginController', ['$rootScope', '$routeParams', '$route', '$sco
                 }
             });
         }
-    }); //end of $scope.auth.$onAuthStateChanged()
+    });
     
     $scope.notify = function(message, type) {
         $.notify({
@@ -35,7 +35,7 @@ app.controller('LoginController', ['$rootScope', '$routeParams', '$route', '$sco
             timer: 5000,
             newest_on_top: true
         });
-    } //end of notify()
+    }
     
     if ($routeParams.forget !== undefined) {
         $scope.notify("Thanks! Please check (" + $routeParams.forget + ") for a link to reset your password.", "success");
@@ -56,26 +56,27 @@ app.controller('LoginController', ['$rootScope', '$routeParams', '$route', '$sco
                                     console.log("Signed in as:", firebaseUser.uid);
                                     $scope.firebaseUser = firebaseUser;
                                 }).catch(function(error) {
+                                    //firebase $auth error
                                     $scope.firebaseUser = null;
                                     console.error("Authentication failed:", error);
                                     var message = '';
                                     switch (error.code) { /* edit */
                                         case 'auth/invalid-email':
                                             $scope.passwordErrorMessage = null;
-                                            $scope.staffIDErrorMessage = "auth/invalid-id";
+                                            $scope.staffIDErrorMessage = "Invalid Staff ID/Email";
                                             break;
                                         case 'auth/user-not-found':
                                             $scope.passwordErrorMessage = null;
-                                            $scope.staffIDErrorMessage = "auth/user-not-found";
+                                            $scope.staffIDErrorMessage = "User cannot be found";
                                             break;
                                         case 'auth/wrong-password':
-                                            $scope.passwordErrorMessage = "auth/wrong-password";
+                                            $scope.passwordErrorMessage = "Invalid password";
                                             $scope.staffIDErrorMessage = null;
                                             break;
                                         case 'auth/too-many-requests':
                                             $scope.passwordErrorMessage = null;
                                             $scope.staffIDErrorMessage = null;
-                                            $scope.notify("auth/too-many-requests", "danger");
+                                            $scope.notify("You have tried too many times, please wait awhile before trying again", "danger");
                                             break;
                                         default:
                                             $scope.passwordErrorMessage = null;
@@ -83,30 +84,40 @@ app.controller('LoginController', ['$rootScope', '$routeParams', '$route', '$sco
                                             $scope.notify(error.code, "danger");
                                             break;
                                     }
-                                }); //end of $scope.auth.$signInWithEmailAndPassword()
+                                });
                             } else {
+                                //inactive staff
+                                console.log("auth/account-not-available");
                                 $scope.passwordErrorMessage = null;
                                 $scope.staffIDErrorMessage = null;
-                                $scope.notify("auth/account-not-available", "danger");
+                                $scope.notify("Your account is currently not available, please contact the administrator", "danger");
                                 $scope.$apply();
-                            } //end of if() //check staff active or inactive
+                            }
                         } else {
+                            //cannot find email from database
+                            console.log("auth/no-matching-id");
                             $scope.passwordErrorMessage = null;
-                            $scope.staffIDErrorMessage = "auth/no-matching-id";
+                            $scope.staffIDErrorMessage = "Invalid Staff ID/Email";
                             $scope.$apply();
-                        } //end of if() //cannot find email from database
-                    }); //end of firebase.database().ref() //get email from database
+                        }
+                    });
                 } else {
-                    $scope.passwordErrorMessage = "auth/no-password-entered";
+                    //check password empty
+                    console.log("auth/no-password-entered");
+                    $scope.passwordErrorMessage = "Password is required";
                     $scope.staffIDErrorMessage = null;
-                } //end of if() //check password empty
+                }
             } else {
+                //regex staffID test
+                console.log("auth/invalid-id");
                 $scope.passwordErrorMessage = null;
-                $scope.staffIDErrorMessage = "auth/invalid-id";
-            } //end of if() //regex staffID test
+                $scope.staffIDErrorMessage = "Invalid Staff ID/Email";
+            }
         } else {
+            //empty staffID
+            console.log("auth/no-id-entered");
             $scope.passwordErrorMessage = null;
-            $scope.staffIDErrorMessage = "auth/no-id-entered";
+            $scope.staffIDErrorMessage = "Staff ID/Email is required";
         }
     }; //end of $scope.login()
     
@@ -126,11 +137,11 @@ app.controller('LoginController', ['$rootScope', '$routeParams', '$route', '$sco
                                 switch (error.code) { /* edit */
                                     case 'auth/invalid-email':
                                         $scope.passwordErrorMessage = null;
-                                        $scope.staffIDErrorMessage = "auth/invalid-email";
+                                        $scope.staffIDErrorMessage = "Invalid Staff ID/Email";
                                         break;
                                     case 'auth/user-not-found':
                                         $scope.passwordErrorMessage = null;
-                                        $scope.staffIDErrorMessage = "auth/user-not-found";
+                                        $scope.staffIDErrorMessage = "User cannot be found";
                                         break;
                                     default:
                                         $scope.passwordErrorMessage = null;
@@ -139,19 +150,21 @@ app.controller('LoginController', ['$rootScope', '$routeParams', '$route', '$sco
                                         break;
                                 }
                                 $scope.$apply();
-                            }); //end of $scope.auth.$sendPasswordResetEmail()
+                            });
                         } else {
+                            console.log("auth/account-not-available");
                             $scope.passwordErrorMessage = null;
                             $scope.staffIDErrorMessage = null;
-                            $scope.notify("auth/account-not-available", "danger");
+                            $scope.notify("Your account is currently not available, please contact the administrator", "danger");
                             $scope.$apply();
                         }
                     } else {
+                        console.log("auth/no-matching-id");
                         $scope.passwordErrorMessage = null;
-                        $scope.staffIDErrorMessage = "auth/no-matching-id";
+                        $scope.staffIDErrorMessage = "Invalid Staff ID/Email";
                         $scope.$apply();
                     }
-                }); //end of firebase.database().ref()
+                });
             } else if ($scope.staffID.includes("@")) {
                 $scope.email = $scope.staffID;
                 firebase.auth().sendPasswordResetEmail($scope.email).then(function() {
@@ -163,11 +176,11 @@ app.controller('LoginController', ['$rootScope', '$routeParams', '$route', '$sco
                     switch (error.code) { /* edit */
                         case 'auth/invalid-email':
                             $scope.passwordErrorMessage = null;
-                            $scope.staffIDErrorMessage = "auth/invalid-email";
+                            $scope.staffIDErrorMessage = "Invalid Staff ID/Email";
                             break;
                         case 'auth/user-not-found':
                             $scope.passwordErrorMessage = null;
-                            $scope.staffIDErrorMessage = "auth/user-not-found";
+                            $scope.staffIDErrorMessage = "User cannot be found";
                             break;
                         default:
                             $scope.passwordErrorMessage = null;
@@ -176,20 +189,21 @@ app.controller('LoginController', ['$rootScope', '$routeParams', '$route', '$sco
                             break;
                     }
                     $scope.$apply();
-                }); //end of $scope.auth.$sendPasswordResetEmail()
+                });
             } else {
+                console.log("auth/invalid-id-or-email");
                 $scope.passwordErrorMessage = null;
-                $scope.staffIDErrorMessage = "auth/invalid-id-or-email";
+                $scope.staffIDErrorMessage = "Invalid Staff ID/Email";
             }
         }
-    }; //end of $scope.forgetPassword()
+    };
     
     $scope.goToForgetPassword = function() {
         $location.path('/forget-password').search('forget', null);
-    }; //end of $scope.goToForgetPassword()
+    };
     
     $scope.goToLogin = function() {
         $location.path('/login');
-    }; //end of $scope.goToLogin()
+    };
         
 }]);

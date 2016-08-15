@@ -67,6 +67,7 @@ app.controller('StaffController', ['$route', '$rootScope', '$routeParams', '$sco
                     }
                     $rootScope.user.showName = $rootScope.user.name.toUpperCase();
                     $scope.user = $rootScope.user;
+                    $scope.checkSoftRouting();
                     $scope.$apply();
                 } else {
                     firebase.database().ref("adminstaff/" + $scope.firebaseUser.uid).once("value").then(function(snapshot) {
@@ -88,7 +89,7 @@ app.controller('StaffController', ['$route', '$rootScope', '$routeParams', '$sco
                                 }
                                 $rootScope.user.showName = $rootScope.user.name.toUpperCase();
                                 $scope.user = $rootScope.user;
-                                $scope.checkRouting();
+                                $scope.checkSoftRouting();
                                 $scope.$apply();
                             }).catch(function(error) {
                                 console.log(error);
@@ -124,12 +125,28 @@ app.controller('StaffController', ['$route', '$rootScope', '$routeParams', '$sco
         
     $scope.checkRouting = function() {
         if ($scope.user.isSuperAdmin) {
-            alert("You do not have permission to view this webpage");
-            $location.path("/admin").search("staffID",null).search("edit",null).search("add",null);
-            $route.reload();
+            if ($location.path() !== "/edit-profile") {
+                alert("You do not have permission to view this webpage");
+                $location.path("/admin").search("staffID",null).search("edit",null).search("add",null);
+                $route.reload();
+            }
         } else if (!$scope.user.isAdmin) {
             if ($location.path() !== "/edit-profile") {
                 alert("You do not have permission to view this webpage");
+                $location.path("/dashboard").search("staffID",null).search("edit",null).search("add",null);
+                $route.reload();
+            }
+        }
+    };
+        
+    $scope.checkRouting = function() {
+        if ($scope.user.isSuperAdmin) {
+            if ($location.path() !== "/edit-profile") {
+                $location.path("/admin").search("staffID",null).search("edit",null).search("add",null);
+                $route.reload();
+            }
+        } else if (!$scope.user.isAdmin) {
+            if ($location.path() !== "/edit-profile") {
                 $location.path("/dashboard").search("staffID",null).search("edit",null).search("add",null);
                 $route.reload();
             }
@@ -421,6 +438,11 @@ app.controller('StaffController', ['$route', '$rootScope', '$routeParams', '$sco
 
         var updates = {};
         if (!$scope.staffPhoneError && !$scope.staffNameError && !($scope.staff.authID === undefined) && !$scope.staffStatusEmpty) {
+            var newDate = new Date();
+            var datetime = newDate.dayNow() + " @ " + newDate.timeNow();
+            
+            updates["/staff/" + $scope.staff.authID + '/updatedAt'] = datetime;
+            updates["/staff/" + $scope.staff.authID + '/updatedBy'] = $scope.user.ID;
             updates["/staff/" + $scope.staff.authID + '/name'] = $scope.staff.name;
             updates["/staff/" + $scope.staff.authID + '/role'] = $scope.staff.role;
             updates["/staff/" + $scope.staff.authID + '/status'] = $scope.staff.status;
@@ -438,7 +460,7 @@ app.controller('StaffController', ['$route', '$rootScope', '$routeParams', '$sco
             //if deleted, add at and by
             if ($scope.staff.status == "Deleted") {
                 firebase.database().ref("/staff/" + $scope.staff.authID + '/deletedAt').set(datetime);
-                firebase.database().ref("/staff/" + $scope.staff.authID + '/deletedBy').set($scope.firebaseUser.uid);
+                firebase.database().ref("/staff/" + $scope.staff.authID + '/deletedBy').set($scope.user.ID);
             } else {
                 firebase.database().ref("/staff/" + $scope.staff.authID + '/deletedAt').remove();
                 firebase.database().ref("/staff/" + $scope.staff.authID + '/deletedBy').remove();
@@ -574,6 +596,9 @@ app.controller('StaffController', ['$route', '$rootScope', '$routeParams', '$sco
                                 
                                 if ($scope.staff.status !== "Inactive")
                                     $scope.staff.statusMessage = null;
+                                
+                                var newDate = new Date();
+                                var datetime = newDate.dayNow() + " @ " + newDate.timeNow();
 
                                 //once done, get generated uid and save in staff table
                                 firebase.database().ref('staff/' + userData.uid).set({
@@ -584,7 +609,11 @@ app.controller('StaffController', ['$route', '$rootScope', '$routeParams', '$sco
                                     status: $scope.staff.status,
                                     phone: $scope.staff.phone,
                                     authID: userData.uid,
-                                    statusMessage: $scope.staff.statusMessage
+                                    statusMessage: $scope.staff.statusMessage,
+                                    createdAt: datetime,
+                                    updatedAt: datetime,
+                                    createdBy: $scope.user.ID,
+                                    updatedBy: $scope.user.ID
                                 }).then(function () {
                                     console.log(userData.uid + "--> Created");
                                     console.log($scope.firebaseUser.uid + "--> Current");
@@ -758,6 +787,12 @@ app.controller('StaffController', ['$route', '$rootScope', '$routeParams', '$sco
             if (snapshot.val() != null) {
                 updates["/adminstaff/" + $scope.user.authID + '/phone'] = $scope.user.phone;
 
+                var newDate = new Date();
+                var datetime = newDate.dayNow() + " @ " + newDate.timeNow();
+                
+                updates["/adminstaff/" + $scope.user.authID + '/updatedAt'] = datetime;
+                updates["/adminstaff/" + $scope.user.authID + '/updatedBy'] = $scope.user.ID;
+                
                 $scope.auth.$updateEmail($scope.user.email).then(function () {
                     //update email
                     //update for staff, adminstaff, logincheck, authentication
@@ -765,13 +800,30 @@ app.controller('StaffController', ['$route', '$rootScope', '$routeParams', '$sco
                     updates["/logincheck/" + $scope.user.ID + '/email'] = $scope.user.email;
                     firebase.database().ref().update(updates);
                     alert("You have successfully updated your profile");
-                    $location.path("/dashboard").search("edit",null).search("add",null);
-                    $route.reload();
+                    firebase.database().ref('admin/' + $scope.firebaseUser.uid).once('value').then(function (snapshot, error) {
+                        if (snapshot.val() != null) {
+                            if (snapshot.val().isSuperAdmin) {
+                                    $location.path("/admin").search("edit",null).search("add",null);
+                                    $route.reload();
+                            } else {
+                                $location.path("/dashboard").search("edit",null).search("add",null);
+                                $route.reload();
+                            }
+                        } else {
+                            $location.path("/dashboard").search("edit",null).search("add",null);
+                            $route.reload();
+                        }
+                    });
                 }).catch(function(error) {
                     console.log(error);
                     alert(error);
                 });
             } else {
+                var newDate = new Date();
+                var datetime = newDate.dayNow() + " @ " + newDate.timeNow();
+                
+                updates["/staff/" + $scope.user.authID + '/updatedAt'] = datetime;
+                updates["/staff/" + $scope.user.authID + '/updatedBy'] = $scope.user.ID;
                 updates["/staff/" + $scope.user.authID + '/phone'] = $scope.user.phone;
         
                 $scope.auth.$updateEmail($scope.user.email).then(function () {

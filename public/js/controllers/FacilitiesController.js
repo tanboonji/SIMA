@@ -65,6 +65,7 @@ app.controller('FacilitiesController', ['$rootScope', '$route', '$routeParams', 
                     }
                     $rootScope.user.showName = $rootScope.user.name.toUpperCase();
                     $scope.user = $rootScope.user;
+                    $scope.checkSoftRouting();
                     $scope.$apply();
                 } else {
                     firebase.database().ref("adminstaff/" + $scope.firebaseUser.uid).once("value").then(function(snapshot) {
@@ -86,24 +87,31 @@ app.controller('FacilitiesController', ['$rootScope', '$route', '$routeParams', 
                                 }
                                 $rootScope.user.showName = $rootScope.user.name.toUpperCase();
                                 $scope.user = $rootScope.user;
-                                $scope.checkRouting();
+                                $scope.checkSoftRouting();
                                 $scope.$apply();
                             }).catch(function(error) {
                                 console.log(error);
                                 if (error.code === "PERMISSION_DENIED") {
                                     //(#error)auth-no-access-permission
                                     $scope.notify("You do not have the permission to access firebase database (Error #001)", "danger");
+                                } else {
+                                    //(#error)firebase-error
+                                    $scope.notify("An unknown firebase error occured (Error #010)", "danger");
                                 }
                             });
                         } else {
                             //(#error)database-user-not-found
-                            $scope.notify("database-user-not-found (Error #002)", "danger"); /* edit */
+                            console.log("database-user-not-found");
+                            $scope.notify("User cannot be found in database (Error #002)", "danger");
                         }
                     }).catch(function(error) {
                         console.log(error);
                         if (error.code === "PERMISSION_DENIED") {
                             //(#error)auth-no-access-permission
                             $scope.notify("You do not have the permission to access firebase database (Error #001)", "danger");
+                        } else {
+                            //(#error)firebase-error
+                            $scope.notify("An unknown firebase error occured (Error #010)", "danger");
                         }
                     });
                 }
@@ -112,6 +120,9 @@ app.controller('FacilitiesController', ['$rootScope', '$route', '$routeParams', 
                 if (error.code === "PERMISSION_DENIED") {
                     //(#error)auth-no-access-permission
                     $scope.notify("You do not have the permission to access firebase database (Error #001)", "danger");
+                } else {
+                    //(#error)firebase-error
+                    $scope.notify("An unknown firebase error occured (Error #010)", "danger");
                 }
             });
         } else {
@@ -127,6 +138,16 @@ app.controller('FacilitiesController', ['$rootScope', '$route', '$routeParams', 
             $route.reload();
         } else if (!$scope.user.isAdmin) {
             alert("You do not have permission to view this webpage");
+            $location.path("/dashboard").search("facilityID",null).search("edit",null).search("add",null);
+            $route.reload();
+        }
+    };
+        
+    $scope.checkSoftRouting = function() {
+        if ($scope.user.isSuperAdmin) {
+            $location.path("/admin").search("facilityID",null).search("edit",null).search("add",null);
+            $route.reload();
+        } else if (!$scope.user.isAdmin) {
             $location.path("/dashboard").search("facilityID",null).search("edit",null).search("add",null);
             $route.reload();
         }
@@ -367,6 +388,9 @@ app.controller('FacilitiesController', ['$rootScope', '$route', '$routeParams', 
                         if (error.code === "PERMISSION_DENIED") {
                             //(#error)auth-no-access-permission
                             $scope.notify("You do not have the permission to access firebase database (Error #001)", "danger");
+                        } else {
+                            //(#error)firebase-error
+                            $scope.notify("An unknown firebase error occured (Error #010)", "danger");
                         }
                     });
 
@@ -388,6 +412,9 @@ app.controller('FacilitiesController', ['$rootScope', '$route', '$routeParams', 
                             if (error.code === "PERMISSION_DENIED") {
                                 //(#error)auth-no-access-permission
                                 $scope.notify("You do not have the permission to access firebase database (Error #001)", "danger");
+                            } else {
+                                //(#error)firebase-error
+                                $scope.notify("An unknown firebase error occured (Error #010)", "danger");
                             }
                         });
                     });
@@ -426,6 +453,11 @@ app.controller('FacilitiesController', ['$rootScope', '$route', '$routeParams', 
                             $scope.notify("An unknown error occured when accessing firebase storage (Error #103)","danger");
                             $scope.photoStatus = 'Unknown error occurred';
                             break;
+                        default:
+                            //(#error)storage-unknown
+                            $scope.notify("An unknown error occured when accessing firebase storage (Error #104)","danger");
+                            $scope.photoStatus = 'Unknown error occurred';
+                            break;
                     }
                 }, function() {
                     $scope.downloadURL = uploadTask.snapshot.downloadURL;
@@ -461,6 +493,9 @@ app.controller('FacilitiesController', ['$rootScope', '$route', '$routeParams', 
                                 if (error.code === "PERMISSION_DENIED") {
                                     //(#error)auth-no-access-permission
                                     $scope.notify("You do not have the permission to access firebase database (Error #001)", "danger");
+                                } else {
+                                    //(#error)firebase-error
+                                    $scope.notify("An unknown firebase error occured (Error #010)", "danger");
                                 }
                             });
                         });
@@ -475,18 +510,25 @@ app.controller('FacilitiesController', ['$rootScope', '$route', '$routeParams', 
                         if (error.code === "PERMISSION_DENIED") {
                             //(#error)auth-no-access-permission
                             $scope.notify("You do not have the permission to access firebase database (Error #001)", "danger");
+                        } else {
+                            //(#error)firebase-error
+                            $scope.notify("An unknown firebase error occured (Error #010)", "danger");
                         }
                     });
                 });
             } else {
                 //(#error)database-count-does-not-exist
-                $scope.notify("database-count-not-found (Error #003)", "danger"); /* edit */
+                console.log("database-count-does-not-exist");
+                $scope.notify("An error occured when accessing firebase (Error #003)", "danger");
             }
         }).catch(function(error) {
             console.log(error);
             if (error.code === "PERMISSION_DENIED") {
                 //(#error)auth-no-access-permission
                 $scope.notify("You do not have the permission to access firebase database (Error #001)", "danger");
+            } else {
+                //(#error)firebase-error
+                $scope.notify("An unknown firebase error occured (Error #010)", "danger");
             }
         });
     }; //end of $scope.addFacility()
@@ -515,6 +557,9 @@ app.controller('FacilitiesController', ['$rootScope', '$route', '$routeParams', 
             if (error.code === "PERMISSION_DENIED") {
                 //(#error)auth-no-access-permission
                 $scope.notify("You do not have the permission to access firebase database (Error #001)", "danger");
+            } else {
+                //(#error)firebase-error
+                $scope.notify("An unknown firebase error occured (Error #010)", "danger");
             }
         });
     };
@@ -550,6 +595,9 @@ app.controller('FacilitiesController', ['$rootScope', '$route', '$routeParams', 
                 if (error.code === "PERMISSION_DENIED") {
                     //(#error)auth-no-access-permission
                     $scope.notify("You do not have the permission to access firebase database (Error #001)", "danger");
+                } else {
+                    //(#error)firebase-error
+                    $scope.notify("An unknown firebase error occured (Error #010)", "danger");
                 }
             });
         }).catch(function(error) {
@@ -557,6 +605,9 @@ app.controller('FacilitiesController', ['$rootScope', '$route', '$routeParams', 
             if (error.code === "PERMISSION_DENIED") {
                 //(#error)auth-no-access-permission
                 $scope.notify("You do not have the permission to access firebase database (Error #001)", "danger");
+            } else {
+                //(#error)firebase-error
+                $scope.notify("An unknown firebase error occured (Error #010)", "danger");
             }
         });
     };
@@ -570,6 +621,9 @@ app.controller('FacilitiesController', ['$rootScope', '$route', '$routeParams', 
             if (error.code === "PERMISSION_DENIED") {
                 //(#error)auth-no-access-permission
                 $scope.notify("You do not have the permission to access firebase database (Error #001)", "danger");
+            } else {
+                //(#error)firebase-error
+                $scope.notify("An unknown firebase error occured (Error #010)", "danger");
             }
         });
     };
@@ -619,13 +673,17 @@ app.controller('FacilitiesController', ['$rootScope', '$route', '$routeParams', 
                     
                 } else {
                     //(#error)database-category-not-found
-                    $scope.notify("database-category-not-found (Error #004)","danger"); /* edit */
+                    console.log("database-category-not-found");
+                    $scope.notify("An error occured when accessing firebase (Error #004)","danger");
                 }
             }).catch(function(error) {
                 console.log(error);
                 if (error.code === "PERMISSION_DENIED") {
                     //(#error)auth-no-access-permission
                     $scope.notify("You do not have the permission to access firebase database (Error #001)", "danger");
+                } else {
+                    //(#error)firebase-error
+                    $scope.notify("An unknown firebase error occured (Error #010)", "danger");
                 }
             });
         });
@@ -666,13 +724,17 @@ app.controller('FacilitiesController', ['$rootScope', '$route', '$routeParams', 
                             });
                         } else {
                             //(#error)database-category-not-found
-                            $scope.notify("database-category-not-found (Error #004)","danger"); /* edit */
+                            console.log("database-category-not-found");
+                            $scope.notify("An error occured when accessing firebase (Error #004)","danger");
                         }
                     }).catch(function(error) {
                         console.log(error);
                         if (error.code === "PERMISSION_DENIED") {
                             //(#error)auth-no-access-permission
                             $scope.notify("You do not have the permission to access firebase database (Error #001)", "danger");
+                        } else {
+                            //(#error)firebase-error
+                            $scope.notify("An unknown firebase error occured (Error #010)", "danger");
                         }
                     });
                 });
@@ -680,13 +742,17 @@ app.controller('FacilitiesController', ['$rootScope', '$route', '$routeParams', 
                 $scope.$apply();
             } else {
                 //(#error)database-facility-not-found
-                $scope.notify("database-facility-not-found (Error #005)","danger"); /* edit */
+                console.log("database-facility-not-found");
+                $scope.notify("An error occured when accessing firebase (Error #005)","danger");
             }
         }).catch(function(error) {
             console.log(error);
             if (error.code === "PERMISSION_DENIED") {
                 //(#error)auth-no-access-permission
                 $scope.notify("You do not have the permission to access firebase database (Error #001)", "danger");
+            } else {
+                //(#error)firebase-error
+                $scope.notify("An unknown firebase error occured (Error #010)", "danger");
             }
         });
     }; //end of $scope.reloadFacility()
@@ -767,6 +833,9 @@ app.controller('FacilitiesController', ['$rootScope', '$route', '$routeParams', 
                             if (error.code === "PERMISSION_DENIED") {
                                 //(#error)auth-no-access-permission
                                 $scope.notify("You do not have the permission to access firebase database (Error #001)", "danger");
+                            } else {
+                                //(#error)firebase-error
+                                $scope.notify("An unknown firebase error occured (Error #010)", "danger");
                             }
                         });
                     } else if (!categoryValue.deleted && categoryValue.ID !== undefined) {
@@ -782,6 +851,9 @@ app.controller('FacilitiesController', ['$rootScope', '$route', '$routeParams', 
                             if (error.code === "PERMISSION_DENIED") {
                                 //(#error)auth-no-access-permission
                                 $scope.notify("You do not have the permission to access firebase database (Error #001)", "danger");
+                            } else {
+                                //(#error)firebase-error
+                                $scope.notify("An unknown firebase error occured (Error #010)", "danger");
                             }
                         });
 
@@ -794,6 +866,9 @@ app.controller('FacilitiesController', ['$rootScope', '$route', '$routeParams', 
                             if (error.code === "PERMISSION_DENIED") {
                                 //(#error)auth-no-access-permission
                                 $scope.notify("You do not have the permission to access firebase database (Error #001)", "danger");
+                            } else {
+                                //(#error)firebase-error
+                                $scope.notify("An unknown firebase error occured (Error #010)", "danger");
                             }
                         });
                         
@@ -815,6 +890,9 @@ app.controller('FacilitiesController', ['$rootScope', '$route', '$routeParams', 
                                 if (error.code === "PERMISSION_DENIED") {
                                     //(#error)auth-no-access-permission
                                     $scope.notify("You do not have the permission to access firebase database (Error #001)", "danger");
+                                } else {
+                                    //(#error)firebase-error
+                                    $scope.notify("An unknown firebase error occured (Error #010)", "danger");
                                 }
                             });
                         });
@@ -833,7 +911,11 @@ app.controller('FacilitiesController', ['$rootScope', '$route', '$routeParams', 
                         }).catch(function(error) {
                             console.log(error);
                             if (error.code === "PERMISSION_DENIED") {
-                                $scope.notify("auth/no-access-permission", "danger"); /* edit */
+                                //(#error)auth-no-access-permission
+                                $scope.notify("You do not have the permission to access firebase database (Error #001)", "danger");
+                            } else {
+                                //(#error)firebase-error
+                                $scope.notify("An unknown firebase error occured (Error #010)", "danger");
                             }
                         });
 
@@ -855,6 +937,9 @@ app.controller('FacilitiesController', ['$rootScope', '$route', '$routeParams', 
                                 if (error.code === "PERMISSION_DENIED") {
                                     //(#error)auth-no-access-permission
                                     $scope.notify("You do not have the permission to access firebase database (Error #001)", "danger");
+                                } else {
+                                    //(#error)firebase-error
+                                    $scope.notify("An unknown firebase error occured (Error #010)", "danger");
                                 }
                             });
                         });
@@ -896,6 +981,11 @@ app.controller('FacilitiesController', ['$rootScope', '$route', '$routeParams', 
                                 $scope.notify("An unknown error occured when accessing firebase storage (Error #103)","danger");
                                 $scope.photoStatus = 'Unknown error occurred';
                                 break;
+                            default:
+                                //(#error)storage-unknown
+                                $scope.notify("An unknown error occured when accessing firebase storage (Error #104)","danger");
+                                $scope.photoStatus = 'Unknown error occurred';
+                                break;
                         }
                     }, function() {
                         $scope.downloadURL = uploadTask.snapshot.downloadURL;
@@ -922,6 +1012,9 @@ app.controller('FacilitiesController', ['$rootScope', '$route', '$routeParams', 
                                 if (error.code === "PERMISSION_DENIED") {
                                     //(#error)auth-no-access-permission
                                     $scope.notify("You do not have the permission to access firebase database (Error #001)", "danger");
+                                } else {
+                                    //(#error)firebase-error
+                                    $scope.notify("An unknown firebase error occured (Error #010)", "danger");
                                 }
                             });
 
@@ -934,8 +1027,13 @@ app.controller('FacilitiesController', ['$rootScope', '$route', '$routeParams', 
                                     //do nothing
                                 }).catch(function(error) {
                                     error = true;
+                                    console.log(error);
                                     if (error.code === "PERMISSION_DENIED") {
-                                        $scope.notify("auth/no-access-permission","danger"); /* edit */
+                                        //(#error)auth-no-access-permission
+                                        $scope.notify("You do not have the permission to access firebase database (Error #001)", "danger");
+                                    } else {
+                                        //(#error)firebase-error
+                                        $scope.notify("An unknown firebase error occured (Error #010)", "danger");
                                     }
                                 });
                             })
@@ -950,6 +1048,9 @@ app.controller('FacilitiesController', ['$rootScope', '$route', '$routeParams', 
                             if (error.code === "PERMISSION_DENIED") {
                                 //(#error)auth-no-access-permission
                                 $scope.notify("You do not have the permission to access firebase database (Error #001)", "danger");
+                            } else {
+                                //(#error)firebase-error
+                                $scope.notify("An unknown firebase error occured (Error #010)", "danger");
                             }
                         });
                     });
@@ -983,10 +1084,14 @@ app.controller('FacilitiesController', ['$rootScope', '$route', '$routeParams', 
                             .then(function() {
                                 //do nothing
                             }).catch(function(error) {
+                                error = true;
                                 console.log(error);
                                 if (error.code === "PERMISSION_DENIED") {
                                     //(#error)auth-no-access-permission
                                     $scope.notify("You do not have the permission to access firebase database (Error #001)", "danger");
+                                } else {
+                                    //(#error)firebase-error
+                                    $scope.notify("An unknown firebase error occured (Error #010)", "danger");
                                 }
                             });
                         });
@@ -1001,18 +1106,25 @@ app.controller('FacilitiesController', ['$rootScope', '$route', '$routeParams', 
                         if (error.code === "PERMISSION_DENIED") {
                             //(#error)auth-no-access-permission
                             $scope.notify("You do not have the permission to access firebase database (Error #001)", "danger");
+                        } else {
+                            //(#error)firebase-error
+                            $scope.notify("An unknown firebase error occured (Error #010)", "danger");
                         }
                     });
                 }
             } else {
                 //(#error)database-count-not-found
-                $scope.notify("database-count-not-found (Error #003)", "danger"); /* edit */
+                console.log("database-count-not-found");
+                $scope.notify("An error occured when accessing firebase (Error #003)", "danger");
             } //end of if()
         }).catch(function(error) {
             console.log(error);
             if (error.code === "PERMISSION_DENIED") {
                 //(#error)auth-no-access-permission
                 $scope.notify("You do not have the permission to access firebase database (Error #001)", "danger");
+            } else {
+                //(#error)firebase-error
+                $scope.notify("An unknown firebase error occured (Error #010)", "danger");
             }
         });
     }; //end of $scope.saveFacility()
@@ -1042,13 +1154,17 @@ app.controller('FacilitiesController', ['$rootScope', '$route', '$routeParams', 
                     });
                 } else {
                     //(#error)database-category-not-found
-                    $scope.notify("database-category-not-found (Error #004)","danger"); /* edit */
+                    console.log("database-category-not-found");
+                    $scope.notify("An error occured when accessing firebase (Error #004)","danger");
                 }
             }).catch(function(error) {
                 console.log(error);
                 if (error.code === "PERMISSION_DENIED") {
                     //(#error)auth-no-access-permission
                     $scope.notify("You do not have the permission to access firebase database (Error #001)", "danger");
+                } else {
+                    //(#error)firebase-error
+                    $scope.notify("An unknown firebase error occured (Error #010)", "danger");
                 }
             });
         });

@@ -1,6 +1,12 @@
 {
+  //superA - root.child('admin/'+ auth.uid + '/isSuperAdmin') == true
+  //HO or admin or superA - root.child('admin').child(auth.uid).exists()
+  //admin - root.child('adminstaff').child(auth.uid).exists()
+  //BUH -  root.child('staff/'+ auth.uid + '/role').val() == 'BUH'
+  //ownself - root.child('staff/'+$staff + '/authID').val() == auth.uid
+  
   "rules": {
-   	   "facility":{ ".read": true, ".write" : true},
+   	   "facility":{ ".read": true, ".write" : true, ".indexOn": "name"},
           "project":{ ".read": true, ".write" : true, ".indexOn": "CM"},
             "category":{ ".read": true, ".write" : true},
           "projectfacility":{ ".read": true, ".write" : true},
@@ -9,9 +15,9 @@
       // only write here if admin (add new staff, delete)
       "staff": {
        ".read": "auth !=null",
-       ".write": "root.child('admin').child(auth.uid).exists()",
-      ".indexOn": ["role","status"],
-          "$staff": {
+       ".write": "root.child('admin').child(auth.uid).exists()" ,
+      ".indexOn": ["role","status","ID"],
+        "$staff": {
             //if staff themself (edit) or admin
             ".write": "root.child('admin/'+ auth.uid).exists() || root.child('staff/'+$staff + '/authID').val() == auth.uid"
            }
@@ -28,7 +34,7 @@
        // only write here if admin (should be super-admin or admin for HO)
        "admin": {
           ".read": "auth != null",
-            ".write": "true"
+          ".write": "auth != null"
   			},
          
         "count":{

@@ -1,8 +1,12 @@
 app.controller('ProjectsController', ['$rootScope', '$route', '$routeParams', '$scope', '$location', '$firebaseAuth', '$firebaseObject', 
 	'$firebaseArray', function($rootScope, $route, $routeParams, $scope, $location, $firebaseAuth, $firebaseObject, $firebaseArray){
 	
-    /***** General *****/
-        
+    /********************
+    ****** General ******
+    ********************/
+    
+    //bootstrap-notify
+    //show pop-up notification
     $scope.notify = function(message, type) {
         $.notify({
             message: message
@@ -15,10 +19,15 @@ app.controller('ProjectsController', ['$rootScope', '$route', '$routeParams', '$
             timer: 5000,
             newest_on_top: true
         });
-    }; //end of notify()
+    };
+        
+    /*********************
+    *** Authentication ***
+    *********************/
         
 	$scope.auth = $firebaseAuth();
 	
+    //detech authentication state change (login/logout)
 	$scope.auth.$onAuthStateChanged(function(firebaseUser) {
 		$scope.firebaseUser = firebaseUser;
 		if ($scope.firebaseUser === null) {
@@ -57,6 +66,7 @@ app.controller('ProjectsController', ['$rootScope', '$route', '$routeParams', '$
                     }
                     $rootScope.user.showName = $rootScope.user.name.toUpperCase();
                     $scope.user = $rootScope.user;
+                    $scope.checkSoftRouting();
                     $scope.$apply();
                 } else {
                     firebase.database().ref("adminstaff/" + $scope.firebaseUser.uid).once("value").then(function(snapshot) {
@@ -78,7 +88,7 @@ app.controller('ProjectsController', ['$rootScope', '$route', '$routeParams', '$
                                 }
                                 $rootScope.user.showName = $rootScope.user.name.toUpperCase();
                                 $scope.user = $rootScope.user;
-                                $scope.checkRouting();
+                                $scope.checkSoftRouting();
                                 $scope.$apply();
                             }).catch(function(error) {
                                 console.log(error);
@@ -130,17 +140,30 @@ app.controller('ProjectsController', ['$rootScope', '$route', '$routeParams', '$
         }
     };
         
+    $scope.checkSoftRouting = function() {
+        if ($scope.user.isSuperAdmin) {
+            $location.path("/admin").search("projectID",null).search("edit",null).search("add",null);
+            $route.reload();
+        } else if (!$scope.user.isBUH) {
+            $location.path("/dashboard").search("projectID",null).search("edit",null).search("add",null);
+            $route.reload();
+        } else if (!$scope.user.isAdmin) {
+            if ($location.path() === "/add-project") {
+                alert("You do not have permission to view this webpage");
+                $location.path("/dashboard").search("projectID",null).search("edit",null).search("add",null);
+                $route.reload();
+            }
+        }
+    };
+        
     $scope.logout = function() {
         delete $rootScope.user;
         $scope.auth.$signOut();
     }
-	
-	$scope.sortByList = ['All','Not Deleted','Deleted'];
-	$scope.sortByItem = 'Not Deleted';
-	
-	$scope.sortByItemSelected = function(itemSelected) {
-		$scope.sortByItem = itemSelected;
-	};
+        
+    /********************
+    ****** Routing ******
+    ********************/
 	
 	$scope.goToAddProject = function() {
 		$location.path('/add-project').search('add',null).search('edit',null).search('projectID',null);
@@ -160,7 +183,11 @@ app.controller('ProjectsController', ['$rootScope', '$route', '$routeParams', '$
         } else {
             $location.path("/edit-project").search("projectID",p.ID).search("edit",null).search("add",null);
         }
-    }; //end of $scope.goToEditFacility()
+    };
+    
+    /*********************
+    ******** Date ********
+    *********************/
         
     Date.prototype.dayNow = function () { 
         return (this.getFullYear() + "/" + (((this.getMonth()+1) < 10)?"0":"") + (this.getMonth()+1) + "/" + 
@@ -172,7 +199,9 @@ app.controller('ProjectsController', ['$rootScope', '$route', '$routeParams', '$
             this.getMinutes() + ":" + ((this.getSeconds() < 10)?"0":"") + this.getSeconds();
     }
         
-    /***** List *****/
+    /*********************
+    **** Project List ****
+    *********************/
     
     if ($routeParams.add !== undefined) {
         $scope.notify("Successfully added \"" +$routeParams.add + "\" project","success");
@@ -189,8 +218,6 @@ app.controller('ProjectsController', ['$rootScope', '$route', '$routeParams', '$
             firebase.database().ref('project').once('value').then(function (snapshot, error) {
                 var tempList = [];
                 angular.forEach(snapshot.val(), function(projectValue, key) {
-//                    var tempProject = projectValue;
-//                    tempList.push(tempProject);
                     tempList.push(projectValue);
                 });
                 $scope.projectList = tempList;
@@ -199,27 +226,30 @@ app.controller('ProjectsController', ['$rootScope', '$route', '$routeParams', '$
                         projectValue.deleted = true;
                     else
                         projectValue.deleted = false;
-                }); //end of angular.forEach()
+                });
                 $scope.$apply();
             }).catch(function(error) {
+                console.log(error);
                 if (error.code === "PERMISSION_DENIED") {
-                    $scope.notify("auth/no-access-permission", "danger"); /* edit */
+                    //(#error)auth-no-access-permission
+                    $scope.notify("You do not have the permission to access firebase database (Error #001)", "danger");
                 }
-            }); //end of firebase.database().ref()
-        }; //end of $scope.refreshProjectList
+            });
+        };
 
         ref.on('value', function() {
             $scope.refreshProjectList();
         });
     }
     
-    /***** Magic Suggest *****/
+    /********************
+    *** Magic Suggest ***
+    ********************/
     
     if ($location.path() === "/add-project") {
         $scope.staffList = [];
 
         firebase.database().ref('staff/').once('value').then(function (snapshot) {
-
             snapshot.forEach(function(staffValue) {
                 $scope.staffList.push("(" + staffValue.val().ID + ") " + staffValue.val().name);
             });
@@ -245,10 +275,12 @@ app.controller('ProjectsController', ['$rootScope', '$route', '$routeParams', '$
                 placeholder: "Enter project CM",
                 maxSelection: 1
             });
-        }); //end of firebase.database().ref()
+        });
     }
         
-    /***** Checklist *****/
+    /********************
+    ***** Checklist *****
+    ********************/
     
     $scope.frequencyList = ["Daily","Weekly","Monthly","Quarterly","Yearly"];
         
@@ -262,14 +294,14 @@ app.controller('ProjectsController', ['$rootScope', '$route', '$routeParams', '$
         var newCategory = {name:"", formID:facility.categoryCount, no:facility.categoryCount+1,
             questionCount:0, question:[newQuestion]};
         facility.checklist.push(newCategory);
-    }; //end of $scope.addCategory()
+    };
     
     $scope.addQuestion = function(category) {
         category.questionCount++;
         var questionNo = 'abcdefghijklmnopqrstuvwxyz'[category.questionCount];
         var newQuestion = {name:"", formID:category.questionCount, no:questionNo, type:"MCQ"};
         category.question.push(newQuestion);
-    }; //end of $scope.addQuestion()
+    };
     
     $scope.deleteCategory = function(facility, category) {
         if (facility.categoryCount !== 0) {
@@ -282,7 +314,7 @@ app.controller('ProjectsController', ['$rootScope', '$route', '$routeParams', '$
                 facility.checklist[index].no = index+1;
             }
         }
-    }; //end of $scope.deleteCategory()
+    };
     
     $scope.deleteQuestion = function(category,question) {
         if (category.questionCount !== 0) {
@@ -296,19 +328,19 @@ app.controller('ProjectsController', ['$rootScope', '$route', '$routeParams', '$
                 category.question[index].no = questionNo;
             }
         }
-    }; //end of $scope.deleteQuestion()
+    };
         
     $scope.deleteFacility = function(facility) {
         $scope.facilityList.unshift({name:facility.name});
         var index = $scope.facilityAddedList.indexOf(facility);
         $scope.facilityAddedList.splice(index,1);
-    }
+    };
     
     $scope.moveFacility = function(facility) {
         $scope.addFacilityToAddedList(facility.name);
         var index = $scope.facilityList.map(function(x) {return x.name}).indexOf(facility.name);
         $scope.facilityList.splice(index,1);
-    }
+    };
         
     $scope.addEditCategory = function() {
         $scope.categoryCount++;
@@ -316,7 +348,7 @@ app.controller('ProjectsController', ['$rootScope', '$route', '$routeParams', '$
         var newCategory = {name:"", formID:$scope.categoryCount, no:$scope.categoryCount+1,
             questionCount:0, question:[newQuestion], show:true};
         $scope.checklist.push(newCategory);
-    }; //end of $scope.addCategory()
+    };
         
     $scope.removeCategory = function(category) {
         if ($scope.categoryCount !== 0) {
@@ -333,7 +365,11 @@ app.controller('ProjectsController', ['$rootScope', '$route', '$routeParams', '$
                 }
             }
         }
-    }; //end of $scope.removeCategory()
+    };
+        
+    /********************
+    **** Drag & Drop ****
+    ********************/
     
     if ($location.path() === "/add-project") {
         var dragAndDrop = {
@@ -370,7 +406,9 @@ app.controller('ProjectsController', ['$rootScope', '$route', '$routeParams', '$
         dragAndDrop.init();
     }
         
-    /***** Add *****/
+    /********************
+    **** Project Add ****
+    ********************/
 
     $scope.facilityAddedList = [];
 
@@ -378,8 +416,6 @@ app.controller('ProjectsController', ['$rootScope', '$route', '$routeParams', '$
         firebase.database().ref('facility').once('value').then(function (snapshot, error) {
             var tempList = [];
             angular.forEach(snapshot.val(), function(facilityValue, key) {
-//                var tempFacility = facilityValue;
-//                tempList.push(tempFacility);
                 tempList.push(facilityValue);
             });
             $scope.facilityList = tempList;
@@ -387,14 +423,16 @@ app.controller('ProjectsController', ['$rootScope', '$route', '$routeParams', '$
                 if (facilityValue.deletedAt !== undefined) {
                     facilityValue.deleted = true;
                 }
-            }); //end of angular.forEach()
+            });
             $scope.$apply();
         }).catch(function(error) {
+            console.log(error);
             if (error.code === "PERMISSION_DENIED") {
-                $scope.notify("auth/no-access-permission", "danger"); /* edit */
+                //(#error)auth-no-access-permission
+                $scope.notify("You do not have the permission to access firebase database (Error #001)", "danger");
             }
-        }); //end of firebase.database().ref()
-    }; //end of $scope.refreshFacilityList
+        });
+    };
         
     if ($location.path() === "/add-project" || $location.path() === "/edit-project") {
         $scope.refreshFacilityList();
@@ -434,21 +472,26 @@ app.controller('ProjectsController', ['$rootScope', '$route', '$routeParams', '$
                                 $scope.$apply();
                             });
                         } else {
-                            $scope.notify("category-not-found","danger"); /* edit */
-                        } //end of if()
-                    }).catch(function(error) {
-                        if (error.code === "PERMISSION_DENIED") {
-                            $scope.notify("auth/no-access-permission", "danger"); /* edit */
+                            //(#error)database-category-not-found
+                            $scope.notify("database-category-not-found (Error #004)","danger"); /* edit */
                         }
-                    }); //end of firebase.database().ref()
-                }); //end of angular.forEach()
+                    }).catch(function(error) {
+                        console.log(error);
+                        if (error.code === "PERMISSION_DENIED") {
+                            //(#error)auth-no-access-permission
+                            $scope.notify("You do not have the permission to access firebase database (Error #001)", "danger");
+                        }
+                    });
+                });
             }
         }).catch(function(error) {
+            console.log(error);
             if (error.code === "PERMISSION_DENIED") {
-                $scope.notify("auth/no-access-permission", "danger"); /* edit */
+                //(#error)auth-no-access-permission
+                $scope.notify("You do not have the permission to access firebase database (Error #001)", "danger");
             }
-        }); //end of firebase.database().ref()
-    }; //end of $scope.addFacilityToAddedList()
+        });
+    };
     
     $scope.validateProject = function() {
         
@@ -463,8 +506,8 @@ app.controller('ProjectsController', ['$rootScope', '$route', '$routeParams', '$
                 facilityValue.error = false;
                 angular.forEach(facilityValue.checklist, function(categoryValue, key) {
                     categoryValue.error = false;
-                }); //end of angular.forEach()
-            }); //end of angular.forEach()
+                });
+            });
         } else if ($scope.address === undefined) {
             $scope.projectNameEmpty = false;
             $scope.projectAddressEmpty = true;
@@ -476,8 +519,8 @@ app.controller('ProjectsController', ['$rootScope', '$route', '$routeParams', '$
                 facilityValue.error = false;
                 angular.forEach(facilityValue.checklist, function(categoryValue, key) {
                     categoryValue.error = false;
-                }); //end of angular.forEach()
-            }); //end of angular.forEach()
+                });
+            });
         } else if ($scope.BUH.getValue().length === 0) {
             $scope.projectNameEmpty = false;
             $scope.projectAddressEmpty = false;
@@ -489,8 +532,8 @@ app.controller('ProjectsController', ['$rootScope', '$route', '$routeParams', '$
                 facilityValue.error = false;
                 angular.forEach(facilityValue.checklist, function(categoryValue, key) {
                     categoryValue.error = false;
-                }); //end of angular.forEach()
-            }); //end of angular.forEach()
+                });
+            });
         } else if ($scope.TM.getValue().length === 0) {
             $scope.projectNameEmpty = false;
             $scope.projectAddressEmpty = false;
@@ -502,8 +545,8 @@ app.controller('ProjectsController', ['$rootScope', '$route', '$routeParams', '$
                 facilityValue.error = false;
                 angular.forEach(facilityValue.checklist, function(categoryValue, key) {
                     categoryValue.error = false;
-                }); //end of angular.forEach()
-            }); //end of angular.forEach()
+                });
+            });
         } else if ($scope.CM.getValue().length === 0) {
             $scope.projectNameEmpty = false;
             $scope.projectAddressEmpty = false;
@@ -515,8 +558,8 @@ app.controller('ProjectsController', ['$rootScope', '$route', '$routeParams', '$
                 facilityValue.error = false;
                 angular.forEach(facilityValue.checklist, function(categoryValue, key) {
                     categoryValue.error = false;
-                }); //end of angular.forEach()
-            }); //end of angular.forEach()
+                });
+            });
         } else {
             var error = false;
             $scope.projectNameEmpty = false;
@@ -529,8 +572,8 @@ app.controller('ProjectsController', ['$rootScope', '$route', '$routeParams', '$
                 facilityValue.error = false;
                 angular.forEach(facilityValue.checklist, function(categoryValue, key) {
                     categoryValue.error = false;
-                }); //end of angular.forEach()
-            }); //end of angular.forEach()
+                });
+            });
             
             angular.forEach($scope.facilityAddedList, function(facilityValue, key) {
                 if (!error) {
@@ -554,13 +597,13 @@ app.controller('ProjectsController', ['$rootScope', '$route', '$routeParams', '$
                                                 error = true;
                                             }
                                         }
-                                    }); //end of angular.forEach()
+                                    });
                                 }
                             }
-                        }); //end of angular.forEach()
+                        });
                     }
                 }
-            }); //end of angular.forEach()
+            });
             
             if (!error) {
                 var BUH = $scope.BUH.getValue()[0];
@@ -574,7 +617,7 @@ app.controller('ProjectsController', ['$rootScope', '$route', '$routeParams', '$
                 $scope.CMID = CM.substr(1,5);
                 $scope.addProject();
             }
-        } //end of else
+        }
     } //end of $scope.validateProject()
         
     $scope.addProject = function() {
@@ -612,9 +655,10 @@ app.controller('ProjectsController', ['$rootScope', '$route', '$routeParams', '$
                         }).catch(function(error) {
                             console.log(error);
                             if (error.code === "PERMISSION_DENIED") {
-                                $scope.notify("auth/no-access-permission", "danger"); /* edit */
+                                //(#error)auth-no-access-permission
+                                $scope.notify("You do not have the permission to access firebase database (Error #001)", "danger");
                             }
-                        }); //end of firebase.database().ref()
+                        });
 
                         angular.forEach(categoryValue.question, function(questionValue, key) {
                             $scope.questionCount++;
@@ -629,16 +673,19 @@ app.controller('ProjectsController', ['$rootScope', '$route', '$routeParams', '$
                                     alphabet: $scope.questionAlphabet
                                 });
                             }).catch(function(error) {
+                                console.log(error);
                                 if (error.code === "PERMISSION_DENIED") {
-                                    $scope.notify("auth/no-access-permission","danger"); /* edit */
+                                    //(#error)auth-no-access-permission
+                                    $scope.notify("You do not have the permission to access firebase database (Error #001)", "danger");
                                 }
-                            }); //end of firebase.database().ref()
-                        }); //end of angular.forEach()
-                    }); //end of angular.forEach()
+                            });
+                        });
+                    });
 
                     $scope.projectFacilityCount++;
                     $scope.projectFacilityAdded.push($scope.projectFacilityAlphabet + $scope.projectFacilityCount);
 
+                    //add projectFacility details
                     firebase.database().ref('projectfacility/' + $scope.projectFacilityAlphabet + $scope.projectFacilityCount).set({
                             frequency: facilityValue.frequency,
                             name: facilityValue.name,
@@ -652,23 +699,27 @@ app.controller('ProjectsController', ['$rootScope', '$route', '$routeParams', '$
                     }).catch(function(error) {
                         console.log(error);
                         if (error.code === "PERMISSION_DENIED") {
-                            $scope.notify("auth/no-access-permission", "danger"); /* edit */
+                            //(#error)auth-no-access-permission
+                            $scope.notify("You do not have the permission to access firebase database (Error #001)", "danger");
                         }
-                    }); //end of firebase.database().ref() //for projectFacility details
+                    });
 
+                    //add category in each projectFacility
                     angular.forEach($scope.categoryAdded, function(categoryValue, key) {
                         firebase.database().ref('projectfacility/' + $scope.projectFacilityAlphabet + $scope.projectFacilityCount 
                                 + '/category/' + categoryValue).set(categoryValue)
                         .then(function() {
                             //do nothing
                         }).catch(function(error) {
+                            console.log(error);
                             if (error.code === "PERMISSION_DENIED") {
-                                $scope.notify("auth/no-access-permission","danger"); /* edit */
+                                //(#error)auth-no-access-permission
+                                $scope.notify("You do not have the permission to access firebase database (Error #001)", "danger");
                             }
-                        }); //end of firebase.database().ref()
-                    }); //end of angular.forEach() //for categoryAdded in each projectFacility
+                        });
+                    });
                     $scope.categoryAdded = [];
-                }); //end of angular.forEach() //for projectFacility
+                });
 
                 if ($scope.MCSTS === undefined)
                     $scope.MCSTS = "";
@@ -707,12 +758,15 @@ app.controller('ProjectsController', ['$rootScope', '$route', '$routeParams', '$
                             //do nothing
                         }).catch(function(error) {
                             error = true;
+                            console.log(error);
                             if (error.code === "PERMISSION_DENIED") {
-                                $scope.notify("auth/no-access-permission","danger"); /* edit */
+                                //(#error)auth-no-access-permission
+                                $scope.notify("You do not have the permission to access firebase database (Error #001)", "danger");
                             }
                         });
-                    }); //end of angular.forEach()
+                    });
 
+                    //redirect to projects if add success
                     if (!error) {
                         $location.path("/projects").search("add",$scope.name);
                         $route.reload();
@@ -721,21 +775,34 @@ app.controller('ProjectsController', ['$rootScope', '$route', '$routeParams', '$
                 }).catch(function(error) {
                     console.log(error);
                     if (error.code === "PERMISSION_DENIED") {
-                        $scope.notify("auth/no-access-permission", "danger"); /* edit */
+                        //(#error)auth-no-access-permission
+                        $scope.notify("You do not have the permission to access firebase database (Error #001)", "danger");
                     }
-                }); //end of firebase.database().ref
+                });
                 
             } else {
-                $scope.notify("auth/count-does-not-exist", "danger"); /* edit */
-            } //end of if()
-        }).catch(function(error) {
-            if (error.code === "PERMISSION_DENIED") {
-                $scope.notify("auth/no-access-permission", "danger"); /* edit */
+                //(#error)database-count-does-not-exist
+                $scope.notify("database-count-not-found (Error #003)", "danger"); /* edit */
             }
-        }); //end of firebase.database().ref()
-    }
+        }).catch(function(error) {
+            console.log(error);
+            if (error.code === "PERMISSION_DENIED") {
+                //(#error)auth-no-access-permission
+                $scope.notify("You do not have the permission to access firebase database (Error #001)", "danger");
+            }
+        });
+    }; //end of $scope.addProject()
     
-    /***** Search & Filter *****/
+    /**********************
+    *** Search & Filter ***
+    **********************/
+    
+	$scope.sortByList = ['All','Not Deleted','Deleted'];
+	$scope.sortByItem = 'Not Deleted';
+	
+	$scope.sortByItemSelected = function(itemSelected) {
+		$scope.sortByItem = itemSelected;
+	};
     
     $scope.search = function(p) {
     return (angular.lowercase(p.name).indexOf(angular.lowercase($scope.query) || '') !== -1 ||
@@ -756,7 +823,9 @@ app.controller('ProjectsController', ['$rootScope', '$route', '$routeParams', '$
             return (!p.deleted);
     }
     
-    /***** View *****/
+    /*********************
+    **** Project View ****
+    *********************/
         
     $scope.overlay = false;
     
@@ -817,28 +886,36 @@ app.controller('ProjectsController', ['$rootScope', '$route', '$routeParams', '$
                                     $scope.$apply();
                                 });
                             } else {
-                                $scope.notify("category-not-found","danger"); /* edit */
+                                //(#error)database-category-not-found
+                                $scope.notify("database-category-not-found (Error #004)","danger"); /* edit */
                             }
                         }).catch(function(error) {
+                            console.log(error);
                             if (error.code === "PERMISSION_DENIED") {
-                                $scope.notify("auth/no-access-permission", "danger"); /* edit */
+                                //(#error)auth-no-access-permission
+                                $scope.notify("You do not have the permission to access firebase database (Error #001)", "danger");
                             }
-                        }); //end of firebase.database().ref()
+                        });
                     });
                 } else {
-                    $scope.notify("project-not-found","danger"); /* edit */
+                    //(#error)database-project-not-found
+                    $scope.notify("database-project-not-found (Error #008)","danger"); /* edit */
                 }
                 $scope.project.projectFacilityList.push(newProjectFacility);
                 $scope.$apply();
             }).catch(function(error) {
+                console.log(error);
                 if (error.code === "PERMISSION_DENIED") {
-                    $scope.notify("auth/no-access-permission", "danger"); /* edit */
+                    //(#error)auth-no-access-permission
+                    $scope.notify("You do not have the permission to access firebase database (Error #001)", "danger");
                 }
-            }); //end of firebase.database().ref()
-        }); //end of angular.forEach()
+            });
+        });
     }; //end of $scope.viewFacility()
         
-    /***** Edit *****/
+    /*********************
+    **** Project Edit ****
+    *********************/
     
     $scope.reloadProject = function() {
         $scope.refreshFacilityList();
@@ -888,33 +965,42 @@ app.controller('ProjectsController', ['$rootScope', '$route', '$routeParams', '$
                                             $scope.$apply();
                                         });
                                     } else {
-                                        $scope.notify("category-not-found","danger"); /* edit */
+                                        //(#error)database-category-not-found
+                                        $scope.notify("database-category-not-found (Error #004)","danger"); /* edit */
                                     }
                                 }).catch(function(error) {
+                                    console.log(error);
                                     if (error.code === "PERMISSION_DENIED") {
-                                        $scope.notify("auth/no-access-permission", "danger"); /* edit */
+                                        //(#error)auth-no-access-permission
+                                        $scope.notify("You do not have the permission to access firebase database (Error #001)", "danger");
                                     }
-                                }); //end of firebase.database().ref()
+                                });
                             });
                         } else {
-                            $scope.notify("project-not-found","danger"); /* edit */
+                            //(#error)database-project-not-found
+                            $scope.notify("database-project-not-found (Error #008)","danger"); /* edit */
                         }
                         $scope.project.projectFacilityList.push(newProjectFacility);
                         $scope.$apply();
                     }).catch(function(error) {
+                        console.log(error);
                         if (error.code === "PERMISSION_DENIED") {
-                            $scope.notify("auth/no-access-permission", "danger"); /* edit */
+                            //(#error)auth-no-access-permission
+                            $scope.notify("You do not have the permission to access firebase database (Error #001)", "danger");
                         }
-                    }); //end of firebase.database().ref()
-                }); //end of angular.forEach()
+                    });
+                });
             } else {
-                $scope.notify("project-not-found","danger"); /* edit */
-            } //end of if()
+                //(#error)database-project-not-found
+                $scope.notify("database-project-not-found (Error #008)","danger"); /* edit */
+            } 
         }).catch(function(error) {
+            console.log(error);
             if (error.code === "PERMISSION_DENIED") {
-                $scope.notify("auth/no-access-permission", "danger"); /* edit */
+                //(#error)auth-no-access-permission
+                $scope.notify("You do not have the permission to access firebase database (Error #001)", "danger");
             }
-        }); //end of firebase.database().ref()
+        });
     }; //end of $scope.reloadFacility()
     
     if ($routeParams.projectID !== undefined) {
@@ -926,7 +1012,10 @@ app.controller('ProjectsController', ['$rootScope', '$route', '$routeParams', '$
         });
     };
         
-    /***** Magic Suggest *****/
+    /**********************
+    **** Magic Suggest ****
+    **** Project Edit *****
+    **********************/
     
     if ($location.path() === "/edit-project") {
         $scope.staffList = [];
@@ -962,15 +1051,20 @@ app.controller('ProjectsController', ['$rootScope', '$route', '$routeParams', '$
             $scope.BUH.setValue([$scope.project.fullBUH]);
             $scope.TM.setValue([$scope.project.fullTM]);
             $scope.CM.setValue([$scope.project.fullCM]);
-        }); //end of firebase.database().ref()
+        });
     }
+        
+    /*********************
+    ***** Checklist ******
+    **** Project Edit ****
+    *********************/
         
     $scope.addProjectQuestion = function(category) {
         category.questionCount++;
         var questionNo = 'abcdefghijklmnopqrstuvwxyz'[category.questionCount];
         var newQuestion = {name:"", formID:category.questionCount, no:questionNo, type:"MCQ"};
         category.questionList.push(newQuestion);
-    }; //end of $scope.addQuestion()
+    };
     
     $scope.deleteProjectQuestion = function(category,question) {
         if (category.questionCount !== 0) {
@@ -984,7 +1078,7 @@ app.controller('ProjectsController', ['$rootScope', '$route', '$routeParams', '$
                 category.questionList[index].no = questionNo;
             }
         }
-    }; //end of $scope.deleteQuestion()
+    };
         
     $scope.addProjectCategory = function(facility) {
         facility.categoryCount++;
@@ -992,7 +1086,7 @@ app.controller('ProjectsController', ['$rootScope', '$route', '$routeParams', '$
         var newCategory = {name:"", formID:facility.categoryCount, no:facility.categoryCount+1,
             questionCount:0, questionList:[newQuestion], deleted:false};
         facility.checklist.push(newCategory);
-    }; //end of $scope.addCategory()
+    };
         
     $scope.deleteProjectCategory = function(facility, category) {
         if (facility.categoryCount !== 0) {
@@ -1009,7 +1103,7 @@ app.controller('ProjectsController', ['$rootScope', '$route', '$routeParams', '$
                 }
             }
         }
-    }; //end of $scope.deleteProjectCategory()
+    };
         
     $scope.deleteProjectFacility = function(facility) {
         $scope.facilityList.unshift({name:facility.name});
@@ -1058,21 +1152,31 @@ app.controller('ProjectsController', ['$rootScope', '$route', '$routeParams', '$
                                 $scope.$apply();
                             });
                         } else {
-                            $scope.notify("category-not-found","danger"); /* edit */
+                            //(#error)database-category-not-found
+                            $scope.notify("database-category-not-found (Error #004)","danger"); /* edit */
                         } //end of if()
                     }).catch(function(error) {
+                        console.log(error);
                         if (error.code === "PERMISSION_DENIED") {
-                            $scope.notify("auth/no-access-permission", "danger"); /* edit */
+                            //(#error)auth-no-access-permission
+                            $scope.notify("You do not have the permission to access firebase database (Error #001)", "danger");
                         }
-                    }); //end of firebase.database().ref()
-                }); //end of angular.forEach()
+                    });
+                });
             }
         }).catch(function(error) {
+            console.log(error);
             if (error.code === "PERMISSION_DENIED") {
-                $scope.notify("auth/no-access-permission", "danger"); /* edit */
+                //(#error)auth-no-access-permission
+                $scope.notify("You do not have the permission to access firebase database (Error #001)", "danger");
             }
-        }); //end of firebase.database().ref()
+        });
     }; //end of $scope.addFacilityToProjectList()
+        
+    /**********************
+    ***** Drag & Drop *****
+    **** Project Edit *****
+    **********************/
         
     if ($location.path() === "/edit-project") {
         var dragAndDrop = {
@@ -1099,7 +1203,6 @@ app.controller('ProjectsController', ['$rootScope', '$route', '$routeParams', '$
                 } else if (source.id === "left" && target.id === "right") {
                     $scope.facilityList.unshift({name:el.id});
                     var index = $scope.project.projectFacilityList.map(function(x) {return x.name}).indexOf(el.id);
-//                    $scope.project.projectFacilityList.splice(index,1);
                     $scope.project.projectFacilityList[index].deleted = true;
                     el.remove();
                     $scope.$apply();
@@ -1120,16 +1223,18 @@ app.controller('ProjectsController', ['$rootScope', '$route', '$routeParams', '$
             }).catch(function(error) {
                 console.log(error);
                 if (error.code === "PERMISSION_DENIED") {
-                    $scope.notify("auth/no-access-permission", "danger"); /* edit */
+                    //(#error)auth-no-access-permission
+                    $scope.notify("You do not have the permission to access firebase database (Error #001)", "danger");
                 }
-            }); //end of firebase.database().ref()
+            });
         }).catch(function(error) {
             console.log(error);
             if (error.code === "PERMISSION_DENIED") {
-                $scope.notify("auth/no-access-permission", "danger"); /* edit */
+                //(#error)auth-no-access-permission
+                $scope.notify("You do not have the permission to access firebase database (Error #001)", "danger");
             }
-        }); //end of firebase.database().ref()
-    }; //end of $scope.deleteFacility()
+        });
+    };
         
     $scope.restoreProject = function() {
         $scope.project.deleted = false;
@@ -1138,10 +1243,11 @@ app.controller('ProjectsController', ['$rootScope', '$route', '$routeParams', '$
         }).catch(function(error) {
             console.log(error);
             if (error.code === "PERMISSION_DENIED") {
-                $scope.notify("auth/no-access-permission", "danger"); /* edit */
+                //(#error)auth-no-access-permission
+                $scope.notify("You do not have the permission to access firebase database (Error #001)", "danger");
             }
-        }); //end of firebase.database().ref()
-    }; //end of $scope.restoreFacility()
+        }); 
+    };
     
     $scope.validateEditProject = function() {
         if ($scope.project.name === undefined) {
@@ -1155,8 +1261,8 @@ app.controller('ProjectsController', ['$rootScope', '$route', '$routeParams', '$
                 facilityValue.error = false;
                 angular.forEach(facilityValue.checklist, function(categoryValue, key) {
                     categoryValue.error = false;
-                }); //end of angular.forEach()
-            }); //end of angular.forEach()
+                });
+            });
         } else if ($scope.project.address === undefined) {
             $scope.projectNameEmpty = false;
             $scope.projectAddressEmpty = true;
@@ -1168,8 +1274,8 @@ app.controller('ProjectsController', ['$rootScope', '$route', '$routeParams', '$
                 facilityValue.error = false;
                 angular.forEach(facilityValue.checklist, function(categoryValue, key) {
                     categoryValue.error = false;
-                }); //end of angular.forEach()
-            }); //end of angular.forEach()
+                });
+            });
         } else if ($scope.BUH.getValue().length === 0) {
             $scope.projectNameEmpty = false;
             $scope.projectAddressEmpty = false;
@@ -1181,8 +1287,8 @@ app.controller('ProjectsController', ['$rootScope', '$route', '$routeParams', '$
                 facilityValue.error = false;
                 angular.forEach(facilityValue.checklist, function(categoryValue, key) {
                     categoryValue.error = false;
-                }); //end of angular.forEach()
-            }); //end of angular.forEach()
+                });
+            });
         } else if ($scope.TM.getValue().length === 0) {
             $scope.projectNameEmpty = false;
             $scope.projectAddressEmpty = false;
@@ -1194,8 +1300,8 @@ app.controller('ProjectsController', ['$rootScope', '$route', '$routeParams', '$
                 facilityValue.error = false;
                 angular.forEach(facilityValue.checklist, function(categoryValue, key) {
                     categoryValue.error = false;
-                }); //end of angular.forEach()
-            }); //end of angular.forEach()
+                });
+            });
         } else if ($scope.CM.getValue().length === 0) {
             $scope.projectNameEmpty = false;
             $scope.projectAddressEmpty = false;
@@ -1207,8 +1313,8 @@ app.controller('ProjectsController', ['$rootScope', '$route', '$routeParams', '$
                 facilityValue.error = false;
                 angular.forEach(facilityValue.checklist, function(categoryValue, key) {
                     categoryValue.error = false;
-                }); //end of angular.forEach()
-            }); //end of angular.forEach()
+                });
+            });
         } else {
             var error = false;
             $scope.projectNameEmpty = false;
@@ -1221,8 +1327,8 @@ app.controller('ProjectsController', ['$rootScope', '$route', '$routeParams', '$
                 facilityValue.error = false;
                 angular.forEach(facilityValue.checklist, function(categoryValue, key) {
                     categoryValue.error = false;
-                }); //end of angular.forEach()
-            }); //end of angular.forEach()
+                });
+            });
             
             angular.forEach($scope.project.projectFacilityList, function(facilityValue, key) {
                 if (!error && facilityValue.deleted === false) {
@@ -1246,13 +1352,13 @@ app.controller('ProjectsController', ['$rootScope', '$route', '$routeParams', '$
                                                 error = true;
                                             }
                                         }
-                                    }); //end of angular.forEach()
+                                    });
                                 }
                             }
-                        }); //end of angular.forEach()
+                        });
                     }
                 }
-            }); //end of angular.forEach()
+            });
             
             if (!error) {
                 var BUH = $scope.BUH.getValue()[0];
@@ -1266,9 +1372,9 @@ app.controller('ProjectsController', ['$rootScope', '$route', '$routeParams', '$
                 $scope.CMID = CM.substr(1,5);
                 $scope.saveProject();
             }
-        } //end of else
+        }
     } //end of $scope.validateProject()
-        
+    
     $scope.saveProject = function() {
         $scope.projectFacilityAdded = [];
         $scope.categoryAdded = [];
@@ -1282,16 +1388,20 @@ app.controller('ProjectsController', ['$rootScope', '$route', '$routeParams', '$
                 $scope.questionCount = snapshot.val().questionCount.count;
                 $scope.categoryCount = snapshot.val().categoryCount.count;
                 $scope.projectFacilityCount = snapshot.val().projectFacilityCount.count;
+                
+                console.log($scope.project.projectFacilityList);
 
                 angular.forEach($scope.project.projectFacilityList, function(facilityValue, key) {
                     if (facilityValue.deleted === true && facilityValue.ID !== undefined) {
+                        //deleted category from firebase
                         var projectFacilityRef = firebase.database().ref('projectFacility/' + facilityValue.ID);
                         projectFacilityRef.remove().then(function() {
                             //do nothing
                         }).catch(function(error) {
                             console.log(error); /* Edit */
-                        }); //categoryRef.remove() //delete category from firebase
+                        });
                     } else if (facilityValue.deleted === false && facilityValue.ID !== undefined) {
+                        //update category in firebase
                         angular.forEach(facilityValue.checklist, function(categoryValue, key) {
                             if (categoryValue.deleted === true && categoryValue.ID !== undefined) {
                                 var categoryRef = firebase.database().ref('category/' + categoryValue.ID);
@@ -1299,7 +1409,7 @@ app.controller('ProjectsController', ['$rootScope', '$route', '$routeParams', '$
                                     //do nothing
                                 }).catch(function(error) {
                                     console.log(error); /* Edit */
-                                }); //categoryRef.remove() //delete category from firebase
+                                });
                             } else if (categoryValue.deleted === false && categoryValue.ID !== undefined) {
                                 $scope.categoryAdded.push(categoryValue.ID);
                                 firebase.database().ref('category/' + categoryValue.ID).set({
@@ -1310,17 +1420,20 @@ app.controller('ProjectsController', ['$rootScope', '$route', '$routeParams', '$
                                 }).catch(function(error) {
                                     console.log(error);
                                     if (error.code === "PERMISSION_DENIED") {
-                                        $scope.notify("auth/no-access-permission", "danger"); /* edit */
+                                        //(#error)auth-no-access-permission
+                                        $scope.notify("You do not have the permission to access firebase database (Error #001)", "danger");
                                     }
-                                }); //end of firebase.database().ref()
+                                });
 
+                                //remove existing questions
                                 var questionRef = firebase.database().ref('category/' + categoryValue.ID + '/question');
                                 questionRef.remove().then(function() {
                                     //do nothing
                                 }).catch(function(error) {
                                     console.log(error); /* Edit */
-                                }); //categoryRef.remove() //removing existing questions
+                                });
 
+                                //add new questions
                                 angular.forEach(categoryValue.questionList, function(questionValue, key) {
                                     $scope.questionCount++;
                                     firebase.database().ref('category/' + categoryValue.ID + '/question/' + 
@@ -1335,12 +1448,15 @@ app.controller('ProjectsController', ['$rootScope', '$route', '$routeParams', '$
                                             alphabet: $scope.questionAlphabet
                                         });
                                     }).catch(function(error) {
+                                        console.log(error);
                                         if (error.code === "PERMISSION_DENIED") {
-                                            $scope.notify("auth/no-access-permission","danger"); /* edit */
+                                            //(#error)auth-no-access-permission
+                                            $scope.notify("You do not have the permission to access firebase database (Error #001)", "danger");
                                         }
-                                    }); //end of firebase.database().ref() //adding question to firebase
-                                }); //end of angular.forEach() //looping through question in category
+                                    });
+                                });
                             } else if (categoryValue.deleted === false && categoryValue.ID === undefined) {
+                                //add new category to firebase
                                 $scope.categoryCount++;
                                 $scope.categoryAdded.push($scope.categoryAlphabet + $scope.categoryCount);
                                 firebase.database().ref('category/' + $scope.categoryAlphabet + $scope.categoryCount).set({
@@ -1354,10 +1470,12 @@ app.controller('ProjectsController', ['$rootScope', '$route', '$routeParams', '$
                                 }).catch(function(error) {
                                     console.log(error);
                                     if (error.code === "PERMISSION_DENIED") {
-                                        $scope.notify("auth/no-access-permission", "danger"); /* edit */
+                                        //(#error)auth-no-access-permission
+                                        $scope.notify("You do not have the permission to access firebase database (Error #001)", "danger");
                                     }
-                                }); //end of firebase.database().ref()
+                                });
 
+                                //add new questions to firebase
                                 angular.forEach(categoryValue.questionList, function(questionValue, key) {
                                     $scope.questionCount++;
                                     firebase.database().ref('category/' + $scope.categoryAlphabet + $scope.categoryCount + '/question/' + 
@@ -1371,28 +1489,31 @@ app.controller('ProjectsController', ['$rootScope', '$route', '$routeParams', '$
                                             alphabet: $scope.questionAlphabet
                                         });
                                     }).catch(function(error) {
+                                        console.log(error);
                                         if (error.code === "PERMISSION_DENIED") {
-                                            $scope.notify("auth/no-access-permission","danger"); /* edit */
+                                            //(#error)auth-no-access-permission
+                                            $scope.notify("You do not have the permission to access firebase database (Error #001)", "danger");
                                         }
-                                    }); //end of firebase.database().ref() //adding question to firebase
-                                }); //end of angular.forEach() //looping through question in category
-                            } //end of if() //check category state
-                        }); //end of angular.forEach() //looping through category in projectFacility
+                                    });
+                                }); 
+                            }
+                        });
                             
                         $scope.projectFacilityAdded.push(facilityValue.ID);
                         firebase.database().ref('projectfacility/' + facilityValue.ID).set({
-                                frequency: facilityValue.frequency,
-                                name: facilityValue.name,
-                                ID: facilityValue.ID,
-                                projectID: facilityValue.projectID
+                            frequency: facilityValue.frequency,
+                            name: facilityValue.name,
+                            ID: facilityValue.ID,
+                            projectID: $scope.project.ID
                         }).then(function() {
                             //do nothing
                         }).catch(function(error) {
                             console.log(error);
                             if (error.code === "PERMISSION_DENIED") {
-                                $scope.notify("auth/no-access-permission", "danger"); /* edit */
+                                //(#error)auth-no-access-permission
+                                $scope.notify("You do not have the permission to access firebase database (Error #001)", "danger");
                             }
-                        }); //end of firebase.database().ref() //for projectFacility details
+                        });
 
                         angular.forEach($scope.categoryAdded, function(categoryValue, key) {
                             firebase.database().ref('projectfacility/' + facilityValue.ID + '/category/' + categoryValue)
@@ -1400,11 +1521,13 @@ app.controller('ProjectsController', ['$rootScope', '$route', '$routeParams', '$
                             .then(function() {
                                 //do nothing
                             }).catch(function(error) {
+                                console.log(error);
                                 if (error.code === "PERMISSION_DENIED") {
-                                    $scope.notify("auth/no-access-permission","danger"); /* edit */
+                                    //(#error)auth-no-access-permission
+                                    $scope.notify("You do not have the permission to access firebase database (Error #001)", "danger");
                                 }
-                            }); //end of firebase.database().ref()
-                        }); //end of angular.forEach() //for categoryAdded in each projectFacility
+                            });
+                        });
                         $scope.categoryAdded = [];
                     } else if (facilityValue.deleted === false && facilityValue.ID === undefined) {
                         angular.forEach(facilityValue.checklist, function(categoryValue, key) {
@@ -1422,9 +1545,10 @@ app.controller('ProjectsController', ['$rootScope', '$route', '$routeParams', '$
                                 }).catch(function(error) {
                                     console.log(error);
                                     if (error.code === "PERMISSION_DENIED") {
-                                        $scope.notify("auth/no-access-permission", "danger"); /* edit */
+                                        //(#error)auth-no-access-permission
+                                        $scope.notify("You do not have the permission to access firebase database (Error #001)", "danger");
                                     }
-                                }); //end of firebase.database().ref()
+                                });
 
                                 angular.forEach(categoryValue.questionList, function(questionValue, key) {
                                     $scope.questionCount++;
@@ -1439,13 +1563,15 @@ app.controller('ProjectsController', ['$rootScope', '$route', '$routeParams', '$
                                             alphabet: $scope.questionAlphabet
                                         });
                                     }).catch(function(error) {
+                                        console.log(error);
                                         if (error.code === "PERMISSION_DENIED") {
-                                            $scope.notify("auth/no-access-permission","danger"); /* edit */
+                                            //(#error)auth-no-access-permission
+                                            $scope.notify("You do not have the permission to access firebase database (Error #001)", "danger");
                                         }
-                                    }); //end of firebase.database().ref() //adding question to firebase
-                                }); //end of angular.forEach() //looping through question in category
-                            } //end of if() //check if category is not deleted
-                        }); //end of angular.forEach() //looping through category in checklist
+                                    });
+                                });
+                            }
+                        });
                             
                         $scope.projectFacilityCount++;
                         $scope.projectFacilityAdded.push($scope.projectFacilityAlphabet + $scope.projectFacilityCount);
@@ -1463,9 +1589,10 @@ app.controller('ProjectsController', ['$rootScope', '$route', '$routeParams', '$
                         }).catch(function(error) {
                             console.log(error);
                             if (error.code === "PERMISSION_DENIED") {
-                                $scope.notify("auth/no-access-permission", "danger"); /* edit */
+                                //(#error)auth-no-access-permission
+                                $scope.notify("You do not have the permission to access firebase database (Error #001)", "danger");
                             }
-                        }); //end of firebase.database().ref() //for projectFacility details
+                        });
 
                         angular.forEach($scope.categoryAdded, function(categoryValue, key) {
                             firebase.database().ref('projectfacility/' + $scope.projectFacilityAlphabet + $scope.projectFacilityCount 
@@ -1473,20 +1600,29 @@ app.controller('ProjectsController', ['$rootScope', '$route', '$routeParams', '$
                             .then(function() {
                                 //do nothing
                             }).catch(function(error) {
+                                console.log(error);
                                 if (error.code === "PERMISSION_DENIED") {
-                                    $scope.notify("auth/no-access-permission","danger"); /* edit */
+                                    //(#error)auth-no-access-permission
+                                    $scope.notify("You do not have the permission to access firebase database (Error #001)", "danger");
                                 }
-                            }); //end of firebase.database().ref()
-                        }); //end of angular.forEach() //for categoryAdded in each projectFacility
+                            });
+                        });
                         $scope.categoryAdded = [];
-                    } //end of if() //check if facility is old/new and deleted/notdeleted
-                }); //end of angular.forEach() //looping through projectFacility in project
-                    
+                    }
+                });
+                
+                //update project details    
                 if ($scope.MCSTS === undefined)
                     $scope.MCSTS = "";
                 
                 var newDate = new Date();
                 var datetime = newDate.dayNow() + " @ " + newDate.timeNow();
+                
+                /***** remove *****/
+                if ($scope.project.createdAt === undefined)
+                    $scope.project.createdAt = datetime;
+                if ($scope.project.createdBy === undefined)
+                    $scope.project.createdBy = $scope.user.ID;
 
                 firebase.database().ref('project/' + $scope.project.ID).set({
                     name: $scope.project.name,
@@ -1512,12 +1648,13 @@ app.controller('ProjectsController', ['$rootScope', '$route', '$routeParams', '$
                         .then(function() {
                             //do nothing
                         }).catch(function(error) {
-                            error = true;
+                            console.log(error);
                             if (error.code === "PERMISSION_DENIED") {
-                                $scope.notify("auth/no-access-permission","danger"); /* edit */
+                                //(#error)auth-no-access-permission
+                                $scope.notify("You do not have the permission to access firebase database (Error #001)", "danger");
                             }
                         });
-                    }); //end of angular.forEach()
+                    });
 
                     if (!error) {
                         $location.path("/projects").search("edit",$scope.project.name);
@@ -1527,18 +1664,21 @@ app.controller('ProjectsController', ['$rootScope', '$route', '$routeParams', '$
                 }).catch(function(error) {
                     console.log(error);
                     if (error.code === "PERMISSION_DENIED") {
-                        $scope.notify("auth/no-access-permission", "danger"); /* edit */
+                        //(#error)auth-no-access-permission
+                        $scope.notify("You do not have the permission to access firebase database (Error #001)", "danger");
                     }
-                }); //end of firebase.database().ref //updating project details
-                    
+                });  
             } else {
-                $scope.notify("auth/count-does-not-exist", "danger"); /* edit */
-            } //end of if() //check if successfully gotten count from database
-        }).catch(function(error) {
-            if (error.code === "PERMISSION_DENIED") {
-                $scope.notify("auth/no-access-permission", "danger"); /* edit */
+                //(#error)database-count-does-not-exist
+                $scope.notify("database-count-not-found (Error #003)", "danger"); /* edit */
             }
-        }); //end of firebase.database().ref() //getting count from database
+        }).catch(function(error) {
+            console.log(error);
+            if (error.code === "PERMISSION_DENIED") {
+                //(#error)auth-no-access-permission
+                $scope.notify("You do not have the permission to access firebase database (Error #001)", "danger");
+            }
+        });
     } //end of $scope.saveProject()
         
 }]);

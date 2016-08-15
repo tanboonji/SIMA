@@ -21,7 +21,7 @@
                 <a href="#/edit-profile">
                     <span class="profile-link">{{user.showName}}</span>
                 </a>
-                <button class="logout-btn" type="button" ng-click="logout()">
+                <button class="btn btn-default logout-btn" style="margin-top:-5px;" type="button" ng-click="logout()">
                     Log Out
                 </button>
             </div>
@@ -30,7 +30,6 @@
 </header>
 
 <div class="edit-profile container">
-
     <div class="overlay" ng-show="popupform" ng-click="closeOverlay()">
         <!-- Password Popup Div Starts Here -->
         <div class="passwordform overlay-popup" ng-click="openOverlay($event)">
@@ -60,58 +59,51 @@
         <!-- Password Popup Div Ends Here -->
     </div>
 
-
     <h3 class="title">Edit Profile</h3>
     <form class="form-horizontal">
-
         <div class="row">
             <label class="control-label col-md-2">ID</label>
             <div class="col-md-6 margin-top-6">
                 <input type="email" ng-model="user.ID" class="form-control" disabled/>
             </div>
         </div>
-
         <div class="row margin-top-25">
             <label class="control-label col-md-2">Name</label>
             <div class="col-md-6 margin-top-6">
                 <input type="email" ng-model="user.name" class="form-control" disabled/>
             </div>
         </div>
-
         <div class="row margin-top-25">
             <label class="control-label col-md-2">Role</label>
             <div class="col-md-6 margin-top-6">
                 <input type="email" ng-model="user.role" class="form-control" disabled/>
             </div>
         </div>
-
         <div class="row margin-top-25">
             <label class="control-label col-md-2">Email</label>
             <div class="col-md-6" ng-class="{'has-error': staffEmailEmpty}">
                 <input type="email" ng-model="user.email" class="form-control" placeholder="Enter staff email" required/>
                 <span ng-show="staffEmailEmpty" class="help-block margin-bottom-0">
-                    Email is required.
+                    Your email is required.
                 </span>
-
             </div>
         </div>
-
         <div class="row margin-top-25">
             <label class="control-label col-md-2">Phone</label>
             <div class="col-md-6" ng-class="{'has-error': staffPhoneError}">
-                <input type="text" id="phoneNo" ng-pattern="/^[\d]{8}$/" ng-model="user.phone" class="form-control" placeholder="Enter staff phone number" required/>
+                <input type="text" id="phoneNo" ng-pattern="/^[\d]{8}$/" ng-model="user.phone" 
+                       class="form-control" placeholder="Enter staff phone number" required/>
                 <span ng-show="staffPhoneEmpty" class="help-block margin-bottom-0">
-                    Phone number is required.
+                    Your phone number is required.
                 </span>
                 <span ng-show="staffPhoneDigits" class="help-block margin-bottom-0">
-                    Invalid characters. Only digits allowed.
+                    Phone number contains invalid characters, only digits allowed.
                 </span>
                 <span ng-show="staffPhoneLength" class="help-block margin-bottom-0">
-                    Must be 8 digits in length.
+                    Phone number must be 8 digits in length.
                 </span>
             </div>
         </div>
-
         <div class="row margin-top-25">
             <label class="control-label col-md-2">Password</label>
             <div class="col-md-6" ng-class="{'has-error': staffPhoneError}">
@@ -122,7 +114,6 @@
 
             </div>
         </div>
-
         <div class="row margin-top-25 margin-bottom-50">
             <div class="col-md-offset-2 col-md-10">
                 <button class="btn btn-primary" type="button" ng-click="goToDashboard()">
