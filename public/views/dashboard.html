@@ -171,7 +171,7 @@
                                             <input type="text" class="form-control group-input-view" ng-model="q.name"
                                                 placeholder="Enter question name" disabled>
                                         </div>
-                                        <div class="btn-group btn-group-justified col-md-12 margin-bottom-13" 
+                                        <div class="btn-group btn-group-justified col-md-12" 
                                              role="group" aria-label="..." ng-show="q.isMCQ">
                                             <div class="btn-group" role="group">
                                                 <button type="button" class="btn" 
@@ -186,7 +186,7 @@
                                                         ng-class="{'btn-default': !q.isNo,'btn-primary': q.isNo}" disabled>No</button>
                                             </div>
                                         </div>
-                                        <div class="btn-group btn-group-justified col-md-12 margin-bottom-13" 
+                                        <div class="btn-group btn-group-justified col-md-12" 
                                              role="group" aria-label="..." ng-show="!q.isMCQ">
                                             <div class="btn-group" role="group">
                                                 <button type="button" class="btn btn-disabled" disabled>Yes</button>
@@ -198,11 +198,11 @@
                                                 <button type="button" class="btn btn-disabled" disabled>No</button>
                                             </div>
                                         </div>
-                                        <div class="col-md-12 margin-bottom-13" ng-show="q.hasImage">
+                                        <div class="col-md-12 margin-top-13" ng-show="q.hasImage">
                                             <img src="{{q.image}}" style="width:150px;height:150px;">
                                         </div>
-                                        <div class="col-md-12">
-                                            {{q.comments}}
+                                        <div class="col-md-12" ng-class="{'margin-top-7': q.hasComment}">
+                                            <b>{{q.comments}}</b>
                                         </div>
                                         <div class="force-height-10 noselect">JustNeededSomeExtraSpaceForStyleIssue.ToBeEdited</div>
                                     </div>

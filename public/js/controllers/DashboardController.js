@@ -304,6 +304,8 @@ app.controller('DashboardController', ['$rootScope', '$route', '$routeParams', '
                                         default:
                                             break;
                                     }
+                                    if (questionValue.comments !== "" && questionValue.comments !== undefined)
+                                        questionValue.hasComment = true;
                                     if (questionValue.type === "MCQ")
                                         questionValue.isMCQ = true;
                                     if (questionValue.image !== "")
