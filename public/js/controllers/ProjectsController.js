@@ -242,15 +242,13 @@ app.controller('ProjectsController', ['$rootScope', '$route', '$routeParams', '$
                         projectValue.TMName = $scope.staffList[index].name;
                         var index = $scope.staffList.map(function(x) {return x.ID}).indexOf(projectValue.CM);
                         projectValue.CMName = $scope.staffList[index].name;
-                        tempList.push(projectValue);
-                    });
-                    $scope.projectList = tempList;
-                    angular.forEach($scope.projectList, function(projectValue, key) {
                         if (projectValue.deletedAt !== undefined)
                             projectValue.deleted = true;
                         else
                             projectValue.deleted = false;
+                        tempList.push(projectValue);
                     });
+                    $scope.projectList = tempList;
                     $scope.$apply();
                 }).catch(function(error) {
                     console.log(error);
@@ -281,12 +279,14 @@ app.controller('ProjectsController', ['$rootScope', '$route', '$routeParams', '$
     
     /********************
     *** Magic Suggest ***
+    **** Project Add ****
     ********************/
     
     if ($location.path() === "/add-project") {
         $scope.staffList = [];
 
         firebase.database().ref('staff/').once('value').then(function (snapshot) {
+            
             snapshot.forEach(function(staffValue) {
                 if (staffValue.val().status === "Active")
                     $scope.staffList.push("(" + staffValue.val().ID + ") " + staffValue.val().name);
@@ -318,6 +318,7 @@ app.controller('ProjectsController', ['$rootScope', '$route', '$routeParams', '$
         
     /********************
     ***** Checklist *****
+    **** Project Add ****
     ********************/
     
     $scope.frequencyList = ["Daily","Weekly","Monthly","Quarterly","Yearly"];
@@ -380,33 +381,9 @@ app.controller('ProjectsController', ['$rootScope', '$route', '$routeParams', '$
         $scope.facilityList.splice(index,1);
     };
         
-    $scope.addEditCategory = function() {
-        $scope.categoryCount++;
-        var newQuestion = {name:"", formID:0, no:"a", type:"MCQ"};
-        var newCategory = {name:"", formID:$scope.categoryCount, no:$scope.categoryCount+1,
-            questionCount:0, question:[newQuestion], show:true};
-        $scope.checklist.push(newCategory);
-    };
-        
-    $scope.removeCategory = function(category) {
-        if ($scope.categoryCount !== 0) {
-            category.show = false;
-            $scope.categoryCount--;
-            
-            var count = 0;
-            for(var i = 0; i < $scope.checklist.length; i++) {
-                if ($scope.checklist[i].show === false) {
-                    count++;
-                } else {
-                    $scope.checklist[i].formID = i-count;
-                    $scope.checklist[i].no = i+1-count;
-                }
-            }
-        }
-    };
-        
     /********************
     **** Drag & Drop ****
+    **** Project Add ****
     ********************/
     
     if ($location.path() === "/add-project") {
@@ -454,14 +431,13 @@ app.controller('ProjectsController', ['$rootScope', '$route', '$routeParams', '$
         firebase.database().ref('facility').once('value').then(function (snapshot, error) {
             var tempList = [];
             angular.forEach(snapshot.val(), function(facilityValue, key) {
+                if (facilityValue.deletedAt !== undefined)
+                    facilityValue.deleted = true;
+                else
+                    facilityValue.deleted = false;
                 tempList.push(facilityValue);
             });
             $scope.facilityList = tempList;
-            angular.forEach($scope.facilityList, function(facilityValue, key) {
-                if (facilityValue.deletedAt !== undefined) {
-                    facilityValue.deleted = true;
-                }
-            });
             $scope.$apply();
         }).catch(function(error) {
             console.log(error);
@@ -651,7 +627,6 @@ app.controller('ProjectsController', ['$rootScope', '$route', '$routeParams', '$
                 $scope.projectFacilityCount = snapshot.val().projectFacilityCount.count;
 
                 $scope.projectCount++;
-                $scope.projectFacilityCount++;
 
                 angular.forEach($scope.facilityAddedList, function(facilityValue, key) {
                     angular.forEach(facilityValue.checklist, function(categoryValue, key) {
@@ -757,11 +732,8 @@ app.controller('ProjectsController', ['$rootScope', '$route', '$routeParams', '$
                     name: $scope.name,
                     ID: $scope.projectAlphabet + $scope.projectCount,
                     BUH: $scope.BUHID,
-                    BUHName: $scope.BUHName,
                     TM: $scope.TMID,
-                    TMName: $scope.TMName,
                     CM: $scope.CMID,
-                    CMName: $scope.CMName,
                     address: $scope.address,
                     MCSTS: $scope.MCSTS,
                     createdAt: datetime,
@@ -797,7 +769,7 @@ app.controller('ProjectsController', ['$rootScope', '$route', '$routeParams', '$
 
                     //redirect to projects if add success
                     if (!error) {
-                        $location.path("/projects").search("add",$scope.name);
+                        $location.path("/projects").search("add",$scope.name).search("projectID",null).search("edit",null);
                         $route.reload();
                     }
 
@@ -886,12 +858,6 @@ app.controller('ProjectsController', ['$rootScope', '$route', '$routeParams', '$
         $scope.project.fullBUH = "("+$scope.project.BUH+") " + $scope.project.BUHName;
         $scope.project.fullTM = "("+$scope.project.TM+") " + $scope.project.TMName;
         $scope.project.fullCM = "("+$scope.project.CM+") " + $scope.project.CMName;
-        
-        if ($scope.project.deletedAt !== undefined) {
-            $scope.project.deleted = true;
-        } else {
-            $scope.project.deleted = false;
-        }
 
         angular.forEach($scope.project.projectFacility, function(projectFacilityValue, key) {
             firebase.database().ref("projectfacility/" + projectFacilityValue).once("value").then(function(snapshot) {
@@ -901,24 +867,21 @@ app.controller('ProjectsController', ['$rootScope', '$route', '$routeParams', '$
                     newProjectFacility.categoryCount = Object.keys(snapshot.val().category).length;
                     var categoryCount = -1;
                     angular.forEach(snapshot.val().category, function(categoryValue, key) {
-                        firebase.database().ref("category/" + categoryValue).once("value").then(function(snapshot) {
+                        firebase.database().ref("category/" + categoryValue).once("value").then(function(categorySnapshot) {
                             if (snapshot.val() != null) {
                                 categoryCount++;
-                                newProjectFacility.checklist.push(snapshot.val());
+                                newProjectFacility.checklist.push(categorySnapshot.val());
                                 newProjectFacility.checklist[categoryCount].questionList = [];
-                                newProjectFacility.checklist[categoryCount].questionCount = 
-                                    Object.keys(snapshot.val().question).length;
+                                newProjectFacility.checklist[categoryCount].questionCount = Object.keys(categorySnapshot.val().question).length;
                                 newProjectFacility.checklist[categoryCount].no = categoryCount+1;
                                 newProjectFacility.checklist[categoryCount].formID = categoryCount;
                                 var questionCount = -1;
-                                angular.forEach(snapshot.val().question, function(questionValue, key) {
+                                angular.forEach(categorySnapshot.val().question, function(questionValue, key) {
                                     newProjectFacility.checklist[categoryCount].questionList.push(questionValue);
                                     questionCount++;
                                     var questionNo = 'abcdefghijklmnopqrstuvwxyz'[questionCount];
-                                    newProjectFacility.checklist[categoryCount].questionList[questionCount].formID = 
-                                        questionCount;
-                                    newProjectFacility.checklist[categoryCount].questionList[questionCount].no = 
-                                        questionNo;
+                                    newProjectFacility.checklist[categoryCount].questionList[questionCount].formID = questionCount;
+                                    newProjectFacility.checklist[categoryCount].questionList[questionCount].no = questionNo;
                                     $scope.$apply();
                                 });
                             } else {
@@ -969,23 +932,24 @@ app.controller('ProjectsController', ['$rootScope', '$route', '$routeParams', '$
                 $scope.project = snapshot.val();
                 $scope.project.projectFacilityList = [];
                 
-                firebase.database().ref("staff").once("value").then(function(snapshot) {
+                firebase.database().ref("staff").once("value").then(function(staffSnapshot) {
                     tempList = [];
-                    angular.forEach(snapshot.val(), function(staffValue, projectKey) {
+                    angular.forEach(staffSnapshot.val(), function(staffValue, projectKey) {
                         tempList.push(staffValue);
                     });
-                    $scope.staffList = tempList;
-                    var index = $scope.staffList.map(function(x) {return x.ID}).indexOf($scope.project.BUH);
-                    $scope.project.BUHName = $scope.staffList[index].name;
-                    var index = $scope.staffList.map(function(x) {return x.ID}).indexOf($scope.project.TM);
-                    $scope.project.TMName = $scope.staffList[index].name;
-                    var index = $scope.staffList.map(function(x) {return x.ID}).indexOf($scope.project.CM);
-                    $scope.project.CMName = $scope.staffList[index].name;
+                    var index = tempList.map(function(x) {return x.ID}).indexOf($scope.project.BUH);
+                    $scope.project.BUHName = tempList[index].name;
+                    var index = tempList.map(function(x) {return x.ID}).indexOf($scope.project.TM);
+                    $scope.project.TMName = tempList[index].name;
+                    var index = tempList.map(function(x) {return x.ID}).indexOf($scope.project.CM);
+                    $scope.project.CMName = tempList[index].name;
+                    
+                    $scope.project.fullBUH = "("+$scope.project.BUH+") " + $scope.project.BUHName;
+                    $scope.project.fullTM = "("+$scope.project.TM+") " + $scope.project.TMName;
+                    $scope.project.fullCM = "("+$scope.project.CM+") " + $scope.project.CMName;
+                    
+                    $scope.loadMagicSuggest();
                 });
-                
-                $scope.project.fullBUH = "("+$scope.project.BUH+") " + $scope.project.BUHName;
-                $scope.project.fullTM = "("+$scope.project.TM+") " + $scope.project.TMName;
-                $scope.project.fullCM = "("+$scope.project.CM+") " + $scope.project.CMName;
                 
                 if ($scope.project.deletedAt !== undefined) {
                     $scope.project.deleted = true;
@@ -1000,28 +964,26 @@ app.controller('ProjectsController', ['$rootScope', '$route', '$routeParams', '$
                             var index = $scope.facilityList.map(function(x) {return x.name}).indexOf(newProjectFacility.name);
                             $scope.facilityList.splice(index,1);
                         }
-                        newProjectFacility.deleted = false;
-                        newProjectFacility.checklist = [];
                         if (snapshot.val() != null) {
+                            newProjectFacility.deleted = false;
+                            newProjectFacility.checklist = [];
                             newProjectFacility.categoryCount = -1;
                             angular.forEach(snapshot.val().category, function(categoryValue, key) {
-                                firebase.database().ref("category/" + categoryValue).once("value").then(function(snapshot) {
-                                    if (snapshot.val() != null) {
+                                firebase.database().ref("category/" + categoryValue).once("value").then(function(categorySnapshot) {
+                                    if (categorySnapshot.val() != null) {
                                         var categoryCount = ++newProjectFacility.categoryCount;
-                                        newProjectFacility.checklist.push(snapshot.val());
+                                        newProjectFacility.checklist.push(categorySnapshot.val());
                                         newProjectFacility.checklist[categoryCount].deleted = false;
                                         newProjectFacility.checklist[categoryCount].questionList = [];
                                         newProjectFacility.checklist[categoryCount].no = categoryCount+1;
                                         newProjectFacility.checklist[categoryCount].formID = categoryCount;
                                         newProjectFacility.checklist[categoryCount].questionCount = -1;
-                                        angular.forEach(snapshot.val().question, function(questionValue, key) {
+                                        angular.forEach(categorySnapshot.val().question, function(questionValue, key) {
                                             newProjectFacility.checklist[categoryCount].questionList.push(questionValue);
                                             var questionCount = ++newProjectFacility.checklist[categoryCount].questionCount;
                                             var questionNo = 'abcdefghijklmnopqrstuvwxyz'[questionCount];
-                                            newProjectFacility.checklist[categoryCount].questionList[questionCount].formID = 
-                                                questionCount;
-                                            newProjectFacility.checklist[categoryCount].questionList[questionCount].no = 
-                                                questionNo;
+                                            newProjectFacility.checklist[categoryCount].questionList[questionCount].formID = questionCount;
+                                            newProjectFacility.checklist[categoryCount].questionList[questionCount].no = questionNo;
                                             $scope.$apply();
                                         });
                                     } else {
@@ -1089,11 +1051,11 @@ app.controller('ProjectsController', ['$rootScope', '$route', '$routeParams', '$
     **** Project Edit *****
     **********************/
     
-    if ($location.path() === "/edit-project") {
+    $scope.loadMagicSuggest = function() {
         $scope.staffList = [];
 
         firebase.database().ref('staff/').once('value').then(function (snapshot) {
-
+            
             snapshot.forEach(function(staffValue) {
                 if (staffValue.val().status === "Active")
                     $scope.staffList.push("(" + staffValue.val().ID + ") " + staffValue.val().name);
@@ -1120,12 +1082,12 @@ app.controller('ProjectsController', ['$rootScope', '$route', '$routeParams', '$
                 placeholder: "Enter project CM",
                 maxSelection: 1
             });
-        
+
             $scope.BUH.setValue([$scope.project.fullBUH]);
             $scope.TM.setValue([$scope.project.fullTM]);
             $scope.CM.setValue([$scope.project.fullCM]);
         });
-    }
+    };
         
     /*********************
     ***** Checklist ******
@@ -1195,27 +1157,26 @@ app.controller('ProjectsController', ['$rootScope', '$route', '$routeParams', '$
         firebase.database().ref("facility").orderByChild("name").equalTo(facilityName).once("value").then(function(snapshot) {
             if (snapshot.val() != null) {
                 angular.forEach(snapshot.val(), function(facilityValue, key) {
-                    $scope.project.projectFacilityList[0].ID = facilityValue.ID;
                     $scope.project.projectFacilityList[0].category = facilityValue.category;
                 });
                 $scope.project.projectFacilityList[0].categoryCount = -1;
                 $scope.project.projectFacilityList[0].deleted = false;
                 $scope.project.projectFacilityList[0].checklist = [];
                 angular.forEach($scope.project.projectFacilityList[0].category, function(categoryID, key) {
-                    firebase.database().ref("category/" + categoryID).once("value").then(function(snapshot) {
-                        if (snapshot.val() != null) {
+                    firebase.database().ref("category/" + categoryID).once("value").then(function(categorySnapshot) {
+                        if (categorySnapshot.val() != null) {
                             $scope.project.projectFacilityList[0].categoryCount++;
                             var categoryCount = $scope.project.projectFacilityList[0].categoryCount;
                             $scope.project.projectFacilityList[0].checklist.push({});
                             $scope.project.projectFacilityList[0].checklist[categoryCount].deleted = false;
-                            $scope.project.projectFacilityList[0].checklist[categoryCount].name = snapshot.val().name;
-                            $scope.project.projectFacilityList[0].checklist[categoryCount].ID = snapshot.val().ID;
+                            $scope.project.projectFacilityList[0].checklist[categoryCount].name = categorySnapshot.val().name;
+                            $scope.project.projectFacilityList[0].checklist[categoryCount].ID = categorySnapshot.val().ID;
                             $scope.project.projectFacilityList[0].checklist[categoryCount].no = categoryCount+1;
                             $scope.project.projectFacilityList[0].checklist[categoryCount].formID = categoryCount;
                             $scope.project.projectFacilityList[0].checklist[categoryCount].questionCount = -1;
                             $scope.project.projectFacilityList[0].checklist[categoryCount].questionList = [];
 
-                            angular.forEach(snapshot.val().question, function(questionValue, key) {
+                            angular.forEach(categorySnapshot.val().question, function(questionValue, key) {
                                 $scope.project.projectFacilityList[0].checklist[categoryCount].questionList.push({});
                                 $scope.project.projectFacilityList[0].checklist[categoryCount].questionCount++;
                                 var questionCount = $scope.project.projectFacilityList[0].checklist[categoryCount].questionCount;
@@ -1297,12 +1258,12 @@ app.controller('ProjectsController', ['$rootScope', '$route', '$routeParams', '$
     }
     
     $scope.deleteProject = function() {
-        $scope.project.deleted = true;
         var newDate = new Date();
         var datetime = newDate.dayNow() + " @ " + newDate.timeNow();
         firebase.database().ref('project/' + $scope.project.ID + "/deletedAt").set(datetime).then(function() {
             firebase.database().ref('project/' + $scope.project.ID + "/deletedBy").set($scope.user.ID).then(function() {
                 $scope.notify("Successfully deleted \"" + $scope.project.name + "\" facility","success");
+                $scope.project.deleted = true;
             }).catch(function(error) {
                 console.log(error);
                 if (error.code === "PERMISSION_DENIED") {
@@ -1326,9 +1287,9 @@ app.controller('ProjectsController', ['$rootScope', '$route', '$routeParams', '$
     };
         
     $scope.restoreProject = function() {
-        $scope.project.deleted = false;
         firebase.database().ref('project/' + $scope.project.ID + "/deletedAt").set(null).then(function() {
             $scope.notify("Successfully restored \"" + $scope.project.name + "\" facility","success");
+            $scope.project.deleted = false;
         }).catch(function(error) {
             console.log(error);
             if (error.code === "PERMISSION_DENIED") {
@@ -1452,10 +1413,11 @@ app.controller('ProjectsController', ['$rootScope', '$route', '$routeParams', '$
                 angular.forEach($scope.project.projectFacilityList, function(facilityValue, key) {
                     if (facilityValue.deleted === true && facilityValue.ID !== undefined) {
                         //deleted category from firebase
-                        var projectFacilityRef = firebase.database().ref('projectFacility/' + facilityValue.ID);
+                        var projectFacilityRef = firebase.database().ref('projectfacility/' + facilityValue.ID);
                         projectFacilityRef.remove().then(function() {
                             //do nothing
                         }).catch(function(error) {
+                            console.log("here");
                             console.log(error);
                             if (error.code === "PERMISSION_DENIED") {
                                 //(#error)firebase-permission-denied
@@ -1590,6 +1552,7 @@ app.controller('ProjectsController', ['$rootScope', '$route', '$routeParams', '$
                             }
                         });
                             
+                        //update existing projectFacility
                         $scope.projectFacilityAdded.push(facilityValue.ID);
                         firebase.database().ref('projectfacility/' + facilityValue.ID).set({
                             frequency: facilityValue.frequency,
@@ -1737,11 +1700,8 @@ app.controller('ProjectsController', ['$rootScope', '$route', '$routeParams', '$
                     name: $scope.project.name,
                     ID: $scope.project.ID,
                     BUH: $scope.BUHID,
-                    BUHName: $scope.BUHName,
                     TM: $scope.TMID,
-                    TMName: $scope.TMName,
                     CM: $scope.CMID,
-                    CMName: $scope.CMName,
                     address: $scope.project.address,
                     MCSTS: $scope.project.MCSTS,
                     updatedAt: datetime,
@@ -1770,7 +1730,7 @@ app.controller('ProjectsController', ['$rootScope', '$route', '$routeParams', '$
                     });
 
                     if (!error) {
-                        $location.path("/projects").search("edit",$scope.project.name);
+                        $location.path("/projects").search("edit",$scope.project.name).search("projectID",null).search("add",null);
                         $route.reload();
                     }
 

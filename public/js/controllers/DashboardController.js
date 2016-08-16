@@ -382,6 +382,10 @@ app.controller('DashboardController', ['$rootScope', '$route', '$routeParams', '
         $scope.checklistShow = false;
         $scope.overlay = true;
         $scope.record = record;
+        
+        $scope.record.fullBUH = "(" + $scope.record.BUH + ") " + $scope.record.BUHName;
+        $scope.record.fullTM = "(" + $scope.record.TM + ") " + $scope.record.TMName;
+        $scope.record.fullCM = "(" + $scope.record.CM + ") " + $scope.record.CMName;
     }
     
 }]);
