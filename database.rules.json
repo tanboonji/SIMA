@@ -1,60 +1,76 @@
-{
-  //superA - root.child('admin/'+ auth.uid + '/isSuperAdmin') == true
-  //HO or admin or superA - root.child('admin').child(auth.uid).exists()
-  //admin - root.child('adminstaff').child(auth.uid).exists()
-  //BUH -  root.child('staff/'+ auth.uid + '/role').val() == 'BUH'
-  //ownself - root.child('staff/'+$staff + '/authID').val() == auth.uid
-  
-  "rules": {
-   	   "facility":{ ".read": true, ".write" : true, ".indexOn": "name"},
-          "project":{ ".read": true, ".write" : true, ".indexOn": "CM"},
-            "category":{ ".read": true, ".write" : true},
-          "projectfacility":{ ".read": true, ".write" : true},
-              "record":{ ".read": true, ".write" : true},
+{"rules":
+ {
+     // to read: auth needed
+     // to write: need to be admin !Super
+     "facility":{
+         ".read":"root.child('admin/'+ auth.uid + '/isSuperAdmin').val() != true && root.child('admin').child(auth.uid).exists()",
+         ".write":"root.child('admin/'+ auth.uid + '/isSuperAdmin').val() != true && root.child('admin').child(auth.uid).exists()",
+         ".indexOn":"name"},
+   
+     // to read: auth needed
+     // to write: need to be admin !Super || BUH
+     "project":{
+         ".read":"auth !=null",
+         ".write":"root.child('admin/'+ auth.uid + '/isSuperAdmin').val() != true && (root.child('admin').child(auth.uid).exists() || root.child('staff/'+ auth.uid + '/role').val() == 'BUH')",
+         ".indexOn":"CM"},
+     
+     // to read: auth needed
+     // to write: need to be admin !Super || BUH
+     "category":{
+         ".read":"auth !=null",
+         ".write":"root.child('admin/'+ auth.uid + '/isSuperAdmin').val() != true && (root.child('admin').child(auth.uid).exists() || root.child('staff/'+ auth.uid + '/role').val() == 'BUH')"},
+    
+     // to read: auth needed
+     // to write: need to be admin !Super || BUH
+     "projectfacility":{
+         ".read":"auth !=null",
+         ".write":"root.child('admin/'+ auth.uid + '/isSuperAdmin').val() != true && (root.child('admin').child(auth.uid).exists() || root.child('staff/'+ auth.uid + '/role').val() == 'BUH')"},
+    
+     // as long as not super-admin
+     "record":{
+         ".read": "auth!=null && root.child('admin/'+ auth.uid + '/isSuperAdmin').val() != true ",
+         ".write": "auth!=null && root.child('admin/'+ auth.uid + '/isSuperAdmin').val() != true "},
+   
+     // to read: auth needed
+     // to write: need to be admin !Super
+     // to write inner : need to be an admin or staff himself
+     "staff":{
+         ".read":"auth !=null",
+         ".write":"root.child('admin/'+ auth.uid + '/isSuperAdmin').val() != true && root.child('admin').child(auth.uid).exists()",
+         ".indexOn":["role","status","ID"],
             
-      // only write here if admin (add new staff, delete)
-      "staff": {
-       ".read": "auth !=null",
-       ".write": "root.child('admin').child(auth.uid).exists()" ,
-      ".indexOn": ["role","status","ID"],
-        "$staff": {
-            //if staff themself (edit) or admin
-            ".write": "root.child('admin/'+ auth.uid).exists() || root.child('staff/'+$staff + '/authID').val() == auth.uid"
-           }
-       },
-      
-       "adminstaff": {
-       ".read": "auth !=null",
-       ".write": "root.child('admin').child(auth.uid).exists()",
-          "$staff": {
-            //if adminstaff themself (edit)
-            ".write": "root.child('admin/'+ auth.uid).exists() || root.child('staff/'+$staff+'/authID').val() == auth.uid"
-           }
-       },
-       // only write here if admin (should be super-admin or admin for HO)
-       "admin": {
-          ".read": "auth != null",
-          ".write": "auth != null"
-  			},
+         "$staff":{
+             ".write":"root.child('admin/'+ auth.uid + '/isSuperAdmin').val() != true && (root.child('admin/'+ auth.uid).exists() || root.child('staff/'+$staff + '/authID').val() == auth.uid)"}},
+   
+     // to read: auth needed
+     // to write: need to be super-admin
+     // to read & write inner : need to be an super-admin or admin himself
+     "adminstaff":{
+         ".read":"auth !=null",
+         ".write":"root.child('admin/'+ auth.uid + '/isSuperAdmin').val()  == true || root.child('adminstaff/' + auth.uid).exists()", 
          
-        "count":{
-          ".read": "root.child('admin/'+ auth.uid).exists() && auth != null",
-             ".write": "root.child('admin/'+ auth.uid).exists()",
-        	"$count": {
-            //can read/write counts only if is admin
-             ".read": "root.child('admin/'+ auth.uid).exists() && auth != null",
-             ".write": "root.child('admin/'+ auth.uid).exists()"
-          }
-        },
-        
-        "logincheck": {
-       ".read": "true",
-       ".write": "root.child('admin/'+ auth.uid).exists()",
-         "$logincheck": {
-              //can read/write counts only if is admin
-               ".read": "root.child('admin/'+ auth.uid).exists() && auth != null",
-               ".write": "root.child('admin/'+ auth.uid).exists() || root.child('logincheck/'+$logincheck+'/ID').val() == root.child('staff/'+ auth.uid + '/ID').val()"
-            }
-    }
-  }
+         "$staff":{
+             ".read":"root.child('admin/'+ auth.uid + '/isSuperAdmin').val() == true || root.child('adminstaff/'+$staff+'/authID').val() == auth.uid",
+             ".write":"root.child('admin/'+ auth.uid + '/isSuperAdmin').val() == true || root.child('adminstaff/'+$staff+'/authID').val() == auth.uid"}},
+      
+     // to read: auth needed
+     // to write: need to be admin
+     "admin":{
+         ".read":"auth != null",
+         ".write":"root.child('admin/'+ auth.uid).exists()"},
+      
+     // to read: auth needed (staff/admins)
+     // to write: need to be (staff/admin)
+     "count":{
+         ".read":"auth != null",
+         ".write":"auth != null"},
+       
+     // to read: all
+     // to write: need to be (staff themself/admin)
+     "logincheck":{
+         ".read":"true",
+         
+         "$logincheck":{
+             ".write":"root.child('admin/'+ auth.uid).exists() || root.child('logincheck/'+$logincheck+'/ID').val() == root.child('staff/'+ auth.uid + '/ID').val()"}}
+ }
 }
