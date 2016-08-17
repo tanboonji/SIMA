@@ -22,6 +22,24 @@ app.controller('ProjectsController', ['$rootScope', '$route', '$routeParams', '$
     };
         
     /*********************
+    ***** Validation *****
+    *********************/
+        
+    $scope.validation = [];
+    $scope.btnValidate = false;
+        
+    $scope.btnValidateAdd = function() {
+        $scope.validation.push("add");
+        $scope.btnValidate = true;
+    }
+    
+    $scope.btnValidateRemove = function() {
+        $scope.validation.pop();
+        if ($scope.validation.length == 0)
+            $scope.btnValidate = false;
+    }
+        
+    /*********************
     *** Authentication ***
     *********************/
         
@@ -456,6 +474,7 @@ app.controller('ProjectsController', ['$rootScope', '$route', '$routeParams', '$
     }
         
     $scope.addFacilityToAddedList = function(facilityName) {
+        $scope.btnValidateAdd();
         $scope.facilityAddedList.unshift({name:facilityName,frequency:"Daily"});
         
         firebase.database().ref("facility").orderByChild("name").equalTo(facilityName).once("value").then(function(snapshot) {
@@ -491,6 +510,7 @@ app.controller('ProjectsController', ['$rootScope', '$route', '$routeParams', '$
                                 $scope.facilityAddedList[0].checklist[categoryCount].question[questionCount].type = questionValue.type;
                                 $scope.$apply();
                             });
+                            $scope.btnValidateRemove();
                         } else {
                             //(#error)database-category-not-found
                             console.log("database-category-not-found");
@@ -1152,6 +1172,7 @@ app.controller('ProjectsController', ['$rootScope', '$route', '$routeParams', '$
     }
         
     $scope.addFacilityToProjectList = function(facilityName) {
+        $scope.btnValidateAdd();
         $scope.project.projectFacilityList.unshift({name:facilityName,frequency:"Daily"});
         
         firebase.database().ref("facility").orderByChild("name").equalTo(facilityName).once("value").then(function(snapshot) {
@@ -1188,6 +1209,7 @@ app.controller('ProjectsController', ['$rootScope', '$route', '$routeParams', '$
                                 $scope.project.projectFacilityList[0].checklist[categoryCount].questionList[questionCount].type = questionValue.type;
                                 $scope.$apply();
                             });
+                            $scope.btnValidateRemove();
                         } else {
                             //(#error)database-category-not-found
                             console.log("database-category-not-found");
@@ -1412,7 +1434,23 @@ app.controller('ProjectsController', ['$rootScope', '$route', '$routeParams', '$
                 
                 angular.forEach($scope.project.projectFacilityList, function(facilityValue, key) {
                     if (facilityValue.deleted === true && facilityValue.ID !== undefined) {
-                        //deleted category from firebase
+                        //deleted facility from firebase
+                        //delete category in facility
+                        angular.forEach(facilityValue.checklist, function(categoryValue, key) {
+                            var categoryRef = firebase.database().ref('category/' + categoryValue.ID);
+                            categoryRef.remove().then(function() {
+                                //do nothing
+                            }).catch(function(error) {
+                                console.log(error);
+                                if (error.code === "PERMISSION_DENIED") {
+                                    //(#error)firebase-permission-denied
+                                    $scope.notify("You do not have the permission to access this data (Error #001)", "danger");
+                                } else {
+                                    //(#error)unknown-error
+                                    $scope.notify("An unknown error has occured (Error #000)", "danger");
+                                }
+                            });
+                        });
                         var projectFacilityRef = firebase.database().ref('projectfacility/' + facilityValue.ID);
                         projectFacilityRef.remove().then(function() {
                             //do nothing
