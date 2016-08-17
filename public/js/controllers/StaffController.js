@@ -25,7 +25,8 @@ app.controller('StaffController', ['$route', '$rootScope', '$routeParams', '$sco
     *** Authentication ***
     *********************/
         
-	$scope.auth = $firebaseAuth();
+    //current user authentication object
+	$scope.auth = $firebaseAuth(primaryApp.auth());
     //authentication object to create users
     $scope.authObj = $firebaseAuth(secondaryApp.auth());
     
@@ -825,7 +826,9 @@ app.controller('StaffController', ['$route', '$rootScope', '$routeParams', '$sco
         if ($scope.pwdEmpty1 === false && $scope.pwdEmpty2 === false) {
             //if confirm password field is identical, update password        
             $scope.auth.$updatePassword($scope.newPassword).then(function () {
-                alert("You have successfully updated your password");
+                $scope.auth.$signOut();
+                delete $rootScope.user;
+                alert("You have successfully updated your password\n\nPlease login again");
                 $scope.popupform = !$scope.popupform;
             }).catch(function (error) {
                 console.log(error);
@@ -885,7 +888,7 @@ app.controller('StaffController', ['$route', '$rootScope', '$routeParams', '$sco
                     updates["/logincheck/" + $scope.user.ID + '/email'] = $scope.user.email;
                     firebase.database().ref().update(updates);
                     alert("You have successfully updated your profile");
-                    firebase.database().ref('admin/' + $scope.firebaseUser.uid).once('value').then(function (snapshot, error) {
+                    firebase.database().ref('admin/' + $scope.user.authID).once('value').then(function (snapshot, error) {
                         if (snapshot.val() != null) {
                             if (snapshot.val().isSuperAdmin) {
                                     $location.path("/admin").search("edit",null).search("add",null);

@@ -239,91 +239,102 @@ app.controller('DashboardController', ['$rootScope', '$route', '$routeParams', '
 	var ref = firebase.database().ref().child("record");
     
     $scope.refreshRecordList = function() {
-        firebase.database().ref('record').once('value').then(function (recordSnapshot, error) {
-            firebase.database().ref('project').once('value').then(function (projectSnapshot, error) {
-                firebase.database().ref('staff').once('value').then(function (staffSnapshot, error) {
-                    var tempList = [];
-                    angular.forEach(recordSnapshot.val(), function(projectValue, projectKey) {
-                        angular.forEach(projectValue, function(recordValue, recordKey) {
-                            var temp = recordValue;
-                            temp.date = recordKey;
-                            temp.projectID = projectKey;
-                            tempList.push(temp);
-                        });
-                    });
-                    $scope.recordList = tempList;
-                    tempList = [];
-                    angular.forEach(staffSnapshot.val(), function(staffValue, projectKey) {
-                        tempList.push(staffValue);
-                    });
-                    $scope.staffList = tempList;
-                    angular.forEach($scope.recordList, function(recordValue, recordkey) {
-                        recordValue.inspectionDate = $scope.transformDate(recordValue.date);
-                        var projectID = recordValue.projectID;
-                        recordValue.MCSTS = projectSnapshot.val()[projectID].MCSTS;
-                        if (recordValue.MCSTS === "" || recordValue.MCSTS === undefined)
-                            recordValue.MCSTS = "-";
-                        recordValue.name = projectSnapshot.val()[projectID].name;
-                        recordValue.BUH = recordValue.details.BUH;
-                        recordValue.TM = recordValue.details.TM;
-                        recordValue.CM = recordValue.details.CM;
-                        var index = $scope.staffList.map(function(x) {return x.ID}).indexOf(recordValue.BUH);
-                        recordValue.BUHName = $scope.staffList[index].name;
-                        var index = $scope.staffList.map(function(x) {return x.ID}).indexOf(recordValue.TM);
-                        recordValue.TMName = $scope.staffList[index].name;
-                        var index = $scope.staffList.map(function(x) {return x.ID}).indexOf(recordValue.CM);
-                        recordValue.CMName = $scope.staffList[index].name;
-                        recordValue.issueCount = 0;
-                        angular.forEach(recordValue.projectFacility, function(projectFacilityValue, projectFacilitykey) {
-                            var categoryCount = -1;
-                            angular.forEach(projectFacilityValue.category, function(categoryValue, categorykey) {
-                                categoryCount++;
-                                categoryValue.formID = categoryCount;
-                                categoryValue.no = categoryCount+1;
-                                categoryValue.ID = categorykey;
-                                var questionCount = -1;
-                                angular.forEach(categoryValue.question, function(questionValue, questionkey) {
-                                    questionCount++;
-                                    questionValue.formID = questionCount;
-                                    var questionNo = 'abcdefghijklmnopqrstuvwxyz'[questionCount];
-                                    questionValue.no = questionNo;
-                                    questionValue.ID = questionkey;
-                                    if (questionValue.answer === "no" || questionValue.comments.toLowerCase().includes("#issue")) {
-                                        recordValue.issueCount++;
-                                    }
-                                    switch (questionValue.answer) {
-                                        case "no":
-                                            questionValue.isNo = true;
-                                            break;
-                                        case "na":
-                                            questionValue.isNA = true;
-                                            break;
-                                        case "yes":
-                                            questionValue.isYes = true;
-                                            break;
-                                        default:
-                                            break;
-                                    }
-                                    if (questionValue.comments !== "" && questionValue.comments !== undefined)
-                                        questionValue.hasComment = true;
-                                    if (questionValue.type === "MCQ")
-                                        questionValue.isMCQ = true;
-                                    if (questionValue.image !== "")
-                                        questionValue.hasImage = true;
-                                });
+        if ($rootScope.user !== undefined) {
+            firebase.database().ref('record').once('value').then(function (recordSnapshot, error) {
+                firebase.database().ref('project').once('value').then(function (projectSnapshot, error) {
+                    firebase.database().ref('staff').once('value').then(function (staffSnapshot, error) {
+                        var tempList = [];
+                        angular.forEach(recordSnapshot.val(), function(projectValue, projectKey) {
+                            angular.forEach(projectValue, function(recordValue, recordKey) {
+                                var temp = recordValue;
+                                temp.date = recordKey;
+                                temp.projectID = projectKey;
+                                tempList.push(temp);
                             });
                         });
-                        if (recordValue.issueCount === 0)
-                            recordValue.hasIssue = false;
-                        else
-                            recordValue.hasIssue = true;
+                        $scope.recordList = tempList;
+                        tempList = [];
+                        angular.forEach(staffSnapshot.val(), function(staffValue, projectKey) {
+                            tempList.push(staffValue);
+                        });
+                        $scope.staffList = tempList;
+                        angular.forEach($scope.recordList, function(recordValue, recordkey) {
+                            recordValue.inspectionDate = $scope.transformDate(recordValue.date);
+                            var projectID = recordValue.projectID;
+                            recordValue.MCSTS = projectSnapshot.val()[projectID].MCSTS;
+                            if (recordValue.MCSTS === "" || recordValue.MCSTS === undefined)
+                                recordValue.MCSTS = "-";
+                            recordValue.name = projectSnapshot.val()[projectID].name;
+                            recordValue.BUH = recordValue.details.BUH;
+                            recordValue.TM = recordValue.details.TM;
+                            recordValue.CM = recordValue.details.CM;
+                            var index = $scope.staffList.map(function(x) {return x.ID}).indexOf(recordValue.BUH);
+                            recordValue.BUHName = $scope.staffList[index].name;
+                            var index = $scope.staffList.map(function(x) {return x.ID}).indexOf(recordValue.TM);
+                            recordValue.TMName = $scope.staffList[index].name;
+                            var index = $scope.staffList.map(function(x) {return x.ID}).indexOf(recordValue.CM);
+                            recordValue.CMName = $scope.staffList[index].name;
+                            recordValue.issueCount = 0;
+                            angular.forEach(recordValue.projectFacility, function(projectFacilityValue, projectFacilitykey) {
+                                var categoryCount = -1;
+                                angular.forEach(projectFacilityValue.category, function(categoryValue, categorykey) {
+                                    categoryCount++;
+                                    categoryValue.formID = categoryCount;
+                                    categoryValue.no = categoryCount+1;
+                                    categoryValue.ID = categorykey;
+                                    var questionCount = -1;
+                                    angular.forEach(categoryValue.question, function(questionValue, questionkey) {
+                                        questionCount++;
+                                        questionValue.formID = questionCount;
+                                        var questionNo = 'abcdefghijklmnopqrstuvwxyz'[questionCount];
+                                        questionValue.no = questionNo;
+                                        questionValue.ID = questionkey;
+                                        if (questionValue.answer === "no" || questionValue.comments.toLowerCase().includes("#issue")) {
+                                            recordValue.issueCount++;
+                                        }
+                                        switch (questionValue.answer) {
+                                            case "no":
+                                                questionValue.isNo = true;
+                                                break;
+                                            case "na":
+                                                questionValue.isNA = true;
+                                                break;
+                                            case "yes":
+                                                questionValue.isYes = true;
+                                                break;
+                                            default:
+                                                break;
+                                        }
+                                        if (questionValue.comments !== "" && questionValue.comments !== undefined)
+                                            questionValue.hasComment = true;
+                                        if (questionValue.type === "MCQ")
+                                            questionValue.isMCQ = true;
+                                        if (questionValue.image !== "")
+                                            questionValue.hasImage = true;
+                                    });
+                                });
+                            });
+                            if (recordValue.issueCount === 0)
+                                recordValue.hasIssue = false;
+                            else
+                                recordValue.hasIssue = true;
+                        });
+                        $scope.recordList.sort(function(a,b) {
+                            a = a.inspectionDate.split('/').reverse().join('');
+                            b = b.inspectionDate.split('/').reverse().join('');
+                            return a > b ? -1 : a < b ? 1 : 0;
+                        });
+                        $scope.$apply();
+                    }).catch(function(error) {
+                        console.log(error);
+                        if (error.code === "PERMISSION_DENIED") {
+                            //(#error)firebase-permission-denied
+                            $scope.notify("You do not have the permission to access this data (Error #001)", "danger");
+                        } else {
+                            //(#error)unknown-error
+                            $scope.notify("An unknown error has occured (Error #000)", "danger");
+                        }
                     });
-                    $scope.recordList.sort(function(a,b) {
-                        a = a.inspectionDate.split('/').reverse().join('');
-                        b = b.inspectionDate.split('/').reverse().join('');
-                        return a > b ? -1 : a < b ? 1 : 0;
-                    });
-                    $scope.$apply();
                 }).catch(function(error) {
                     console.log(error);
                     if (error.code === "PERMISSION_DENIED") {
@@ -344,16 +355,7 @@ app.controller('DashboardController', ['$rootScope', '$route', '$routeParams', '
                     $scope.notify("An unknown error has occured (Error #000)", "danger");
                 }
             });
-        }).catch(function(error) {
-            console.log(error);
-            if (error.code === "PERMISSION_DENIED") {
-                //(#error)firebase-permission-denied
-                $scope.notify("You do not have the permission to access this data (Error #001)", "danger");
-            } else {
-                //(#error)unknown-error
-                $scope.notify("An unknown error has occured (Error #000)", "danger");
-            }
-        });
+        }
     }; //end of $scope.refreshProjectList()
 
     ref.on('value', function() {

@@ -25,7 +25,8 @@ app.controller('AdminController', ['$route', '$rootScope', '$routeParams', '$sco
     *** Authentication ***
     *********************/
         
-    $scope.auth = $firebaseAuth();
+    //current user authentication object
+    $scope.auth = $firebaseAuth(primaryApp.auth());
     //authentication object to create admins
     $scope.authObj = $firebaseAuth(secondaryApp.auth());
 
@@ -580,7 +581,8 @@ app.controller('AdminController', ['$route', '$rootScope', '$routeParams', '$sco
                                     updatedAt: datetime,
                                     createdAt: datetime,
                                     updatedBy: $scope.user.ID,
-                                    createdBy: $scope.user.ID
+                                    createdBy: $scope.user.ID,
+                                    role: "Admin"
                                 }).then(function () {
                                     console.log(userData.uid + "--> Created");
                                     console.log($scope.firebaseUser.uid + "--> Current");

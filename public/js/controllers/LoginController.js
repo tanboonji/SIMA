@@ -25,7 +25,7 @@ app.controller('LoginController', ['$rootScope', '$routeParams', '$route', '$sco
     *** Authentication ***
     *********************/
         
-    $scope.auth = $firebaseAuth();
+    $scope.auth = $firebaseAuth(primaryApp.auth());
     
     //detech authentication state change (login/logout)
     $scope.auth.$onAuthStateChanged(function(firebaseUser) {
@@ -57,6 +57,7 @@ app.controller('LoginController', ['$rootScope', '$routeParams', '$route', '$sco
 	
     $scope.login = function() {
         if ($scope.staffID !== undefined) {
+            $scope.staffID = $scope.staffID.toUpperCase();
             if (/^[A-Z][0-9]{4}/.test($scope.staffID)) {
                 if ($scope.password !== undefined) {
                     firebase.database().ref('logincheck/' + $scope.staffID).on('value', function(data) {
