@@ -35,8 +35,10 @@ app.controller('ProjectsController', ['$rootScope', '$route', '$routeParams', '$
     
     $scope.btnValidateRemove = function() {
         $scope.validation.pop();
-        if ($scope.validation.length == 0)
+        if ($scope.validation.length === 0) {
             $scope.btnValidate = false;
+            $scope.$apply();
+        }
     }
         
     /*********************
@@ -1437,11 +1439,11 @@ app.controller('ProjectsController', ['$rootScope', '$route', '$routeParams', '$
             $scope.CMID = CM.substr(1,5);
             
             var newCMIndex = $scope.fullStaff.map(function(x) {return x.name}).indexOf($scope.CMName);
-            if ($scope.fullStaff[newCMIndex].hasProject) {
+            var oldCMIndex = $scope.fullStaff.map(function(x) {return x.name}).indexOf($scope.project.oldCM);
+            if ($scope.fullStaff[newCMIndex].hasProject && $scope.fullStaff[oldCMIndex].name !== $scope.fullStaff[newCMIndex].name) {
                 $scope.projectCMInvalid = true;
                 $scope.projectCMError = true;
             } else {
-                var oldCMIndex = $scope.fullStaff.map(function(x) {return x.name}).indexOf($scope.project.oldCM);
                 $scope.oldCM = $scope.fullStaff[oldCMIndex];
                 $scope.newCM = $scope.fullStaff[newCMIndex];
                 $scope.projectCMInvalid = false;

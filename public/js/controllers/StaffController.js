@@ -356,54 +356,58 @@ app.controller('StaffController', ['$route', '$rootScope', '$routeParams', '$sco
         $scope.notify("Successfully saved \"" +$routeParams.edit + "\" staff","success");
     }
 
-    var ref = firebase.database().ref().child("staff");
+    if ($location.path() !== "/edit-profile") {
+        
+        var ref = firebase.database().ref().child("staff");
 
-    $scope.refreshStaffList = function () {
-        firebase.database().ref('staff').once('value').then(function (snapshot, error) {
-            var tempList = {}; //key - numerical ID, value - staff
-            var IDList = []; //to store numerical value of ID
-            var ID;
+        $scope.refreshStaffList = function () {
+            firebase.database().ref('staff').once('value').then(function (snapshot, error) {
+                var tempList = {}; //key - numerical ID, value - staff
+                var IDList = []; //to store numerical value of ID
+                var ID;
 
-            angular.forEach(snapshot.val(), function (staffValue, key) {
-                ID = (staffValue.ID).substr(1);
+                angular.forEach(snapshot.val(), function (staffValue, key) {
+                    ID = (staffValue.ID).substr(1);
 
-                IDList.push(parseInt(ID));
-                tempList[parseInt(ID)] = staffValue;
+                    IDList.push(parseInt(ID));
+                    tempList[parseInt(ID)] = staffValue;
+                });
+
+                $scope.orderById(tempList, IDList);
+                $scope.$apply();
+            }).catch(function (error) {
+                console.log(error);
+                if (error.code === "PERMISSION_DENIED") {
+                    //(#error)firebase-permission-denied
+                    $scope.notify("You do not have the permission to access this data (Error #001)", "danger");
+                } else {
+                    //(#error)unknown-error
+                    $scope.notify("An unknown error has occured (Error #000)", "danger");
+                }
             });
-            
-            $scope.orderById(tempList, IDList);
-            $scope.$apply();
-        }).catch(function (error) {
-            console.log(error);
-            if (error.code === "PERMISSION_DENIED") {
-                //(#error)firebase-permission-denied
-                $scope.notify("You do not have the permission to access this data (Error #001)", "danger");
-            } else {
-                //(#error)unknown-error
-                $scope.notify("An unknown error has occured (Error #000)", "danger");
+        }; //end of $scope.refreshStaffList()
+
+        $scope.orderById = function(tempList, IDList) {
+            var valuekeyList = [];
+
+            //sort by ascending
+            IDList = IDList.sort(function (a, b) {
+                return a - b
+            });
+
+            //insert accordingly to where sorted id matches
+            for (var i = 0; i < IDList.length; i++) {
+                valuekeyList[i] = tempList[IDList[i]];
             }
+
+            $scope.staffList = valuekeyList;
+        };
+
+        ref.on('value', function () {
+            $scope.refreshStaffList();
         });
-    }; //end of $scope.refreshStaffList()
-
-    $scope.orderById = function(tempList, IDList) {
-        var valuekeyList = [];
-
-        //sort by ascending
-        IDList = IDList.sort(function (a, b) {
-            return a - b
-        });
-
-        //insert accordingly to where sorted id matches
-        for (var i = 0; i < IDList.length; i++) {
-            valuekeyList[i] = tempList[IDList[i]];
-        }
-
-        $scope.staffList = valuekeyList;
-    };
-
-    ref.on('value', function () {
-        $scope.refreshStaffList();
-    });
+        
+    }
 
     /*******************
     **** Staff Edit ****

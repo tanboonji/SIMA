@@ -20,6 +20,12 @@ app.controller('FacilitiesController', ['$rootScope', '$route', '$routeParams', 
             newest_on_top: true
         });
     };
+        
+    /*********************
+    ***** Validation *****
+    *********************/
+        
+    $scope.btnValidate = false;
     
     /*********************
     *** Authentication ***
@@ -312,6 +318,7 @@ app.controller('FacilitiesController', ['$rootScope', '$route', '$routeParams', 
     };
         
     $scope.validateAddForm = function() {
+        $scope.btnValidate = true;
         if ($scope.name === undefined || $scope.name === "")
             $scope.facilityNameEmpty = true;
         else
@@ -344,6 +351,8 @@ app.controller('FacilitiesController', ['$rootScope', '$route', '$routeParams', 
         
         if (!error && !$scope.facilityNameEmpty && !$scope.facilityPhotoEmpty)
             $scope.addFacility();
+        else
+            $scope.btnValidate = false;
     }; //end of $scope.validateForm()
     
     $scope.addFacility = function() {
@@ -383,6 +392,8 @@ app.controller('FacilitiesController', ['$rootScope', '$route', '$routeParams', 
                             //(#error)unknown-error
                             $scope.notify("An unknown error has occured (Error #000)", "danger");
                         }
+                        $scope.btnValidate = false;
+                        $scope.$apply();
                     });
 
                     //add question to category
@@ -407,6 +418,8 @@ app.controller('FacilitiesController', ['$rootScope', '$route', '$routeParams', 
                                 //(#error)unknown-error
                                 $scope.notify("An unknown error has occured (Error #000)", "danger");
                             }
+                            $scope.btnValidate = false;
+                            $scope.$apply();
                         });
                     });
                 });
@@ -450,6 +463,8 @@ app.controller('FacilitiesController', ['$rootScope', '$route', '$routeParams', 
                             $scope.photoStatus = 'Unknown error occurred';
                             break;
                     }
+                    $scope.btnValidate = false;
+                    $scope.$apply();
                 }, function() {
                     $scope.downloadURL = uploadTask.snapshot.downloadURL;
 
@@ -488,14 +503,18 @@ app.controller('FacilitiesController', ['$rootScope', '$route', '$routeParams', 
                                     //(#error)unknown-error
                                     $scope.notify("An unknown error has occured (Error #000)", "danger");
                                 }
+                                $scope.btnValidate = false;
+                                $scope.$apply();
                             });
                         });
 
                         if (!error) {
                             $location.path("/facilities").search("add",$scope.name);
                             $route.reload();
-                        };
-
+                        } else {
+                            $scope.btnValidate = false;
+                            $scope.$apply();                            
+                        }
                     }).catch(function(error) {
                         console.log(error);
                         if (error.code === "PERMISSION_DENIED") {
@@ -505,12 +524,16 @@ app.controller('FacilitiesController', ['$rootScope', '$route', '$routeParams', 
                             //(#error)unknown-error
                             $scope.notify("An unknown error has occured (Error #000)", "danger");
                         }
+                        $scope.btnValidate = false;
+                        $scope.$apply();
                     });
                 });
             } else {
                 //(#error)database-count-does-not-exist
                 console.log("database-count-does-not-exist");
                 $scope.notify("An error occured when accessing firebase database (Error #003)", "danger");
+                $scope.btnValidate = false;
+                $scope.$apply();
             }
         }).catch(function(error) {
             console.log(error);
@@ -521,6 +544,8 @@ app.controller('FacilitiesController', ['$rootScope', '$route', '$routeParams', 
                 //(#error)unknown-error
                 $scope.notify("An unknown error has occured (Error #000)", "danger");
             }
+            $scope.btnValidate = false;
+            $scope.$apply();
         });
     }; //end of $scope.addFacility()
     
@@ -760,6 +785,7 @@ app.controller('FacilitiesController', ['$rootScope', '$route', '$routeParams', 
     };
         
     $scope.validateEditForm = function() {
+        $scope.btnValidate = true;
         if ($scope.facility.name === undefined || $scope.facility.name === "")
             $scope.facilityNameEmpty = true;
         else
@@ -795,6 +821,8 @@ app.controller('FacilitiesController', ['$rootScope', '$route', '$routeParams', 
         
         if (!error && !$scope.facilityNameEmpty && !$scope.facilityPhotoEmpty)
             $scope.saveFacility();
+        else
+            $scope.btnValidate = false;
     }; //end of $scope.validateEditForm()
     
     $scope.saveFacility = function() {
@@ -824,6 +852,8 @@ app.controller('FacilitiesController', ['$rootScope', '$route', '$routeParams', 
                                 //(#error)unknown-error
                                 $scope.notify("An unknown error has occured (Error #000)", "danger");
                             }
+                            $scope.btnValidate = false;
+                            $scope.$apply();
                         });
                     } else if (!categoryValue.deleted && categoryValue.ID !== undefined) {
                         //update category in database
@@ -842,6 +872,8 @@ app.controller('FacilitiesController', ['$rootScope', '$route', '$routeParams', 
                                 //(#error)unknown-error
                                 $scope.notify("An unknown error has occured (Error #000)", "danger");
                             }
+                            $scope.btnValidate = false;
+                            $scope.$apply();
                         });
 
                         //remove old question in category
@@ -857,6 +889,8 @@ app.controller('FacilitiesController', ['$rootScope', '$route', '$routeParams', 
                                 //(#error)unknown-error
                                 $scope.notify("An unknown error has occured (Error #000)", "danger");
                             }
+                            $scope.btnValidate = false;
+                            $scope.$apply();
                         });
                         
                         //add new question to category
@@ -881,6 +915,8 @@ app.controller('FacilitiesController', ['$rootScope', '$route', '$routeParams', 
                                     //(#error)unknown-error
                                     $scope.notify("An unknown error has occured (Error #000)", "danger");
                                 }
+                                $scope.btnValidate = false;
+                                $scope.$apply();
                             });
                         });
                     } else if (!categoryValue.deleted && categoryValue.ID === undefined) {
@@ -904,6 +940,8 @@ app.controller('FacilitiesController', ['$rootScope', '$route', '$routeParams', 
                                 //(#error)unknown-error
                                 $scope.notify("An unknown error has occured (Error #000)", "danger");
                             }
+                            $scope.btnValidate = false;
+                            $scope.$apply();
                         });
 
                         //add new question in database
@@ -928,6 +966,8 @@ app.controller('FacilitiesController', ['$rootScope', '$route', '$routeParams', 
                                     //(#error)unknown-error
                                     $scope.notify("An unknown error has occured (Error #000)", "danger");
                                 }
+                                $scope.btnValidate = false;
+                                $scope.$apply();
                             });
                         });
                     }
@@ -974,6 +1014,8 @@ app.controller('FacilitiesController', ['$rootScope', '$route', '$routeParams', 
                                 $scope.photoStatus = 'Unknown error occurred';
                                 break;
                         }
+                        $scope.btnValidate = false;
+                        $scope.$apply();
                     }, function() {
                         $scope.downloadURL = uploadTask.snapshot.downloadURL;
 
@@ -1003,6 +1045,8 @@ app.controller('FacilitiesController', ['$rootScope', '$route', '$routeParams', 
                                     //(#error)unknown-error
                                     $scope.notify("An unknown error has occured (Error #000)", "danger");
                                 }
+                                $scope.btnValidate = false;
+                                $scope.$apply();
                             });
 
                             //add new category to facility
@@ -1022,6 +1066,8 @@ app.controller('FacilitiesController', ['$rootScope', '$route', '$routeParams', 
                                         //(#error)unknown-error
                                         $scope.notify("An unknown error has occured (Error #000)", "danger");
                                     }
+                                    $scope.btnValidate = false;
+                                    $scope.$apply();
                                 });
                             })
                             
@@ -1029,6 +1075,9 @@ app.controller('FacilitiesController', ['$rootScope', '$route', '$routeParams', 
                             if (!error) {
                                 $location.path("/facilities").search("edit",$scope.facility.name).search("facilityID",null);
                                 $route.reload();
+                            } else {
+                                $scope.btnValidate = false;
+                                $scope.$apply();
                             }
                         }).catch(function(error) {
                             console.log(error);
@@ -1039,6 +1088,8 @@ app.controller('FacilitiesController', ['$rootScope', '$route', '$routeParams', 
                                 //(#error)unknown-error
                                 $scope.notify("An unknown error has occured (Error #000)", "danger");
                             }
+                            $scope.btnValidate = false;
+                            $scope.$apply();
                         });
                     });
                 } else {
@@ -1080,6 +1131,8 @@ app.controller('FacilitiesController', ['$rootScope', '$route', '$routeParams', 
                                     //(#error)unknown-error
                                     $scope.notify("An unknown error has occured (Error #000)", "danger");
                                 }
+                                $scope.btnValidate = false;
+                                $scope.$apply();
                             });
                         });
                         
@@ -1087,6 +1140,9 @@ app.controller('FacilitiesController', ['$rootScope', '$route', '$routeParams', 
                         if (!error) {
                             $location.path("/facilities").search("edit",$scope.facility.name).search("facilityID",null);
                             $route.reload();
+                        } else {
+                            $scope.btnValidate = false;
+                            $scope.$apply();
                         }
                     }).catch(function(error) {
                         console.log(error);
@@ -1097,12 +1153,16 @@ app.controller('FacilitiesController', ['$rootScope', '$route', '$routeParams', 
                             //(#error)unknown-error
                             $scope.notify("An unknown error has occured (Error #000)", "danger");
                         }
+                        $scope.btnValidate = false;
+                        $scope.$apply();
                     });
                 }
             } else {
                 //(#error)database-category-not-found
                 console.log("database-category-not-found");
                 $scope.notify("An error occured when accessing firebase database (Error #004)", "danger");
+                $scope.btnValidate = false;
+                $scope.$apply();
             } //end of if()
         }).catch(function(error) {
             console.log(error);
@@ -1113,6 +1173,8 @@ app.controller('FacilitiesController', ['$rootScope', '$route', '$routeParams', 
                 //(#error)unknown-error
                 $scope.notify("An unknown error has occured (Error #000)", "danger");
             }
+            $scope.btnValidate = false;
+            $scope.$apply();
         });
     }; //end of $scope.saveFacility()
     

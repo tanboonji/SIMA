@@ -30,7 +30,6 @@ app.controller('LoginController', ['$rootScope', '$routeParams', '$route', '$sco
     //detech authentication state change (login/logout)
     $scope.auth.$onAuthStateChanged(function(firebaseUser) {
         $scope.firebaseUser = firebaseUser;
-        console.log($scope.firebaseUser);
         if ($scope.firebaseUser !== null) {
             firebase.database().ref('admin/' + $scope.firebaseUser.uid).once('value').then(function (snapshot, error) {
                 if (snapshot.val() != null) {
@@ -46,6 +45,8 @@ app.controller('LoginController', ['$rootScope', '$routeParams', '$route', '$sco
                     $route.reload();
                 }
             });
+        } else {
+            delete $rootScope.user;
         }
     });
     
@@ -53,22 +54,29 @@ app.controller('LoginController', ['$rootScope', '$routeParams', '$route', '$sco
         $scope.notify("Thanks! Please check (" + $routeParams.forget + ") for a link to reset your password.", "success");
     };
         
+    /*********************
+    ***** Validation *****
+    *********************/
+        
+    $scope.btnValidate = false;
     $scope.passwordErrorMessage = null;
     $scope.staffIDErrorMessage = null;
 	
     $scope.login = function() {
+        $scope.btnValidate = true;
         if ($scope.staffID !== undefined) {
             $scope.staffID = $scope.staffID.toUpperCase();
             if (/^[A-Z][0-9]{4}/.test($scope.staffID)) {
                 if ($scope.password !== undefined) {
-                    firebase.database().ref('logincheck/' + $scope.staffID).on('value', function(data) {
-                        if (data.val() !== null) {
-                            if (data.val().status === "Active") {
-                                $scope.email = data.val().email;
+                    firebase.database().ref('logincheck/' + $scope.staffID).once('value').then(function (snapshot, error) {
+                        if (snapshot.val() !== null) {
+                            if (snapshot.val().status === "Active") {
+                                $scope.email = snapshot.val().email;
                                 $scope.auth.$signInWithEmailAndPassword($scope.email, $scope.password).then(function(firebaseUser) {
                                     console.log("Signed in as:", firebaseUser.uid);
                                     $scope.firebaseUser = firebaseUser;
                                 }).catch(function(error) {
+                                    $scope.btnValidate = false;
                                     //firebase $auth error
                                     $scope.firebaseUser = null;
                                     console.error("Authentication failed:", error);
@@ -101,6 +109,7 @@ app.controller('LoginController', ['$rootScope', '$routeParams', '$route', '$sco
                                     }
                                 });
                             } else {
+                                $scope.btnValidate = false;
                                 //inactive staff
                                 console.log("auth/account-not-available");
                                 $scope.passwordErrorMessage = null;
@@ -110,26 +119,41 @@ app.controller('LoginController', ['$rootScope', '$routeParams', '$route', '$sco
                                 $scope.$apply();
                             }
                         } else {
+                            $scope.btnValidate = false;
                             //cannot find email from database
                             console.log("auth/no-matching-id");
                             $scope.passwordErrorMessage = null;
                             $scope.staffIDErrorMessage = "Invalid Staff ID";
                             $scope.$apply();
                         }
+                    }).catch(function(error) {
+                        console.log(error);
+                        if (error.code === "PERMISSION_DENIED") {
+                            //(#error)firebase-permission-denied
+                            $scope.notify("You do not have the permission to access this data (Error #001)", "danger");
+                        } else {
+                            //(#error)unknown-error
+                            $scope.notify("An unknown error has occured (Error #000)", "danger");
+                        }
+                        $scope.btnValidate = false;
+                        $scope.$apply();
                     });
                 } else {
+                    $scope.btnValidate = false;
                     //check password empty
                     console.log("auth/no-password-entered");
                     $scope.passwordErrorMessage = "Password is required";
                     $scope.staffIDErrorMessage = null;
                 }
             } else {
+                $scope.btnValidate = false;
                 //regex staffID test
                 console.log("auth/invalid-id");
                 $scope.passwordErrorMessage = null;
                 $scope.staffIDErrorMessage = "Invalid Staff ID";
             }
         } else {
+            $scope.btnValidate = false;
             //empty staffID
             console.log("auth/no-id-entered");
             $scope.passwordErrorMessage = null;
@@ -138,6 +162,7 @@ app.controller('LoginController', ['$rootScope', '$routeParams', '$route', '$sco
     }; //end of $scope.login()
     
     $scope.forgetPassword = function() {
+        $scope.btnValidate = true;
         if ($scope.staffID !== undefined) {
             if (/^\w+$/.test($scope.staffID) && $scope.staffID.length === 5) {
                 firebase.database().ref('logincheck/' + $scope.staffID).on('value', function(data) {
@@ -169,6 +194,7 @@ app.controller('LoginController', ['$rootScope', '$routeParams', '$route', '$sco
                                 $scope.$apply();
                             });
                         } else {
+                            $scope.btnValidate = false;
                             console.log("auth/account-not-available");
                             $scope.passwordErrorMessage = null;
                             $scope.staffIDErrorMessage = null;
@@ -177,18 +203,20 @@ app.controller('LoginController', ['$rootScope', '$routeParams', '$route', '$sco
                             $scope.$apply();
                         }
                     } else {
+                        $scope.btnValidate = false;
                         console.log("auth/no-matching-id");
                         $scope.passwordErrorMessage = null;
                         $scope.staffIDErrorMessage = "Invalid Staff ID/Email";
                         $scope.$apply();
                     }
                 });
-            } else if ($scope.staffID.includes("@")) {
+            } else if ($scope.staffID.includes("@") && $scope.staffID.includes(".")) {
                 $scope.email = $scope.staffID;
                 firebase.auth().sendPasswordResetEmail($scope.email).then(function() {
                     $location.path('/login').search('forget', $scope.email);
                     $route.reload();
                 }, function(error) {
+                    $scope.btnValidate = false;
                     console.error("Reset failed:", error);
                     var message = '';
                     switch (error.code) {
@@ -210,6 +238,7 @@ app.controller('LoginController', ['$rootScope', '$routeParams', '$route', '$sco
                     $scope.$apply();
                 });
             } else {
+                $scope.btnValidate = false;
                 console.log("auth/invalid-id-or-email");
                 $scope.passwordErrorMessage = null;
                 $scope.staffIDErrorMessage = "Invalid Staff ID/Email";
