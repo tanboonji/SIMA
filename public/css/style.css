@@ -545,6 +545,9 @@ html, body {
     box-shadow: 1px 1px 3px #888;
 }
 
+.restrict
+{min-width:970px;}
+
 /* Logout */
 .logout h2 {
     font-weight: 600;
