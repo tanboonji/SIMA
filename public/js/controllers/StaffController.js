@@ -668,7 +668,8 @@ app.controller('StaffController', ['$route', '$rootScope', '$routeParams', '$sco
                                     createdAt: datetime,
                                     updatedAt: datetime,
                                     createdBy: $scope.user.ID,
-                                    updatedBy: $scope.user.ID
+                                    updatedBy: $scope.user.ID,
+                                    hasProject: false
                                 }).then(function () {
                                     console.log(userData.uid + "--> Created");
                                     console.log($scope.firebaseUser.uid + "--> Current");

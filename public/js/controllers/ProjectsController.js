@@ -302,12 +302,15 @@ app.controller('ProjectsController', ['$rootScope', '$route', '$routeParams', '$
     
     if ($location.path() === "/add-project") {
         $scope.staffList = [];
+        $scope.fullStaff = [];
 
         firebase.database().ref('staff/').once('value').then(function (snapshot) {
             
             snapshot.forEach(function(staffValue) {
-                if (staffValue.val().status === "Active")
+                if (staffValue.val().status === "Active") {
+                    $scope.fullStaff.push(staffValue.val());
                     $scope.staffList.push("(" + staffValue.val().ID + ") " + staffValue.val().name);
+                }
             });
 
             $scope.BUH = $('#magicsuggestBUH').magicSuggest({
@@ -583,10 +586,13 @@ app.controller('ProjectsController', ['$rootScope', '$route', '$routeParams', '$
         else
             $scope.projectTMEmpty = false;
         
-        if ($scope.CM.getValue().length === 0)
+        if ($scope.CM.getValue().length === 0) {
             $scope.projectCMEmpty = true;
-        else
+            $scope.projectCMError = true;
+        } else {
             $scope.projectCMEmpty = false;
+            $scope.projectCMError = false;
+        }
         
         var error = false;
         $scope.checklistEmpty = false;
@@ -614,17 +620,30 @@ app.controller('ProjectsController', ['$rootScope', '$route', '$routeParams', '$
                 }
             });
         });
-
-        if (!error && !$scope.MCSTSError && !$scope.projectNameEmpty && !$scope.projectAddressEmpty && !$scope.projectBUHEmpty && !$scope.projectTMEmpty && !$scope.projectCMEmpty && !$scope.checklistEmpty) {
+        
+        if ($scope.projectCMError === false) {
+            var CM = $scope.CM.getValue()[0];
+            $scope.CMName = CM.substr(8);
+            $scope.CMID = CM.substr(1,5);
+            
+            var index = $scope.fullStaff.map(function(x) {return x.name}).indexOf($scope.CMName);
+            if ($scope.fullStaff[index].hasProject) {
+                $scope.projectCMInvalid = true;
+                $scope.projectCMError = true;
+            } else {
+                $scope.newCM = $scope.fullStaff[index];
+                $scope.projectCMInvalid = false;
+                $scope.projectCMError = false;
+            }
+        }
+        
+        if (!error && !$scope.MCSTSError && !$scope.projectNameEmpty && !$scope.projectAddressEmpty && !$scope.projectBUHEmpty && !$scope.projectTMEmpty && !$scope.projectCMEmpty && !$scope.checklistEmpty && !$scope.projectCMInvalid) {
             var BUH = $scope.BUH.getValue()[0];
             $scope.BUHName = BUH.substr(8);
             $scope.BUHID = BUH.substr(1,5);
             var TM = $scope.TM.getValue()[0];
             $scope.TMName = TM.substr(8);
             $scope.TMID = TM.substr(1,5);
-            var CM = $scope.CM.getValue()[0];
-            $scope.CMName = CM.substr(8);
-            $scope.CMID = CM.substr(1,5);
             
             $scope.addProject();
         }
@@ -767,6 +786,8 @@ app.controller('ProjectsController', ['$rootScope', '$route', '$routeParams', '$
                     });
 
                     var error = false;
+                    
+                    firebase.database().ref('staff/' + $scope.newCM.authID + '/hasProject').set(true);
 
                     angular.forEach($scope.projectFacilityAdded, function(projectFacilityValue, key) {
                         firebase.database().ref('project/' + $scope.projectAlphabet + $scope.projectCount + 
@@ -964,6 +985,7 @@ app.controller('ProjectsController', ['$rootScope', '$route', '$routeParams', '$
                     var index = tempList.map(function(x) {return x.ID}).indexOf($scope.project.CM);
                     $scope.project.CMName = tempList[index].name;
                     
+                    $scope.project.oldCM = $scope.project.CMName;
                     $scope.project.fullBUH = "("+$scope.project.BUH+") " + $scope.project.BUHName;
                     $scope.project.fullTM = "("+$scope.project.TM+") " + $scope.project.TMName;
                     $scope.project.fullCM = "("+$scope.project.CM+") " + $scope.project.CMName;
@@ -1073,12 +1095,15 @@ app.controller('ProjectsController', ['$rootScope', '$route', '$routeParams', '$
     
     $scope.loadMagicSuggest = function() {
         $scope.staffList = [];
+        $scope.fullStaff = [];
 
         firebase.database().ref('staff/').once('value').then(function (snapshot) {
             
             snapshot.forEach(function(staffValue) {
-                if (staffValue.val().status === "Active")
+                if (staffValue.val().status === "Active") {
+                    $scope.fullStaff.push(staffValue.val());
                     $scope.staffList.push("(" + staffValue.val().ID + ") " + staffValue.val().name);
+                }
             });
 
             $scope.BUH = $('#magicsuggestBUH').magicSuggest({
@@ -1367,10 +1392,13 @@ app.controller('ProjectsController', ['$rootScope', '$route', '$routeParams', '$
         else
             $scope.projectTMEmpty = false;
         
-        if ($scope.CM.getValue().length === 0)
+        if ($scope.CM.getValue().length === 0) {
             $scope.projectCMEmpty = true;
-        else
+            $scope.projectCMError = true;
+        } else {
             $scope.projectCMEmpty = false;
+            $scope.projectCMError = false;
+        }
         
         var error = false;
         $scope.checklistEmpty = false;
@@ -1402,17 +1430,32 @@ app.controller('ProjectsController', ['$rootScope', '$route', '$routeParams', '$
                 });
             }
         });
+        
+        if ($scope.projectCMError === false) {
+            var CM = $scope.CM.getValue()[0];
+            $scope.CMName = CM.substr(8);
+            $scope.CMID = CM.substr(1,5);
+            
+            var newCMIndex = $scope.fullStaff.map(function(x) {return x.name}).indexOf($scope.CMName);
+            if ($scope.fullStaff[newCMIndex].hasProject) {
+                $scope.projectCMInvalid = true;
+                $scope.projectCMError = true;
+            } else {
+                var oldCMIndex = $scope.fullStaff.map(function(x) {return x.name}).indexOf($scope.project.oldCM);
+                $scope.oldCM = $scope.fullStaff[oldCMIndex];
+                $scope.newCM = $scope.fullStaff[newCMIndex];
+                $scope.projectCMInvalid = false;
+                $scope.projectCMError = false;
+            }
+        }
 
-        if (!error && !$scope.MCSTSError && !$scope.projectNameEmpty && !$scope.projectAddressEmpty && !$scope.projectBUHEmpty && !$scope.projectTMEmpty && !$scope.projectCMEmpty && !$scope.checklistEmpty) {
+        if (!error && !$scope.MCSTSError && !$scope.projectNameEmpty && !$scope.projectAddressEmpty && !$scope.projectBUHEmpty && !$scope.projectTMEmpty && !$scope.projectCMEmpty && !$scope.checklistEmpty && !$scope.projectCMInvalid) {
             var BUH = $scope.BUH.getValue()[0];
             $scope.BUHName = BUH.substr(8);
             $scope.BUHID = BUH.substr(1,5);
             var TM = $scope.TM.getValue()[0];
             $scope.TMName = TM.substr(8);
             $scope.TMID = TM.substr(1,5);
-            var CM = $scope.CM.getValue()[0];
-            $scope.CMName = CM.substr(8);
-            $scope.CMID = CM.substr(1,5);
             
             $scope.saveProject();
         }
@@ -1748,6 +1791,11 @@ app.controller('ProjectsController', ['$rootScope', '$route', '$routeParams', '$
                     createdBy: $scope.project.createdBy
                 }).then(function() {
                     var error = false;
+                    
+                    if ($scope.oldCM.ID !== $scope.newCM.ID) {
+                        firebase.database().ref('staff/' + $scope.oldCM.authID + '/hasProject').set(false);
+                        firebase.database().ref('staff/' + $scope.newCM.authID + '/hasProject').set(true);
+                    }
 
                     angular.forEach($scope.projectFacilityAdded, function(projectFacilityValue, key) {
                         firebase.database().ref('project/' + $scope.project.ID + '/projectFacility/' + projectFacilityValue)

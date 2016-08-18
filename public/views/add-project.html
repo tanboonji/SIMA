@@ -99,7 +99,7 @@
         </div>
         <div class="row margin-top-25">
             <label class="control-label col-md-2">CM</label>
-            <div class="col-md-6" ng-class="{'has-error': projectCMEmpty}">
+            <div class="col-md-6" ng-class="{'has-error': projectCMError}">
                 <div id="magicsuggestCM">
                     <div class="ms-ctn form-control">
                         <input type="text" class="form-control">
@@ -111,6 +111,9 @@
                 </div>
                 <span ng-show="projectCMEmpty" class="help-block margin-bottom-0">
                     Project CM is required.
+                </span>
+                <span ng-show="projectCMInvalid" class="help-block margin-bottom-0">
+                    Project CM is currently in-charge of another project.
                 </span>
             </div>
         </div>

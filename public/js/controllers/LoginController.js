@@ -30,6 +30,7 @@ app.controller('LoginController', ['$rootScope', '$routeParams', '$route', '$sco
     //detech authentication state change (login/logout)
     $scope.auth.$onAuthStateChanged(function(firebaseUser) {
         $scope.firebaseUser = firebaseUser;
+        console.log($scope.firebaseUser);
         if ($scope.firebaseUser !== null) {
             firebase.database().ref('admin/' + $scope.firebaseUser.uid).once('value').then(function (snapshot, error) {
                 if (snapshot.val() != null) {
