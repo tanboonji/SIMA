@@ -33,7 +33,7 @@ app.controller('StaffController', ['$route', '$rootScope', '$routeParams', '$sco
     //detech authentication state change (login/logout)
 	$scope.auth.$onAuthStateChanged(function(firebaseUser) {
 		$scope.firebaseUser = firebaseUser;
-		if ($scope.firebaseUser === null) {
+        if ($scope.firebaseUser === null) {
 			$location.path('/login').search("staffID",null).search("edit",null).search("add",null);
 		} else {
             $scope.checkUser();
@@ -829,12 +829,11 @@ app.controller('StaffController', ['$route', '$rootScope', '$routeParams', '$sco
         }
 
         if ($scope.pwdEmpty1 === false && $scope.pwdEmpty2 === false) {
-            //if confirm password field is identical, update password        
+            //if confirm password field is identical, update password
             $scope.auth.$updatePassword($scope.newPassword).then(function () {
-                $scope.auth.$signOut();
-                delete $rootScope.user;
-                alert("You have successfully updated your password\n\nPlease login again");
                 $scope.popupform = !$scope.popupform;
+                alert("You have successfully updated your password\n\nPlease login again");
+                $scope.auth.$signOut();
             }).catch(function (error) {
                 console.log(error);
                 if (error.code === "auth/requires-recent-login")

@@ -34,14 +34,14 @@ app.controller('LoginController', ['$rootScope', '$routeParams', '$route', '$sco
             firebase.database().ref('admin/' + $scope.firebaseUser.uid).once('value').then(function (snapshot, error) {
                 if (snapshot.val() != null) {
                     if (snapshot.val().isSuperAdmin) {
-                        $location.path('/admin');
+                        $location.path('/admin').search('forget',null);
                         $route.reload();
                     } else {
-                        $location.path('/dashboard');
+                        $location.path('/dashboard').search('forget',null);
                         $route.reload();
                     }
                 } else {
-                    $location.path('/dashboard');
+                    $location.path('/dashboard').search('forget',null);
                     $route.reload();
                 }
             });
