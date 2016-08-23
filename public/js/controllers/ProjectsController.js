@@ -243,6 +243,7 @@ app.controller('ProjectsController', ['$rootScope', '$route', '$routeParams', '$
     
     if ($location.path() === "/projects") {
         var ref = firebase.database().ref().child("project");
+        
         $scope.refreshProjectList = function() {
             firebase.database().ref('project').once('value').then(function (projectSnapshot, error) {
                 firebase.database().ref('staff').once('value').then(function (staffSnapshot, error) {
