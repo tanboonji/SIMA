@@ -69,7 +69,7 @@
             </tr>
             </thead>
             <tbody>
-            <tr ng-repeat="p in projectList | filter:search | filter:isdeleted">
+            <tr ng-repeat="p in projectList | filter:search | filter:isdeleted | filter:isrole">
             	<td ng-click="viewProject(p)">{{p.MCSTS}}</td>
                 <td ng-click="viewProject(p)">{{p.name}}</td>
                 <td ng-click="viewProject(p)">{{p.BUHName}}</td>

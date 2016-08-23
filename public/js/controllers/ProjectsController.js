@@ -243,7 +243,6 @@ app.controller('ProjectsController', ['$rootScope', '$route', '$routeParams', '$
     
     if ($location.path() === "/projects") {
         var ref = firebase.database().ref().child("project");
-    
         $scope.refreshProjectList = function() {
             firebase.database().ref('project').once('value').then(function (projectSnapshot, error) {
                 firebase.database().ref('staff').once('value').then(function (staffSnapshot, error) {
@@ -874,6 +873,16 @@ app.controller('ProjectsController', ['$rootScope', '$route', '$routeParams', '$
             return (!p.deleted);
     }
     
+    $scope.isrole = function(p) {
+        if ($scope.user === undefined)
+            return false;
+        else
+            if ($scope.user.isAdmin)
+                return true;
+            else if ($scope.user.isBUH)
+                return (p.BUHName === $scope.user.name);
+    }
+    
     /*********************
     **** Project View ****
     *********************/
@@ -1500,7 +1509,6 @@ app.controller('ProjectsController', ['$rootScope', '$route', '$routeParams', '$
                         projectFacilityRef.remove().then(function() {
                             //do nothing
                         }).catch(function(error) {
-                            console.log("here");
                             console.log(error);
                             if (error.code === "PERMISSION_DENIED") {
                                 //(#error)firebase-permission-denied

@@ -235,9 +235,9 @@ app.controller('DashboardController', ['$rootScope', '$route', '$routeParams', '
         var inspectionDate = day + "/" + month + "/" + year;
         return inspectionDate;
     }
-        
-	var ref = firebase.database().ref().child("record");
     
+    var ref = firebase.database().ref().child("record");
+
     $scope.refreshRecordList = function() {
         firebase.database().ref('record').once('value').then(function (recordSnapshot, error) {
             firebase.database().ref('project').once('value').then(function (projectSnapshot, error) {
