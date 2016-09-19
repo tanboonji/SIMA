@@ -1,16 +1,18 @@
-# Knight Frank Site Inspection
+Knight Frank Site Inspection
 
-### Things to do:
-- Button click feedback
-- Login error message
-- Navigation menu
-- When logging in for the first time, update displayName and photoUrl
-- Mouse hover over nav bar
+GitHub
 
-### Bugs to fix:
+tutorial on github https://www.youtube.com/watch?v=0fKg7e37bQE
 
-### Things done:
-- Login.html
+GitHub Commands
 
-### Bugs fixed:
-- Signing in
+git pull origin (branch) //pull updates from github
+git checkout (branch) //change branch
+git add -A //add files to commit
+git commit -m 'commit comment' //for single line comment //commit files to push to github
+git commit //for multi line comment
+git push origin (branch) //push files to github
+GitHub Branches
+
+website-testing branch for new angular admin portal
+website branch for old js admin portal
