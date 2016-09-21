@@ -1,0 +1,109 @@
+<header>
+    <nav class="navbar navbar-default navbar-static-top restrict">
+        <div class="container restrict">
+            <a href="#/dashboard" ng-show="!user.isSuperAdmin">
+                <img src="images/knight-frank-logo.png" alt="Knight Frank" style="max-height:50px"/>
+            </a>
+            <a href="#/admin" ng-show="user.isSuperAdmin">
+                <img src="images/knight-frank-logo.png" alt="Knight Frank" style="max-height:50px"/>
+            </a>
+            <div class="nav-menu">
+                <ul>
+                    <li ng-show="user.isCM"><a href="#/dashboard">Dashboard</a></li>
+                    <li ng-show="user.isBUH"><a href="#/projects">Projects</a></li>
+                    <li ng-show="user.isAdmin"><a href="#/staff">Staff</a></li>
+                    <li ng-show="user.isAdmin"><a href="#/facilities">Facilities</a></li>
+                    <li class="selected" ng-show="user.isSuperAdmin"><a href="#/admin">Admin</a></li>
+                </ul>
+            </div>
+            <div class="profile" id="profile">
+                Hello
+                <a href="#/edit-profile">
+                    <span class="profile-link">{{user.showName}}</span>
+                </a>
+                <button class="btn btn-default logout-btn" style="margin-top:-5px;" type="button" ng-click="logout()">
+                    Log Out
+                </button>
+            </div>
+        </div>
+    </nav>
+</header>
+
+<div class="edit-admin container">
+    <h3 class="title">Edit Admin</h3>
+    <form class="form-horizontal" id="adminform">
+        <div class="row">
+            <label class="control-label col-md-2">ID</label>
+            <div class="col-md-6">
+                <input type="text" ng-model="admin.ID" class="form-control" disabled/>
+            </div>
+        </div>
+        <div class="row margin-top-25">
+            <label class="control-label col-md-2">Email</label>
+            <div class="col-md-6" ng-class="{'has-error': adminEmailEmpty}">
+                <input type="email" ng-model="admin.email" class="form-control" placeholder="Enter admin email" disabled/>
+                <span ng-show="adminEmailEmpty" class="help-block margin-bottom-0">
+                    Admin email is required.
+                </span>
+            </div>
+        </div>
+        <div class="row margin-top-25">
+            <label class="control-label col-md-2">Name</label>
+            <div class="col-md-6" ng-class="{'has-error': adminNameEmpty}">
+                <input type="text" ng-model="admin.name" class="form-control" placeholder="Enter admin name" required/>
+                <span ng-show="adminNameEmpty" class="help-block margin-bottom-0">
+                   Admin name is required.
+                </span>
+            </div>
+        </div>
+        <div class="row margin-top-25">
+            <label class="control-label col-md-2">Phone</label>
+            <div class="col-md-6" ng-class="{'has-error': adminPhoneError}">
+                <input type="text" id="phoneNo" ng-pattern="/^[\d]{8}$/" ng-model="admin.phone" 
+                       class="form-control" placeholder="Enter admin phone number" required/>
+                <span ng-show="adminPhoneEmpty" class="help-block margin-bottom-0">
+                    Admin phone number is required.
+                </span>
+                <span ng-show="adminPhoneDigits" class="help-block margin-bottom-0">
+                    Phone number contains invalid characters, only digits allowed.
+                </span>
+                <span ng-show="adminPhoneLength" class="help-block margin-bottom-0">
+                    Phone number must be 8 digits in length.
+                </span>
+            </div>
+        </div>
+
+        <div class="row margin-top-25">
+            <label class="col-sm-2 control-label">Status</label>
+            <div class="btn-group force-col-margin">
+                <button type="button" class="btn btn-default dropdown-toggle dropdown-style" data-toggle="dropdown" 
+                        aria-haspopup="true" aria-expanded="true">
+                    <div class="dropdown-text-left">{{admin.status}}&nbsp;</div>
+                    <span class="caret dropdown-text-right"></span>
+                </button>
+                <ul class="dropdown-menu col-sm-4">
+                    <li ng-repeat="x in statusList"><a ng-click="selectStatusValue(x)">{{x}}</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="row margin-top-25" ng-show="adminStatusMessage">
+            <div class="col-md-6 col-md-offset-2" ng-class="{'has-error': adminStatusEmpty}">
+                <input type="text" ng-model="admin.statusMessage" class="form-control" 
+                       placeholder="Enter admin status message" ng-required="adminStatusMessage"/>
+                <span ng-show="adminStatusEmpty" class="help-block margin-bottom-0">
+                   Admin status message is required.
+                </span>
+            </div>
+        </div>
+        <div class="row margin-top-25 margin-bottom-50">
+            <div class="col-md-offset-2 col-md-10">
+                <button class="btn btn-primary" type="button" ng-click="goToAdmin()">
+                    <span class="glyphicon glyphicon-remove button-icon" aria-hidden="true"></span> Cancel
+                </button>
+                <button class="btn btn-success" type="submit" ng-click="saveAdmin()">
+                    <span class="glyphicon glyphicon-floppy-disk button-icon" aria-hidden="true"></span> Save
+                </button>
+            </div>
+        </div>
+    </form>
+</div>
