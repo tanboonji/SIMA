@@ -48,7 +48,7 @@ app.controller('FacilitiesController', ['$rootScope', '$route', '$routeParams', 
             firebase.database().ref("staff/" + $scope.firebaseUser.uid).once("value").then(function(snapshot) {
                 if (snapshot.val() !== null) {
                     $rootScope.user = snapshot.val();
-                    if ($rootScope.user.role === "HO") {
+                    if ($rootScope.user.role === "EXCO") {
                         $rootScope.user.isAdmin = true;
                         $rootScope.user.isBUH = true;
                         $rootScope.user.isTM = true;

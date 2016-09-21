@@ -46,7 +46,7 @@ app.controller('StaffController', ['$route', '$rootScope', '$routeParams', '$sco
             firebase.database().ref("staff/" + $scope.firebaseUser.uid).once("value").then(function(snapshot) {
                 if (snapshot.val() !== null) {
                     $rootScope.user = snapshot.val();
-                    if ($rootScope.user.role === "HO") {
+                    if ($rootScope.user.role === "EXCO") {
                         $rootScope.user.isAdmin = true;
                         $rootScope.user.isBUH = true;
                         $rootScope.user.isTM = true;
@@ -191,7 +191,7 @@ app.controller('StaffController', ['$route', '$rootScope', '$routeParams', '$sco
     ** Search & Filter **
     ********************/
 	
-	$scope.sortByRoleList = ['All','CM','TM','BUH','HO'];
+	$scope.sortByRoleList = ['All','CM','TM','BUH','EXCO'];
 	$scope.sortByRoleItem = 'All';
 	
 	$scope.sortByRoleItemSelected = function(itemSelected) {
@@ -226,8 +226,8 @@ app.controller('StaffController', ['$route', '$rootScope', '$routeParams', '$sco
     $scope.isrole = function(s) {
         if ($scope.sortByRoleItem === 'All')
             return true;
-        else if ($scope.sortByRoleItem === 'HO')
-            return (s.role === 'HO');
+        else if ($scope.sortByRoleItem === 'EXCO')
+            return (s.role === 'EXCO');
         else if ($scope.sortByRoleItem === 'BUH')
             return (s.role === 'BUH');
         else if ($scope.sortByRoleItem === 'TM')
@@ -511,7 +511,7 @@ app.controller('StaffController', ['$route', '$rootScope', '$routeParams', '$sco
                 firebase.database().ref("/staff/" + $scope.staff.authID + '/deletedBy').remove();
             }
 
-            if ($scope.prevstaff.role != "HO" && $scope.staff.role === "HO") {
+            if ($scope.prevstaff.role != "EXCO" && $scope.staff.role === "EXCO") {
                 firebase.database().ref('admin/' + $scope.staff.authID).set({
                     isSuperAdmin: false
                 }).catch(function(error) {
@@ -526,8 +526,8 @@ app.controller('StaffController', ['$route', '$rootScope', '$routeParams', '$sco
                 });
             }
 
-            if ($scope.prevstaff.role === "HO" && $scope.staff.role !== "HO") {
-                //if no longer HO remove from admin table
+            if ($scope.prevstaff.role === "EXCO" && $scope.staff.role !== "EXCO") {
+                //if no longer EXCO remove from admin table
                 firebase.database().ref('/admin/' + $scope.staff.authID).remove();
                 updates['/staff/' + $scope.staff.authID + '/role'] = $scope.staff.role;
             }
@@ -575,7 +575,7 @@ app.controller('StaffController', ['$route', '$rootScope', '$routeParams', '$sco
         }
     }
 
-    $scope.roleList = ['HO', 'BUH', 'TM', 'CM'];
+    $scope.roleList = ['EXCO', 'BUH', 'TM', 'CM'];
         
     $scope.selectRoleValue = function(x) {
         $scope.staff.role = x;
@@ -691,8 +691,8 @@ app.controller('StaffController', ['$route', '$rootScope', '$routeParams', '$sco
                                         status: $scope.staff.status
                                     });
 
-                                    //if staff added is HO, give admin permissions (add in admin table)
-                                    if ($scope.staff.role == "HO") {
+                                    //if staff added is EXCO, give admin permissions (add in admin table)
+                                    if ($scope.staff.role == "EXCO") {
                                         firebase.database().ref('admin/' + userData.uid).set({
                                             isSuperAdmin: false
                                         }).then(function() {
