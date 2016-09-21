@@ -35,9 +35,9 @@
         <div class="row">
             <label class="control-label col-md-2">Email</label>
             <div class="col-md-6" ng-class="{'has-error': adminEmailError}">
-                <input type="email" ng-model="newadmin.email" class="form-control" placeholder="Enter admin email" required/>
+                <input type="email" ng-model="newadmin.email" class="form-control" placeholder="Enter staff personal email" required/>
                 <span ng-show="adminEmailEmpty" class="help-block margin-bottom-0">
-                    Admin email is required.
+                    Staff email is required.
                 </span>
                 <span ng-show="adminEmailUsed" class="help-block margin-bottom-0">
                     Email address already in used.
@@ -50,9 +50,9 @@
         <div class="row margin-top-25">
             <label class="control-label col-md-2">Name</label>
             <div class="col-md-6" ng-class="{'has-error': adminNameEmpty}">
-                <input type="text" ng-model="newadmin.name" class="form-control" placeholder="Enter admin name" required/>
+                <input type="text" ng-model="newadmin.name" class="form-control" placeholder="Enter staff name" required/>
                 <span ng-show="adminNameEmpty" class="help-block margin-bottom-0">
-                   Admin name is required.
+                   Staff name is required.
                 </span>
             </div>
         </div>
@@ -60,9 +60,9 @@
             <label class="control-label col-md-2">Phone</label>
             <div class="col-md-6" ng-class="{'has-error': adminPhoneError}">
                 <input type="text" id="phoneNo" ng-pattern="/^[\d]{8}$/" ng-model="newadmin.phone" 
-                       class="form-control" placeholder="Enter admin phone number" required/>
+                       class="form-control" placeholder="Enter staff personal phone number" required/>
                 <span ng-show="adminPhoneEmpty" class="help-block margin-bottom-0">
-                    Admin phone number is required.
+                    Staff phone number is required.
                 </span>
                 <span ng-show="adminPhoneDigits" class="help-block margin-bottom-0">
                     Phone number contains invalid characters, only digits allowed.
@@ -90,7 +90,7 @@
                 <input type="text" ng-model="newadmin.statusMessage" class="form-control" 
                        placeholder="Enter admin status message" ng-required="adminStatusMessage"/>
                 <span ng-show="adminStatusEmpty" class="help-block margin-bottom-0">
-                   Admin status message is required.
+                   Staff status message is required.
                 </span>
             </div>
         </div>

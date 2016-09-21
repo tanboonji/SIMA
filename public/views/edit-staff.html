@@ -41,7 +41,7 @@
         <div class="row margin-top-25">
             <label class="control-label col-md-2">Email</label>
             <div class="col-md-6" ng-class="{'has-error': staffEmailEmpty}">
-                <input type="email" ng-model="staff.email" class="form-control" placeholder="Enter staff email" disabled/>
+                <input type="email" ng-model="staff.email" class="form-control" placeholder="Enter staff personal email" disabled/>
                 <span ng-show="staffEmailEmpty" class="help-block margin-bottom-0">
                     Staff email is required.
                 </span>
@@ -60,7 +60,7 @@
             <label class="control-label col-md-2">Phone</label>
             <div class="col-md-6" ng-class="{'has-error': staffPhoneError}">
                 <input type="text" id="phoneNo" ng-pattern="/^[\d]{8}$/" ng-model="staff.phone" 
-                       class="form-control" placeholder="Enter staff phone number" required/>
+                       class="form-control" placeholder="Enter staff personal phone number" required/>
                 <span ng-show="staffPhoneEmpty" class="help-block margin-bottom-0">
                     Staff phone number is required.
                 </span>
