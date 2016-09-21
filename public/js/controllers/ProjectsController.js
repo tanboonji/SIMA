@@ -916,7 +916,8 @@ app.controller('ProjectsController', ['$rootScope', '$route', '$routeParams', '$
             firebase.database().ref("projectfacility/" + projectFacilityValue).once("value").then(function(snapshot) {
                 var newProjectFacility = snapshot.val();
                 newProjectFacility.checklist = [];
-                if (snapshot.val() != null) {
+                //tempfix #001
+                if (snapshot.val() != null && snapshot.val().category != null) {
                     newProjectFacility.categoryCount = Object.keys(snapshot.val().category).length;
                     var categoryCount = -1;
                     angular.forEach(snapshot.val().category, function(categoryValue, key) {
@@ -953,6 +954,9 @@ app.controller('ProjectsController', ['$rootScope', '$route', '$routeParams', '$
                             }
                         });
                     });
+                //tempfix #001
+                } else if (snapshot.val().category == null) {
+                    
                 } else {
                     //(#error)database-project-not-found
                     console.log("database-project-not-found");
