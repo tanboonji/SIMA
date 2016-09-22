@@ -13,5 +13,6 @@ https://www.youtube.com/watch?v=0fKg7e37bQE
 - git push origin (branch) //push files to github
 
 ### GitHub Branches
-- website-testing branch for new angular admin portal
+- master branch for new angular admin portal
+- website-testing branch for old angular admin portal
 - website branch for old js admin portal
