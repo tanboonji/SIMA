@@ -767,64 +767,105 @@ app.controller('StaffController', ['$route', '$rootScope', '$routeParams', '$sco
     ****** Profile ******
     ********************/
         
+    //close change password popup form
+    $scope.closePopup = function() {
+        $scope.popupform = !$scope.popupform;
+        
+        $scope.passwordEmpty = false;
+        $scope.passwordLength = false;
+        $scope.passwordComplex = false;
+
+        $scope.passwordEmpty2 = false;
+        $scope.passwordLength2 = false;
+        $scope.passwordComplex2 = false;
+
+        $scope.passwordMatch = false;
+        $scope.pwdEmpty2 = false;
+        $scope.pwdEmpty1 = false;
+        
+        $scope.newPassword = undefined;
+        $scope.confirmPassword = undefined;
+    }
+        
     //update password of currently logged in user
     $scope.updatePassword = function () {
         if ($scope.newPassword == undefined || $scope.newPassword == "") {
             $scope.passwordEmpty = true;
-            $scope.passwordMatch = false;
             $scope.passwordLength = false;
+            $scope.passwordComplex = false;
+            
+            $scope.passwordMatch = false;
             $scope.pwdEmpty1 = true;
         } else {
-            if ($scope.newPassword.length < 6) {
+            if ($scope.newPassword.length < 8) {
                 $scope.passwordEmpty = false;
-                $scope.passwordMatch = false;
                 $scope.passwordLength = true;
+                $scope.passwordComplex = false;
+                
+                $scope.passwordMatch = false;
+                $scope.pwdEmpty1 = true;
+            } else if (!/[A-z]/.test($scope.newPassword) || !/\d/.test($scope.newPassword)) {
+                $scope.passwordEmpty = false;
+                $scope.passwordLength = false;
+                $scope.passwordComplex = true;
+                
+                $scope.passwordMatch = false;
                 $scope.pwdEmpty1 = true;
             } else {
-                if ($scope.confirmPassword != $scope.newPassword) {
-                    $scope.passwordEmpty2 = false;
-                    $scope.passwordMatch = true;
-                    $scope.passwordLength2 = false;
-                    $scope.passwordEmpty = false;
-                    $scope.passwordLength = false;
-
-                    $scope.pwdEmpty2 = true;
-                    $scope.pwdEmpty1 = true;
-                } else
-                    $scope.passwordEmpty = false;
-                $scope.passwordMatch = false;
+                $scope.passwordEmpty = false;
                 $scope.passwordLength = false;
+                $scope.passwordComplex = false;
+
+                $scope.passwordMatch = false;
                 $scope.pwdEmpty1 = false;
             }
         }
         
-        if ($scope.confirmPassword == undefined || $scope.newPassword == "") {
+        if ($scope.confirmPassword == undefined || $scope.confirmPassword == "") {
             $scope.passwordEmpty2 = true;
-            $scope.passwordMatch = false;
             $scope.passwordLength2 = false;
+            $scope.passwordComplex2 = false;
+            
+            $scope.passwordMatch = false;
             $scope.pwdEmpty2 = true;
         } else {
-            if ($scope.confirmPassword.length < 6) {
+            if ($scope.confirmPassword.length < 8) {
                 $scope.passwordEmpty2 = false;
-                $scope.passwordMatch = false;
                 $scope.passwordLength2 = true;
+                $scope.passwordComplex2 = false;
+                
+                $scope.passwordMatch = false;
+                $scope.pwdEmpty2 = true;
+            } else if (!/[A-z]/.test($scope.confirmPassword) || !/\d/.test($scope.confirmPassword)) {
+                $scope.passwordEmpty2 = false;
+                $scope.passwordLength2 = false;
+                $scope.passwordComplex2 = true;
+                
+                $scope.passwordMatch = false;
                 $scope.pwdEmpty2 = true;
             } else {
-                if ($scope.confirmPassword != $scope.newPassword) {
-                    $scope.passwordEmpty2 = false;
-                    $scope.passwordMatch = true;
-                    $scope.passwordLength2 = false;
-                    $scope.passwordEmpty1 = false;
-                    $scope.passwordLength1 = false;
+                $scope.passwordEmpty2 = false;
+                $scope.passwordLength2 = false;
+                $scope.passwordComplex2 = false;
 
-                    $scope.pwdEmpty2 = true;
-                    $scope.pwdEmpty1 = true;
-                } else {
-                    $scope.passwordEmpty2 = false;
-                    $scope.passwordMatch = false;
-                    $scope.passwordLength2 = false;
-                    $scope.pwdEmpty2 = false;
-                }
+                $scope.passwordMatch = false;
+                $scope.pwdEmpty2 = false;
+            }
+        }
+        
+        if ($scope.pwdEmpty2 === false) {
+            if ($scope.confirmPassword !== $scope.newPassword) {
+//                $scope.passwordEmpty = false;
+//                $scope.passwordLength = false;
+//                $scope.passwordComplex = false;
+
+                $scope.passwordEmpty2 = false;
+                $scope.passwordLength2 = false;
+                $scope.passwordComplex2 = false;
+
+                $scope.passwordMatch = true;
+                $scope.pwdEmpty2 = true;
+                $scope.pwdEmpty1 = true;
             }
         }
 
