@@ -1,23 +1,22 @@
 <div class="login">
-	<header>
-		<img src="images/knight-frank-logo.png" alt="Knight Frank"/>
-	</header>
-	<div class="login-popup">
-		<h3>Admin Portal Login</h3>
-		<div class="content">
-			<form name="myForm">
-				<input ng-model="staffID" type="text" class="input-text" id="staffID" placeholder="Staff ID" required/>
-				<div class="error-message" ng-show="staffIDErrorMessage!=null">{{staffIDErrorMessage}}</div>
-				<div class="error-empty" ng-show="staffIDErrorMessage==null">&nbsp;</div>
-				<input ng-model="password" type="password" class="input-text" 
-					   placeholder="Password" required/>
-				<div class="error-message" ng-show="passwordErrorMessage!=null">{{passwordErrorMessage}}</div>
-				<div class="error-empty" ng-show="passwordErrorMessage==null">&nbsp;</div>
-				<div class="forget">
-					<a ng-click="goToForgetPassword()"><u>Forget Password?</u></a>
-				</div>
-				<input type="submit" class="btn btn-info login-btn" value="Log In" ng-click="login()" ng-disabled="btnValidate"/>
-			</form>
-		</div>
-	</div>
+    <header>
+        <img src="images/knight-frank-logo.png" alt="Knight Frank"/>
+    </header>
+    <div class="popup">
+        <h3>Admin Portal Login</h3>
+        <div class="content">
+            <form name="myForm">
+                <input ng-model="staffID" type="text" class="input-text" id="staffID" placeholder="Staff ID" required/>
+                <div class="has-error" ng-show="staffIDError!=null">{{staffIDError}}</div>
+                <div class="no-error" ng-show="staffIDError==null">&nbsp;</div>
+                <input ng-model="password" type="password" class="input-text" placeholder="Password" required/>
+                <div class="has-error" ng-show="passwordError!=null">{{passwordError}}</div>
+                <div class="no-error" ng-show="passwordError==null">&nbsp;</div>
+                <div class="forget">
+                    <a ng-click="goToForgetPassword()"><u>Forget Password?</u></a>
+                </div>
+                <input type="submit" class="btn btn-info login-btn" value="Log In" ng-click="login()" ng-disabled="btnClicked"/>
+            </form>
+        </div>
+    </div>
 </div>

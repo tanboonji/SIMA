@@ -300,6 +300,9 @@ html, body {
     height: 90px;
     margin-bottom: 10px;
 }
+.navbar-wrapper {
+    width: 1070px;
+}
 .navbar a {
     color: black;	
     text-decoration: none;
@@ -545,8 +548,13 @@ html, body {
     box-shadow: 1px 1px 3px #888;
 }
 
-.restrict
-{min-width:970px;}
+.restrict {
+    min-width: 1200px;
+}
+
+.restrict .container {
+    min-width: 1170px;
+}
 
 /* Logout */
 .logout h2 {
@@ -556,7 +564,7 @@ html, body {
 }
 
 /* Login */
-.login, .forget-password { 
+.login { 
     background-image: url('../images/login-background.jpg');
     background-repeat: no-repeat;
     background-attachment: fixed;
@@ -565,21 +573,22 @@ html, body {
     height: 100%;
     width: 100%;
 }
-.login header, .forget-password header {
-    padding-left: 4%;
-    padding-top: 3%;
+.login header {
+    position: fixed;
+    left: 4%;
+    top: 5.6%;
 }
-.login h3, .forget-password h3 {
+.login h3 {
     font-weight: 600;
     font-size: 24px;
     color: white;
     margin: 20px 0 16px 20px;
 }
-.login a, .forget-password a {
+.login a {
     color: #ff4e00;
     text-decoration: none;
 }
-.login .login-popup, .forget-password .forget-popup {
+.login .popup {
     position: fixed;
     background-color: rgba(0,0,0,0.85);
     top: 50%;
@@ -587,12 +596,12 @@ html, body {
     width: 450px;
     transform: translate(-50%, -50%);
 }
-.login .login-popup .content, .forget-password .forget-popup .content {
+.login .popup .content {
     margin-left: 75px;
     margin-right: 75px;
     text-align: left;
 }
-.login .login-popup .input-text, .forget-password .forget-popup .input-text {
+.login .popup .input-text {
     width: 300px;
     height: 35px;
     margin: 20px 0 5px 0;
@@ -601,15 +610,15 @@ html, body {
     padding: 1px 10px;
     color: white;
 }
-.login .login-popup .forget, .forget-password .forget-popup .forget {
+.login .popup .forget {
     margin-top: 15px;
     color: #ff4e00;
     text-align: center;
 }
-.login .login-popup .forget u, .forget-password .forget-popup .forget u {
+.login .popup .forget u {
     cursor: pointer;
 }
-.login .login-popup .login-btn {
+.login .popup .login-btn {
     height: 35px;
     width: 300px;
     background-color: #ff4e00;
@@ -617,7 +626,7 @@ html, body {
     color: white;
     margin: 15px 0 35px 0;
 }
-.forget-password .forget-popup .forget-btn {
+.login .popup .forget-btn {
     height: 35px;
     width: 100%;
     background-color: #ff4e00;
@@ -625,11 +634,10 @@ html, body {
     color: white;
     margin: 20px 0 35px 0;
 }
-.login .error-message, .forget-password .error-message {
+.login .has-error {
     color: red;
 }
-.login .error-empty, .forget-password .error-empty {
-    color: red;
+.login .no-error {
     margin-top: -10px;
 }
 
