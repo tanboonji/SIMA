@@ -30,7 +30,7 @@ app.controller('AdminController', ['$route', '$rootScope', '$routeParams', '$sco
     //authentication object to create admins
     $scope.authObj = $firebaseAuth(secondaryApp.auth());
 
-    //detech authentication state change (login/logout)
+    //detect authentication state change (login/logout)
     $scope.auth.$onAuthStateChanged(function (firebaseUser) {
         $scope.firebaseUser = firebaseUser;
         if ($scope.firebaseUser === null) {

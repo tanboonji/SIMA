@@ -47,7 +47,7 @@ app.controller('ProjectsController', ['$rootScope', '$route', '$routeParams', '$
         
 	$scope.auth = $firebaseAuth();
 	
-    //detech authentication state change (login/logout)
+    //detect authentication state change (login/logout)
 	$scope.auth.$onAuthStateChanged(function(firebaseUser) {
 		$scope.firebaseUser = firebaseUser;
 		if ($scope.firebaseUser === null) {
