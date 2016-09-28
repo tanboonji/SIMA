@@ -39,15 +39,15 @@
                     <input class="form-control col-sm-6 margin-top-7" 
                            placeholder="New Password" type="password" ng-model="newPassword">
                     <span ng-show="passwordEmpty" class="help-block margin-bottom-0"> Field must not be blank!</span>
-                    <span ng-show="passwordLength" class="help-block margin-bottom-0"> Password must be at least 8 characters long</span>
-                    <span ng-show="passwordComplex" class="help-block margin-bottom-0"> Password must be at alpha numeric</span>
+                    <span ng-show="passwordLength" class="help-block margin-bottom-0"> Password must be at least 8 characters long.</span>
+                    <span ng-show="passwordComplex" class="help-block margin-bottom-0"> Password must be at alpha numeric.</span>
                 </div>
                 <div ng-class="{'has-error': pwdEmpty2}">
                     <input class="form-control col-sm-6 margin-top-10" placeholder="Confirm new Password" 
                            type="password" ng-model="confirmPassword">
                     <span ng-show="passwordEmpty2" class="help-block margin-bottom-0"> Field must not be blank!</span>
-                    <span ng-show="passwordLength2" class="help-block margin-bottom-0">  Password must be at least 8 characters long</span>
-                    <span ng-show="passwordComplex2" class="help-block margin-bottom-0"> Password must be at alpha numeric</span>
+                    <span ng-show="passwordLength2" class="help-block margin-bottom-0">  Password must be at least 8 characters long.</span>
+                    <span ng-show="passwordComplex2" class="help-block margin-bottom-0"> Password must be at alpha numeric.</span>
                     <span ng-show="passwordMatch" class="help-block margin-bottom-0"> Passwords do not match!</span>
                 </div>
                 <button class="btn btn-primary margin-top-15" type="button" ng-click="closePopup()">
