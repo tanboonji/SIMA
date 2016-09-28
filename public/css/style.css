@@ -333,6 +333,7 @@ html, body {
 }
 .navbar .profile .logout-btn {
     margin-left: 5px;
+    margin-top: -5px;
 }
 
 /* General - Body */
@@ -359,7 +360,7 @@ html, body {
 }
 .force-row-margin {
     margin-left: 0px;
-    margin-rgiht: 0px;
+    margin-right: 0px;
 }
 .dropdown-style {
     display: inline-block;

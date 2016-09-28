@@ -1,32 +1,33 @@
 <div class="restrict">
-        <nav class="navbar navbar-default navbar-static-top">
-            <div class="container">
-                <a href="#/dashboard" ng-show="!user.isSuperAdmin">
-                    <img src="images/knight-frank-logo.png" alt="Knight Frank" style="max-height:50px"/>
-                </a>
-                <a href="#/admin" ng-show="user.isSuperAdmin">
-                    <img src="images/knight-frank-logo.png" alt="Knight Frank" style="max-height:50px"/>
-                </a>
-                <div class="nav-menu">
-                    <ul>
-                        <li ng-show="user.isCM"><a href="#/dashboard">Dashboard</a></li>
-                        <li ng-show="user.isBUH"><a href="#/projects">Projects</a></li>
-                        <li ng-show="user.isAdmin"><a href="#/staff">Staff</a></li>
-                        <li class="selected" ng-show="user.isAdmin"><a href="#/facilities">Facilities</a></li>
-                        <li ng-show="user.isSuperAdmin"><a href="#/admin">Admin</a></li>
-                    </ul>
-                </div>
-                <div class="profile" id="profile">
-                    Hello
-                    <a href="#/edit-profile">
-                        <span class="profile-link">{{user.showName}}</span>
-                    </a>
-                    <button class="btn btn-default logout-btn" style="margin-top:-5px;" type="button" ng-click="logout()">
-                        Log Out
-                    </button>
-                </div>
+    
+    <nav class="navbar navbar-default navbar-static-top">
+        <div class="container">
+            <a href="#/dashboard" ng-show="!user.isSuperAdmin">
+                <img src="images/knight-frank-logo.png" alt="Knight Frank" style="max-height:50px"/>
+            </a>
+            <a href="#/admin" ng-show="user.isSuperAdmin">
+                <img src="images/knight-frank-logo.png" alt="Knight Frank" style="max-height:50px"/>
+            </a>
+            <div class="nav-menu">
+                <ul>
+                    <li ng-show="user.isCM"><a href="#/dashboard">Dashboard</a></li>
+                    <li ng-show="user.isBUH"><a href="#/projects">Projects</a></li>
+                    <li ng-show="user.isAdmin"><a href="#/staff">Staff</a></li>
+                    <li class="selected" ng-show="user.isAdmin"><a href="#/facilities">Facilities</a></li>
+                    <li ng-show="user.isSuperAdmin"><a href="#/admin">Admin</a></li>
+                </ul>
             </div>
-        </nav>
+            <div class="profile" id="profile">
+                Hello
+                <a href="#/edit-profile">
+                    <span class="profile-link">{{user.showName}}</span>
+                </a>
+                <button class="btn btn-default logout-btn" type="button" ng-click="logout()">
+                    Log Out
+                </button>
+            </div>
+        </div>
+    </nav>
 
     <div class="facilities container">
         <h3 class="title">Facilities</h3>
@@ -131,4 +132,5 @@
             </div>
         </div>
     </div>
+    
 </div>
