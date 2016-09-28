@@ -520,7 +520,7 @@ html, body {
     border-bottom: 1px dotted black;
 }
 
-/* Facilities */
+/* Facilities 5 Box *//*
 .facility-list ul {
     padding-left: 0;
     margin-bottom: 0;	
@@ -528,17 +528,21 @@ html, body {
 .facility-list li {
     cursor: pointer;
     display: inline;
-    margin-right: 31.3px;
+/*    margin-right: 31.3px;*//*
+    margin-right: 20px;
 }
 .facility-list img {
-    height: 200px;
-    width: 200px;
+/*    height: 200px;*/
+/*    width: 200px;*//*
+    height: 209px;
+    width: 209px;
     overflow: hidden;
     margin-bottom: 7px;
 }
 .facility-list div {
     padding-bottom: 7px;
-    max-width: 200px;
+/*    max-width: 200px;*//*
+    max-width: 209px;
     display: inline-block;
     margin-bottom: 20px;
     text-align: center;
@@ -548,6 +552,63 @@ html, body {
     box-shadow: 1px 1px 3px #888;
 }
 
+/* Facilities 6 Box *//*
+.facility-list ul {
+    padding-left: 0;
+    margin-bottom: 0;	
+}
+.facility-list li {
+    cursor: pointer;
+    display: inline;
+    margin-right: 20px;
+}
+.facility-list img {
+    height: 170.3px;
+    width: 170.3px;
+    overflow: hidden;
+    margin-bottom: 7px;
+}
+.facility-list div {
+    padding-bottom: 7px;
+    max-width: 170.3px;
+    display: inline-block;
+    margin-bottom: 20px;
+    text-align: center;
+    border: 1px solid #999;
+    border-radius: 7px;
+    overflow: hidden;
+    box-shadow: 1px 1px 3px #888;
+}
+
+/* Facilities 7 Box */
+.facility-list ul {
+    padding-left: 0;
+    margin-bottom: 0;	
+}
+.facility-list li {
+    cursor: pointer;
+    display: inline;
+    margin-right: 20px;
+}
+.facility-list img {
+    height: 142.6px;
+    width: 142.6px;
+    overflow: hidden;
+    margin-bottom: 7px;
+}
+.facility-list div {
+    padding-bottom: 7px;
+    max-width: 142.6px;
+    display: inline-block;
+    margin-bottom: 20px;
+    text-align: center;
+    border: 1px solid #999;
+    border-radius: 7px;
+    overflow: hidden;
+    box-shadow: 1px 1px 3px #888;
+}
+
+/* Restrict */
 .restrict {
     min-width: 1200px;
 }
