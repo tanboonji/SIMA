@@ -1,0 +1,136 @@
+<div class="restrict">
+    
+    <nav class="navbar navbar-default navbar-static-top">
+        <div class="container">
+            <a href="#/dashboard" ng-show="!user.isSuperAdmin">
+                <img src="images/knight-frank-logo.png" alt="Knight Frank" style="max-height:50px"/>
+            </a>
+            <a href="#/admin" ng-show="user.isSuperAdmin">
+                <img src="images/knight-frank-logo.png" alt="Knight Frank" style="max-height:50px"/>
+            </a>
+            <div class="nav-menu">
+                <ul>
+                    <li ng-show="user.isCM"><a href="#/dashboard">Dashboard</a></li>
+                    <li ng-show="user.isBUH"><a href="#/projects">Projects</a></li>
+                    <li ng-show="user.isAdmin"><a href="#/staff">Staff</a></li>
+                    <li class="selected" ng-show="user.isAdmin"><a href="#/facilities">Facilities</a></li>
+                    <li ng-show="user.isSuperAdmin"><a href="#/admin">Admin</a></li>
+                </ul>
+            </div>
+            <div class="profile" id="profile">
+                Hello
+                <a href="#/edit-profile">
+                    <span class="profile-link">{{user.showName}}</span>
+                </a>
+                <button class="btn btn-default logout-btn" type="button" ng-click="logout()">
+                    Log Out
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="facilities container">
+        <h3 class="title">Facilities</h3>
+        <div class="row">
+            <div class="col-md-12">
+                <button type="button" class="btn btn-success pull-left" ng-click="goToAddFacility()">
+                    <span class="glyphicon glyphicon-plus button-icon" aria-hidden="true"></span>
+                    Add
+                </button>
+                <div class="pull-left col-md-4 force-col-margin force-col-padding has-icon">
+                    <span class="glyphicon glyphicon-search form-control-icon"></span>
+                    <input type="text" class="form-control" placeholder="Search for..." ng-model="search.name">
+                </div>
+                <div class="pull-right">
+                    <label for="">Status:&nbsp;</label>
+                    <div class="btn-group">
+                        <button type="button" class="btn btn-default dropdown-toggle dropdown-style" 
+                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                            <div class="dropdown-text-left">{{sortByItem}}</div>
+                            <span class="caret dropdown-text-right"></span>
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li ng-repeat="s in sortByList"><a ng-click="sortByItemSelected(s)">{{s}}</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="margin-top-25 margin-bottom-25 facility-list">
+            <ul>
+                <li ng-repeat="f in facilityList | filter:search | filter:isdeleted" ng-click="viewFacility(f)">
+                    <div>
+                        <img ng-src="{{f.photoURL}}"/>
+                        {{f.name}}
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="overlay" ng-show="overlay" ng-click="closeOverlay()">
+        <div class="overlay-popup" ng-click="openOverlay($event)">
+            <div class="form-horizontal">
+                <div class="row">
+                    <div class="col-md-12 col-lg-12 header">
+                        <h3>{{facility.name}}</h3>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12 col-lg-12">
+                        <div class="category-group-without-padding" ng-repeat="c in checklist">
+                            <div class="category-group-title">
+                                <span class="group-addon">{{c.no}}.</span>
+                                <input type="text" class="form-control group-input no-border" ng-model="c.name"
+                                    placeholder="Enter category name" disabled>
+                            </div>
+                            <div ng-repeat="q in c.question">
+                                <div class="question-group col-lg-9 col-md-9 force-col-padding">
+                                    <span class="group-addon">{{q.no}}.</span>
+                                    <input type="text" class="form-control group-input no-border"  ng-model="q.name"
+                                        placeholder="Enter question name" disabled>
+                                </div>
+                                <div class="question-radio col-lg-2 col-md-2 force-col-padding">
+                                    <div class="radio radio-first">
+                                        <label><input type="radio" value="MCQ" ng-model="q.type"
+                                            name="questionType-{{c.formID}}-{{q.formID}}" disabled>MCQ</label>
+                                    </div>
+                                    <div class="radio radio-last">
+                                        <label><input type="radio" value="Short Answer" ng-model="q.type"
+                                            name="questionType-{{c.formID}}-{{q.formID}}" disabled>Short Ans</label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="force-height-10 noselect">JustNeededSomeExtraSpaceForStyleIssue.ToBeEdited</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row margin-bottom-20 margin-top-7">
+                    <div class="col-md-12 col-lg-12">
+                        <button class="btn btn-primary" type="button" ng-click="closeOverlay()">
+                            <span class="glyphicon glyphicon-remove button-icon" aria-hidden="true"></span>
+                            Close
+                        </button>
+                        <button class="btn btn-danger" type="button" ng-click="deleteFacility()" ng-show="!facility.deleted">
+                            <span class="glyphicon glyphicon-trash button-icon" aria-hidden="true"></span>
+                            Delete
+                        </button>
+                        <button class="btn btn-warning" type="button" ng-click="goToEditFacility()" ng-show="!facility.deleted">
+                            <span class="glyphicon glyphicon-pencil button-icon" aria-hidden="true"></span>
+                            Edit
+                        </button>
+                        <button class="btn btn-danger" type="button" ng-show="facility.deleted" disabled>
+                            <span class="glyphicon glyphicon-trash button-icon" aria-hidden="true"></span>
+                            Deleted
+                        </button>
+                        <button class="btn btn-warning" type="button" ng-click="restoreFacility()" ng-show="facility.deleted">
+                            <span class="glyphicon glyphicon-repeat button-icon" aria-hidden="true"></span>
+                            Restore
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+</div>

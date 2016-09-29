@@ -1,0 +1,262 @@
+<header>
+	<nav class="navbar navbar-default navbar-static-top restrict">
+		<div class="container restrict">
+            <a href="#/dashboard" ng-show="!user.isSuperAdmin">
+                <img src="images/knight-frank-logo.png" alt="Knight Frank" style="max-height:50px"/>
+            </a>
+            <a href="#/admin" ng-show="user.isSuperAdmin">
+                <img src="images/knight-frank-logo.png" alt="Knight Frank" style="max-height:50px"/>
+            </a>
+            <div class="nav-menu">
+                <ul>
+                    <li class="selected" ng-show="user.isCM"><a href="#/dashboard">Dashboard</a></li>
+                    <li ng-show="user.isBUH"><a href="#/projects">Projects</a></li>
+                    <li ng-show="user.isAdmin"><a href="#/staff">Staff</a></li>
+                    <li ng-show="user.isAdmin"><a href="#/facilities">Facilities</a></li>
+                    <li ng-show="user.isSuperAdmin"><a href="#/admin">Admin</a></li>
+                </ul>
+            </div>
+            <div class="profile" id="profile">
+                Hello
+                <a href="#/edit-profile">
+                    <span class="profile-link">{{user.showName}}</span>
+                </a>
+                <button class="btn btn-default logout-btn" style="margin-top:-5px;" type="button" ng-click="logout()">
+                    Log Out
+                </button>
+            </div>
+		</div>
+	</nav>
+</header>
+
+<div class="dashboard restrict container">
+	<h3 class="title">List of outstanding issues</h3>
+    <div class="row">
+    	<div class="col-md-12">
+            <div class="pull-left col-md-4 force-col-padding has-icon">
+                <span class="glyphicon glyphicon-search form-control-icon"></span>
+                <input type="text" class="form-control" placeholder="Search for..." ng-model="query">
+            </div>
+            <div class="pull-right">
+                <label for="">Date:&nbsp;</label>
+                <div class="btn-group margin-right-5">
+                    <button type="button" class="btn btn-default dropdown-toggle dropdown-style" 
+                    	data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                        <div class="dropdown-text-left">{{sortByDateItem}}</div>
+                        <span class="caret dropdown-text-right"></span>
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li ng-repeat="s in sortByDateList"><a ng-click="sortByDateItemSelected(s)">{{s}}</a></li>
+                    </ul>
+                </div>
+                <label for="">Order:&nbsp;</label>
+                <div class="btn-group">
+                    <button type="button" class="btn btn-default dropdown-toggle dropdown-style" 
+                    	data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                        <div class="dropdown-text-left">{{sortByOrderItem}}&nbsp;</div>
+                        <span class="caret dropdown-text-right"></span>
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li ng-repeat="s in sortByOrderList"><a ng-click="sortByOrderItemSelected(s)">{{s}}</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="margin-top-25">
+    	<table class="col-md-12 table table-hover table-bordered">
+        	<thead>
+        	<tr>
+            	<td>MCSTS</td>
+                <td>Name</td>
+                <td>BUH</td>
+                <td>TM</td>
+                <td>CM</td>
+                <td>Inspection Date</td>
+                <td>Issue(s)</td>
+                <td class="col-md-2"></td>
+            </tr>
+            </thead>
+            <tbody>
+            <tr ng-repeat="r in recordList | filter:search | filter:dateRange | filter:userrole" ng-class="{'table-issue': r.hasIssue}">
+            	<td ng-click="viewRecord(r)">{{r.MCSTS}}</td>
+                <td ng-click="viewRecord(r)">{{r.name}}</td>
+                <td ng-click="viewRecord(r)">{{r.BUHName}}</td>
+                <td ng-click="viewRecord(r)">{{r.TMName}}</td>
+                <td ng-click="viewRecord(r)">{{r.CMName}}</td>
+                <td ng-click="viewRecord(r)">{{r.inspectionDate}}</td>
+                <td ng-click="viewRecord(r)">{{r.issueCount}}</td>
+                <td>
+                    <div class="pull-right">
+                        <button class="btn btn-default" type="button" ng-click="viewRecord(r)">
+                            <span class="glyphicon glyphicon-eye-open button-icon" aria-hidden="true"></span>
+                            View
+                        </button>
+                    </div>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="overlay" ng-show="popupform">
+    <!-- Password Popup Div Starts Here -->
+    <div class="passwordform overlay-popup" ng-click="openPopup($event)">
+        <form>
+            <h4>Update Password</h4>
+            <p style="color:#a94442">You need to change your password before continuing as {{changePasswordReason}}</p>
+            <div ng-class="{'has-error': pwdEmpty1}">
+                <input class="form-control col-sm-6 margin-top-7" 
+                       placeholder="New Password" type="password" ng-model="newPassword">
+                <span ng-show="passwordEmpty" class="help-block margin-bottom-0"> Field must not be blank!</span>
+                <span ng-show="passwordLength" class="help-block margin-bottom-0"> Password must be at least 8 characters long.</span>
+                <span ng-show="passwordComplex" class="help-block margin-bottom-0"> Password must be at alpha numeric.</span>
+            </div>
+            <div ng-class="{'has-error': pwdEmpty2}">
+                <input class="form-control col-sm-6 margin-top-10" placeholder="Confirm new Password" 
+                       type="password" ng-model="confirmPassword">
+                <span ng-show="passwordEmpty2" class="help-block margin-bottom-0"> Field must not be blank!</span>
+                <span ng-show="passwordLength2" class="help-block margin-bottom-0">  Password must be at least 8 characters long.</span>
+                <span ng-show="passwordComplex2" class="help-block margin-bottom-0"> Password must be at alpha numeric.</span>
+                <span ng-show="passwordMatch" class="help-block margin-bottom-0"> Passwords do not match!</span>
+            </div>
+            <button class="btn btn-success margin-top-15" type="submit" ng-click="updatePassword()">
+                <span class="glyphicon glyphicon-floppy-disk button-icon" aria-hidden="true"></span>Update
+            </button>
+        </form>
+    </div>
+    <!-- Password Popup Div Ends Here -->
+</div>
+
+<div class="overlay" ng-show="overlay" ng-click="closeOverlay()">
+    <div class="overlay-large-popup" ng-click="openOverlay($event)">
+        <div class="form-horizontal">
+            <div class="row">
+                <div class="col-md-12 col-lg-12 header">
+                    <h3>{{record.name}} ({{record.inspectionDate}})</h3>
+                </div>
+            </div>
+            <div class="row">
+                <label class="control-label col-md-2">MCSTS</label>
+                <div class="col-md-9">
+                    <input type="text" ng-model="record.MCSTS" class="form-control" disabled/>
+                </div>
+            </div>
+            <div class="row margin-top-13">
+                <label class="control-label col-md-2">Name</label>
+                <div class="col-md-9">
+                    <input type="text" ng-model="record.name" class="form-control" disabled/>
+                </div>
+            </div>
+            <div class="row margin-top-13">
+                <label class="control-label col-md-2">BUH</label>
+                <div class="col-md-9">
+                    <input type="text" ng-model="record.fullBUH" class="form-control" disabled/>
+                </div>
+            </div>
+            <div class="row margin-top-13">
+                <label class="control-label col-md-2">TM</label>
+                <div class="col-md-9">
+                    <input type="text" ng-model="record.fullTM" class="form-control" disabled/>
+                </div>
+            </div>
+            <div class="row margin-top-13">
+                <label class="control-label col-md-2">CM</label>
+                <div class="col-md-9">
+                    <input type="text" ng-model="record.fullCM" class="form-control" disabled/>
+                </div>
+            </div>
+            <div class="row margin-top-13">
+                <label class="control-label col-md-2">Inspection Date</label>
+                <div class="col-md-9">
+                    <input type="text" ng-model="record.inspectionDate" class="form-control" disabled/>
+                </div>
+            </div>
+            <div class="row margin-top-13">
+                <label class="control-label col-md-2">Issue(s)</label>
+                <div class="col-md-9">
+                    <input type="text" ng-model="record.issueCount" class="form-control" disabled/>
+                </div>
+            </div>
+            <div class="row margin-top-13">
+                <label class="control-label col-md-2">Record</label>
+                <div class="col-md-9">
+                    <div class="facility-group-view" ng-repeat="f in record.projectFacility" id="{{f.name}}" ng-show="checklistShow">
+                        <div class="category-group-title margin-bottom-13">
+                            <span class="facility-group-title">{{f.name}}</span>
+                        </div>
+                        <div class="margin-left-10 margin-right-10 margin-bottom-13">
+                            <div class="category-group-without-padding" ng-repeat="c in f.category">
+                                <div class="category-group-title margin-bottom-13">
+                                    <span class="group-addon">{{c.no}}.</span>
+                                    <input type="text" class="form-control group-input-view" ng-model="c.name"
+                                        placeholder="Enter category name" disabled>
+                                </div>
+                                <div class="margin-left-10 margin-right-10 margin-bottom-13">
+                                    <div class="category-group-without-padding" ng-repeat="q in c.question">
+                                        <div class="category-group-title margin-bottom-13">
+                                            <span class="group-addon">{{q.no}}.</span>
+                                            <input type="text" class="form-control group-input-view" ng-model="q.name"
+                                                placeholder="Enter question name" disabled>
+                                        </div>
+                                        <div class="btn-group btn-group-justified col-md-12" 
+                                             role="group" aria-label="..." ng-show="q.isMCQ">
+                                            <div class="btn-group" role="group">
+                                                <button type="button" class="btn" 
+                                                        ng-class="{'btn-default': !q.isYes,'btn-primary': q.isYes}" disabled>Yes</button>
+                                            </div>
+                                            <div class="btn-group" role="group">
+                                                <button type="button" class="btn"
+                                                        ng-class="{'btn-default': !q.isNA,'btn-primary': q.isNA}" disabled>N/A</button>
+                                            </div>
+                                            <div class="btn-group" role="group">
+                                                <button type="button" class="btn"
+                                                        ng-class="{'btn-default': !q.isNo,'btn-primary': q.isNo}" disabled>No</button>
+                                            </div>
+                                        </div>
+                                        <div class="btn-group btn-group-justified col-md-12" 
+                                             role="group" aria-label="..." ng-show="!q.isMCQ">
+                                            <div class="btn-group" role="group">
+                                                <button type="button" class="btn btn-disabled" disabled>Yes</button>
+                                            </div>
+                                            <div class="btn-group" role="group">
+                                                <button type="button" class="btn btn-disabled" disabled>N/A</button>
+                                            </div>
+                                            <div class="btn-group" role="group">
+                                                <button type="button" class="btn btn-disabled" disabled>No</button>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-12 margin-top-13" ng-show="q.hasImage">
+                                            <img src="{{q.image}}" style="width:150px;height:150px;">
+                                        </div>
+                                        <div class="col-md-12" ng-class="{'margin-top-7': q.hasComment}">
+                                            <b>{{q.comments}}</b>
+                                        </div>
+                                        <div class="force-height-10 noselect">JustNeededSomeExtraSpaceForStyleIssue.ToBeEdited</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <button class="btn btn-default margin-bottom-13" type="button" ng-click="showChecklist()" ng-show="!checklistShow">
+                        <span class="glyphicon glyphicon-menu-down button-icon" aria-hidden="true"></span>
+                        Show Record
+                    </button>
+                    <button class="btn btn-default margin-bottom-13" type="button" ng-click="showChecklist()" ng-show="checklistShow">
+                        <span class="glyphicon glyphicon-menu-up button-icon" aria-hidden="true"></span>
+                        Hide Record
+                    </button>
+                </div>
+            </div>
+            <div class="row margin-bottom-20 margin-top-7">
+                <div class="col-md-offset-2 col-lg-offset-2 col-md-10 col-lg-10">
+                    <button class="btn btn-primary" type="button" ng-click="closeOverlay()">
+                        <span class="glyphicon glyphicon-remove button-icon" aria-hidden="true"></span>
+                        Close
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

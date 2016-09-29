@@ -1,0 +1,128 @@
+<header>
+    <nav class="navbar navbar-default navbar-static-top restrict">
+        <div class="container restrict">
+            <a href="#/dashboard" ng-show="!user.isSuperAdmin">
+                <img src="images/knight-frank-logo.png" alt="Knight Frank" style="max-height:50px"/>
+            </a>
+            <a href="#/admin" ng-show="user.isSuperAdmin">
+                <img src="images/knight-frank-logo.png" alt="Knight Frank" style="max-height:50px"/>
+            </a>
+            <div class="nav-menu">
+                <ul>
+                    <li ng-show="user.isCM"><a href="#/dashboard">Dashboard</a></li>
+                    <li ng-show="user.isBUH"><a href="#/projects">Projects</a></li>
+                    <li ng-show="user.isAdmin"><a href="#/staff">Staff</a></li>
+                    <li ng-show="user.isAdmin"><a href="#/facilities">Facilities</a></li>
+                    <li ng-show="user.isSuperAdmin"><a href="#/admin">Admin</a></li>
+                </ul>
+            </div>
+            <div class="profile" id="profile">
+                Hello
+                <a href="#/edit-profile">
+                    <span class="profile-link">{{user.showName}}</span>
+                </a>
+                <button class="btn btn-default logout-btn" style="margin-top:-5px;" type="button" ng-click="logout()">
+                    Log Out
+                </button>
+            </div>
+        </div>
+    </nav>
+</header>
+
+<div class="edit-profile container">
+    <div class="overlay" ng-show="popupform" ng-click="closePopup()">
+        <!-- Password Popup Div Starts Here -->
+        <div class="passwordform overlay-popup" ng-click="openOverlay($event)">
+            <form>
+                <h4>Update Password</h4>
+                <div ng-class="{'has-error': pwdEmpty1}">
+                    <input class="form-control col-sm-6 margin-top-7" 
+                           placeholder="New Password" type="password" ng-model="newPassword">
+                    <span ng-show="passwordEmpty" class="help-block margin-bottom-0"> Field must not be blank!</span>
+                    <span ng-show="passwordLength" class="help-block margin-bottom-0"> Password must be at least 8 characters long.</span>
+                    <span ng-show="passwordComplex" class="help-block margin-bottom-0"> Password must be at alpha numeric.</span>
+                </div>
+                <div ng-class="{'has-error': pwdEmpty2}">
+                    <input class="form-control col-sm-6 margin-top-10" placeholder="Confirm new Password" 
+                           type="password" ng-model="confirmPassword">
+                    <span ng-show="passwordEmpty2" class="help-block margin-bottom-0"> Field must not be blank!</span>
+                    <span ng-show="passwordLength2" class="help-block margin-bottom-0">  Password must be at least 8 characters long.</span>
+                    <span ng-show="passwordComplex2" class="help-block margin-bottom-0"> Password must be at alpha numeric.</span>
+                    <span ng-show="passwordMatch" class="help-block margin-bottom-0"> Passwords do not match!</span>
+                </div>
+                <button class="btn btn-primary margin-top-15" type="button" ng-click="closePopup()">
+                    <span class="glyphicon glyphicon-remove button-icon" aria-hidden="true"></span>Cancel
+                </button>
+                <button class="btn btn-success margin-top-15" type="submit" ng-click="updatePassword()">
+                    <span class="glyphicon glyphicon-floppy-disk button-icon" aria-hidden="true"></span>Update
+                </button>
+            </form>
+        </div>
+        <!-- Password Popup Div Ends Here -->
+    </div>
+
+    <h3 class="title">Edit Profile</h3>
+    <form class="form-horizontal">
+        <div class="row">
+            <label class="control-label col-md-2">ID</label>
+            <div class="col-md-6 margin-top-6">
+                <input type="text" ng-model="user.ID" class="form-control" disabled/>
+            </div>
+        </div>
+        <div class="row margin-top-25">
+            <label class="control-label col-md-2">Name</label>
+            <div class="col-md-6 margin-top-6">
+                <input type="text" ng-model="user.name" class="form-control" disabled/>
+            </div>
+        </div>
+        <div class="row margin-top-25">
+            <label class="control-label col-md-2">Role</label>
+            <div class="col-md-6 margin-top-6">
+                <input type="text" ng-model="user.role" class="form-control" disabled/>
+            </div>
+        </div>
+        <div class="row margin-top-25">
+            <label class="control-label col-md-2">Email</label>
+            <div class="col-md-6" ng-class="{'has-error': staffEmailEmpty}">
+                <input type="email" ng-model="user.email" class="form-control" placeholder="Enter your personal email" required/>
+                <span ng-show="staffEmailEmpty" class="help-block margin-bottom-0">
+                    Your email is required.
+                </span>
+            </div>
+        </div>
+        <div class="row margin-top-25">
+            <label class="control-label col-md-2">Phone</label>
+            <div class="col-md-6" ng-class="{'has-error': staffPhoneError}">
+                <input type="text" id="phoneNo" ng-pattern="/^[\d]{8}$/" ng-model="user.phone" 
+                       class="form-control" placeholder="Enter your personal phone number" required/>
+                <span ng-show="staffPhoneEmpty" class="help-block margin-bottom-0">
+                    Your phone number is required.
+                </span>
+                <span ng-show="staffPhoneDigits" class="help-block margin-bottom-0">
+                    Phone number contains invalid characters, only digits allowed.
+                </span>
+                <span ng-show="staffPhoneLength" class="help-block margin-bottom-0">
+                    Phone number must be 8 digits in length.
+                </span>
+            </div>
+        </div>
+        <div class="row margin-top-25">
+            <label class="control-label col-md-2">Password</label>
+            <div class="col-md-6" ng-class="{'has-error': staffPhoneError}">
+                <button class="btn btn-default" type="button" ng-click="popupform = !popupform">
+                    <span class="glyphicon glyphicon-lock button-icon" aria-hidden="true"></span>Change Password
+                </button>
+            </div>
+        </div>
+        <div class="row margin-top-25 margin-bottom-50">
+            <div class="col-md-offset-2 col-md-10">
+                <button class="btn btn-primary" type="button" ng-click="goToDashboard()">
+                    <span class="glyphicon glyphicon-remove button-icon" aria-hidden="true"></span>Cancel
+                </button>
+                <button class="btn btn-success" type="submit" ng-click="saveProfile()">
+                    <span class="glyphicon glyphicon-floppy-disk button-icon" aria-hidden="true"></span>Save
+                </button>
+            </div>
+        </div>
+    </form>
+</div>
