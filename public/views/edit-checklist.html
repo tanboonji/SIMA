@@ -12,7 +12,7 @@
                     <li ng-show="user.isCM"><a href="#/dashboard">Dashboard</a></li>
                     <li ng-show="user.isBUH"><a href="#/projects">Projects</a></li>
                     <li ng-show="user.isAdmin"><a href="#/staff">Staff</a></li>
-                    <li class="selected" ng-show="user.isAdmin"><a href="#/facilities">Checklists</a></li>
+                    <li class="selected" ng-show="user.isAdmin"><a href="#/checklists">Checklists</a></li>
                     <li ng-show="user.isSuperAdmin"><a href="#/admin">Admin</a></li>
                 </ul>
             </div>
@@ -29,13 +29,13 @@
 	</nav>
 </header>
 
-<div class="add-facility container">
-	<h3 class="title">Add Checklist</h3>
+<div class="edit-facility container">
+	<h3 class="title">Edit Checklist</h3>
     <form class="form-horizontal">
         <div class="row">
             <label class="control-label col-md-2">Name</label>
             <div class="col-md-6" ng-class="{'has-error': facilityNameEmpty}">
-                <input type="text" ng-model="name" class="form-control" placeholder="Enter facility name" required/>
+                <input type="text" ng-model="facility.name" class="form-control" placeholder="Enter facility name" required/>
                 <span ng-show="facilityNameEmpty" class="help-block margin-bottom-0">
                     Checklist name is required.
                 </span>
@@ -44,9 +44,9 @@
         <div class="row margin-top-25">
         	<label class="control-label col-md-2">Photo</label>
             <div class="col-md-6" ng-class="{'has-error': facilityPhotoEmpty}">
-            	<div ngf-drop ngf-select ng-model="photo" class="dropbox col-md-12" 
+            	<div ngf-drop ngf-select ng-model="facility.photoURL" class="dropbox col-md-12" 
                 	ngf-drag-over-class="dragover" ngf-multiple="false" ngf-allow-dir="true" 
-                    accept="image/*" ngf-pattern="image/*" ngf-validate="size:{max: '5MB'}">
+                    accept="image/*" ngf-pattern="image/*" ngf-validate="size:{max:'5MB'}">
                 	Drag checklist photo here or click here to upload<br/>
                     (Max file size is 5MB)<br/><br/>
                     {{photoStatus}}<br/>
@@ -55,7 +55,7 @@
                 <div ngf-no-file-drop>File drag and drop is not supported for this browser</div>
             </div>
             <div class="col-md-4 force-col-padding">
-                <img ngf-src="photo" ngf-resize="{width: 250, height: 250}" ngf-no-object-url="false"
+                <img ngf-src="facility.photoURL" ngf-resize="{width: 250, height: 250}" ngf-no-object-url="false"
                      style="max-width:250px;max-height:250px"/>
             </div>
             <div class="col-md-offset-2 col-md-10 has-error" ng-show="facilityPhotoEmpty">
@@ -63,58 +63,75 @@
             </div>
         </div>
         <div class="row margin-top-25">
-        	<label class="control-label col-md-2">Checklist</label>
+            <label class="control-label col-md-2">Checklist</label>
             <div class="col-md-6">
-            	<div ng-class="{'category-group-error': c.error}" class="category-group-without-padding" ng-repeat="c in checklist">
-                	<div class="category-group-title">
+                <div ng-class="{'category-group-error': c.error}" class="category-group-without-padding" 
+                     ng-repeat="c in checklist" ng-show="!c.deleted">
+                    <div class="category-group-title">
                         <span class="group-addon">{{c.no}}.</span>
                         <input type="text" class="form-control group-input" ng-model="c.name"
-                        	placeholder="Enter category name" required>
+                            placeholder="Enter category name" ng-required="!c.deleted">
                         <span class="glyphicon glyphicon-remove group-delete" aria-hidden="true"
-                        	ng-click="deleteCategory(c)"></span>
+                            ng-click="removeCategory(c)"></span>
                     </div>
                     <div ng-repeat="q in c.question">
                         <div class="question-group col-md-9 force-col-padding">
                             <span class="group-addon">{{q.no}}.</span>
                             <input type="text" class="form-control group-input" ng-model="q.name"
-                                placeholder="Enter question name" required>
+                                placeholder="Enter question name" ng-required="!c.deleted">
                             <span class="glyphicon glyphicon-remove group-delete" aria-hidden="true"
-                            	ng-click="deleteQuestion(c,q)"></span>
+                                ng-click="deleteQuestion(c,q)"></span>
                         </div>
                         <div class="question-radio col-md-2 force-col-padding">
                             <div class="radio radio-first">
                                 <label><input type="radio" value="MCQ" ng-model="q.type"
-                                	name="questionType-{{c.formID}}-{{q.formID}}">MCQ</label>
+                                    name="questionType-{{c.formID}}-{{q.formID}}">MCQ</label>
                             </div>
                             <div class="radio radio-last">
                                 <label><input type="radio" value="Short Answer" ng-model="q.type"
-                                	name="questionType-{{c.formID}}-{{q.formID}}">Short Ans</label>
+                                    name="questionType-{{c.formID}}-{{q.formID}}">Short Ans</label>
                             </div>
                         </div>
                     </div>
                     <button class="btn btn-default add-question-btn-with-margin" type="button" ng-click="addQuestion(c)">
-                    	<span class="glyphicon glyphicon-plus button-icon" aria-hidden="true"></span>
+                        <span class="glyphicon glyphicon-plus button-icon" aria-hidden="true"></span>
                         Add Question
                     </button>
                     <div class="has-error category-error" ng-show="c.error">
                         <span class="help-block">Category or question name is required.</span>
                     </div>
-            	</div>
-                <button class="btn btn-default" type="button" ng-click="addCategory()">
+                </div>
+                <button class="btn btn-default margin-bottom-20" type="button" ng-click="addCategory()">
                     <span class="glyphicon glyphicon-plus button-icon" aria-hidden="true"></span>
                     Add Category
                 </button>
+                <button class="btn btn-default margin-bottom-20" type="button" ng-click="refreshChecklist()">
+                    <span class="glyphicon glyphicon-refresh button-icon" aria-hidden="true"></span>
+                    Reset Checklist
+                </button>
             </div>
         </div>
-        <div class="row margin-top-25 margin-bottom-50">
-        	<div class="col-md-offset-2 col-md-10">
+        <div class="row margin-top-5 margin-bottom-50">
+            <div class="col-md-offset-2 col-md-10">
                 <button class="btn btn-primary" type="button" ng-click="goToFacilities()">
                     <span class="glyphicon glyphicon-remove button-icon" aria-hidden="true"></span>
                     Cancel
                 </button>
-                <button class="btn btn-success" type="submit" ng-click="validateAddForm()" ng-disabled="btnValidate">
-                    <span class="glyphicon glyphicon-plus button-icon" aria-hidden="true"></span>
-                    Add
+                <button class="btn btn-danger" type="button" ng-click="deleteFacility()" ng-show="!facility.deleted">
+                    <span class="glyphicon glyphicon-trash button-icon" aria-hidden="true"></span>
+                    Delete
+                </button>
+                <button class="btn btn-success" type="submit" ng-click="validateEditForm()" ng-show="!facility.deleted" ng-disabled="btnValidate">
+                    <span class="glyphicon glyphicon-floppy-disk button-icon" aria-hidden="true"></span>
+                    Save
+                </button>
+                <button class="btn btn-danger" type="button" ng-show="facility.deleted" disabled>
+                    <span class="glyphicon glyphicon-trash button-icon" aria-hidden="true"></span>
+                    Deleted
+                </button>
+                <button class="btn btn-warning" type="button" ng-click="restoreFacility()" ng-show="facility.deleted">
+                    <span class="glyphicon glyphicon-repeat button-icon" aria-hidden="true"></span>
+                    Restore
                 </button>
             </div>
         </div>

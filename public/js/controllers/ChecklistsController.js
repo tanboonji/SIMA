@@ -1,4 +1,4 @@
-app.controller('FacilitiesController', ['$rootScope', '$route', '$routeParams', '$scope', '$location', '$firebaseAuth', '$firebaseObject', 
+app.controller('ChecklistsController', ['$rootScope', '$route', '$routeParams', '$scope', '$location', '$firebaseAuth', '$firebaseObject', 
     '$firebaseArray', function($rootScope, $route, $routeParams, $scope, $location, $firebaseAuth, $firebaseObject, $firebaseArray){
     
     /********************
@@ -37,7 +37,7 @@ app.controller('FacilitiesController', ['$rootScope', '$route', '$routeParams', 
     $scope.auth.$onAuthStateChanged(function(firebaseUser) {
         $scope.firebaseUser = firebaseUser;
         if ($scope.firebaseUser === null)
-            $location.path('/login').search("facilityID",null).search("edit",null).search("add",null);
+            $location.path('/login').search("checklistID",null).search("edit",null).search("add",null);
         else
             $scope.checkUser();
     });
@@ -140,21 +140,21 @@ app.controller('FacilitiesController', ['$rootScope', '$route', '$routeParams', 
     $scope.checkRouting = function() {
         if ($scope.user.isSuperAdmin) {
             alert("You do not have permission to view this webpage (facilities1)");
-            $location.path("/admin").search("facilityID",null).search("edit",null).search("add",null);
+            $location.path("/admin").search("checklistID",null).search("edit",null).search("add",null);
             $route.reload();
         } else if (!$scope.user.isAdmin) {
             alert("You do not have permission to view this webpage (facilities2)");
-            $location.path("/dashboard").search("facilityID",null).search("edit",null).search("add",null);
+            $location.path("/dashboard").search("checklistID",null).search("edit",null).search("add",null);
             $route.reload();
         }
     };
         
     $scope.checkSoftRouting = function() {
         if ($scope.user.isSuperAdmin) {
-            $location.path("/admin").search("facilityID",null).search("edit",null).search("add",null);
+            $location.path("/admin").search("checklistID",null).search("edit",null).search("add",null);
             $route.reload();
         } else if (!$scope.user.isAdmin) {
-            $location.path("/dashboard").search("facilityID",null).search("edit",null).search("add",null);
+            $location.path("/dashboard").search("checklistID",null).search("edit",null).search("add",null);
             $route.reload();
         }
     };
@@ -215,18 +215,18 @@ app.controller('FacilitiesController', ['$rootScope', '$route', '$routeParams', 
     ********************/
         
     $scope.goToAddFacility = function() {
-        $location.path('/add-facility').search("facilityID",null).search("edit",null).search("add",null);
+        $location.path('/add-checklist').search("checklistID",null).search("edit",null).search("add",null);
     };
     
     $scope.goToFacilities = function() {
-        $location.path('/facilities').search("facilityID",null).search("edit",null).search("add",null);
+        $location.path('/checklists').search("checklistID",null).search("edit",null).search("add",null);
     };
     
     $scope.goToEditFacility = function() {
         if ($scope.facilityID !== undefined)
-            $location.path("/edit-facility").search("facilityID",$scope.facilityID).search("edit",null).search("add",null);
+            $location.path("/edit-checklist").search("checklistID",$scope.facilityID).search("edit",null).search("add",null);
         else 
-            $location.path("/edit-facility").search("facilityID",$scope.facility.ID).search("edit",null).search("add",null);
+            $location.path("/edit-checklist").search("checklistID",$scope.facility.ID).search("edit",null).search("add",null);
     };
         
     /********************
@@ -309,7 +309,7 @@ app.controller('FacilitiesController', ['$rootScope', '$route', '$routeParams', 
     **** Facility Add ****
     *********************/
     
-    if ($location.path() === "/add-facility") {
+    if ($location.path() === "/add-checklist") {
         $scope.categoryCount = 0;
         var newQuestion = {name:"", formID:0, no:"a", type:"MCQ"};
         var newCategory = {name:"", formID:0, no:1, questionCount:0, question:[newQuestion]};
@@ -509,7 +509,7 @@ app.controller('FacilitiesController', ['$rootScope', '$route', '$routeParams', 
                         });
 
                         if (!error) {
-                            $location.path("/facilities").search("add",$scope.name);
+                            $location.path("/checklists").search("add",$scope.name);
                             $route.reload();
                         } else {
                             $scope.btnValidate = false;
@@ -775,8 +775,8 @@ app.controller('FacilitiesController', ['$rootScope', '$route', '$routeParams', 
     }; //end of $scope.reloadFacility()
     
     //get facilityID from URL
-    if ($routeParams.facilityID !== undefined) {
-        $scope.facilityID = $routeParams.facilityID;
+    if ($routeParams.checklistID !== undefined) {
+        $scope.facilityID = $routeParams.checklistID;
         var facilityRef = firebase.database().ref().child("facility/" + $scope.facilityID);
         
         facilityRef.on('value', function() {
@@ -1073,7 +1073,7 @@ app.controller('FacilitiesController', ['$rootScope', '$route', '$routeParams', 
                             
                             //redirect to facility list if successfully added facility
                             if (!error) {
-                                $location.path("/facilities").search("edit",$scope.facility.name).search("facilityID",null);
+                                $location.path("/checklists").search("edit",$scope.facility.name).search("checklistID",null);
                                 $route.reload();
                             } else {
                                 $scope.btnValidate = false;
@@ -1138,7 +1138,7 @@ app.controller('FacilitiesController', ['$rootScope', '$route', '$routeParams', 
                         
                         //redirect to facility list if successfully added facility
                         if (!error) {
-                            $location.path("/facilities").search("edit",$scope.facility.name).search("facilityID",null);
+                            $location.path("/checklists").search("edit",$scope.facility.name).search("checklistID",null);
                             $route.reload();
                         } else {
                             $scope.btnValidate = false;

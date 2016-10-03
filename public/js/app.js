@@ -58,25 +58,25 @@ app.config(function($routeProvider){
             controller: 'StaffController',
             templateUrl: 'views/edit-profile.html'
         })
-		.when('/facilities', {
-			controller: 'FacilitiesController',
-			templateUrl: 'views/facilities.html'
+		.when('/checklists', {
+			controller: 'ChecklistsController',
+			templateUrl: 'views/checklists.html'
 		})
-		.when('/facilities?:add?:edit', {
-			controller: 'FacilitiesController',
-			templateUrl: 'views/facilities.html'
+		.when('/checklists?:add?:edit', {
+			controller: 'ChecklistsController',
+			templateUrl: 'views/checklists.html'
 		})
-		.when('/add-facility', {
-			controller: 'FacilitiesController',
-			templateUrl: 'views/add-facility.html'
+		.when('/add-checklist', {
+			controller: 'ChecklistsController',
+			templateUrl: 'views/add-checklist.html'
 		})
-		.when('/edit-facility', {
-			controller: 'FacilitiesController',
-			templateUrl: 'views/edit-facility.html'
+		.when('/edit-checklist', {
+			controller: 'ChecklistsController',
+			templateUrl: 'views/edit-checklist.html'
 		})
-		.when('/edit-facility?:facilityID', {
-			controller: 'FacilitiesController',
-			templateUrl: 'views/edit-facility.html'
+		.when('/edit-checklist?:checklistID', {
+			controller: 'ChecklistsController',
+			templateUrl: 'views/edit-checklist.html'
 		})
         .when('/admin', {
             controller: 'AdminController',
