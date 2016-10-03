@@ -34,15 +34,18 @@
     <form class="form-horizontal">
         <div class="row">
             <label class="control-label col-md-2">Email</label>
-            <div class="col-md-6" ng-class="{'has-error': staffEmailEmpty}">
-                <input type="email" ng-model="staff.email" class="form-control" placeholder="Enter staff personal email" required/>
+            <div class="col-md-6" ng-class="{'has-error': staffEmailError}">
+                <input type="email" ng-model="staff.email" class="form-control" placeholder="Enter staff email" required/>
+                <span class="info-block margin-bottom-0">
+                    Note: Email to be personal email (Site Staff) or KFPAM email (HQ Staff).
+                </span>
                 <span ng-show="staffEmailEmpty" class="help-block margin-bottom-0">
                     Staff email is required.
                 </span>
-                <span ng-show="adminEmailUsed" class="help-block margin-bottom-0">
+                <span ng-show="staffEmailUsed" class="help-block margin-bottom-0">
                     Email address already in used.
                 </span>
-                <span ng-show="adminEmailInvalid" class="help-block margin-bottom-0">
+                <span ng-show="staffEmailInvalid" class="help-block margin-bottom-0">
                     Invalid email address.
                 </span>
             </div>

@@ -35,7 +35,10 @@
         <div class="row">
             <label class="control-label col-md-2">Email</label>
             <div class="col-md-6" ng-class="{'has-error': adminEmailError}">
-                <input type="email" ng-model="newadmin.email" class="form-control" placeholder="Enter staff personal email" required/>
+                <input type="email" ng-model="newadmin.email" class="form-control" placeholder="Enter staff email" required/>
+                <span class="info-block margin-bottom-0">
+                    Note: Email to be personal email (Site Staff) or KFPAM email (HQ Staff).
+                </span>
                 <span ng-show="adminEmailEmpty" class="help-block margin-bottom-0">
                     Staff email is required.
                 </span>

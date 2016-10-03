@@ -613,18 +613,18 @@ app.controller('StaffController', ['$route', '$rootScope', '$routeParams', '$sco
         } else 
             defaultPhone();
 
-        $scope.adminEmailError = false;
+        $scope.staffEmailError = false;
         
         if ($scope.staff.email === undefined) {
-            $scope.adminEmailError = true;
+            $scope.staffEmailError = true;
             $scope.staffEmailEmpty = true;
         } else {
-            $scope.adminEmailError = false;
+            $scope.staffEmailError = false;
             $scope.staffEmailEmpty = false;
         }
         
-        $scope.adminEmailUsed = false;
-        $scope.adminEmailInvalid = false;
+        $scope.staffEmailUsed = false;
+        $scope.staffEmailInvalid = false;
         
         if ($scope.staffStatusMessage) {
             if ($scope.staff.statusMessage === undefined || $scope.staff.statusMessage === "")
@@ -634,7 +634,7 @@ app.controller('StaffController', ['$route', '$rootScope', '$routeParams', '$sco
         } else
             $scope.staffStatusEmpty = false;
 
-        if (!$scope.staffPhoneError && !$scope.staffNameEmpty && !$scope.staffEmailEmpty && !$scope.staffStatusEmpty) {
+        if (!$scope.staffPhoneError && !$scope.staffNameEmpty && !$scope.staffEmailError && !$scope.staffStatusEmpty) {
             firebase.database().ref('count/staffCount').once('value').then(function (snapshot, error) {
                 if (snapshot.val() != null) {
                     $scope.id = snapshot.val().count + 1;
@@ -734,12 +734,12 @@ app.controller('StaffController', ['$route', '$rootScope', '$routeParams', '$sco
                                 $scope.notify("You do not have the permission to access this data (Error #001)", "danger");
                             } else if (error.code === "auth/email-already-in-use") {
                                 //(#error)auth-email-already-in-use
-                                $scope.adminEmailUsed = true;
-                                $scope.adminEmailError = true;
-                            } else if (error.code === "auth/email-already-in-use") {
+                                $scope.staffEmailUsed = true;
+                                $scope.staffEmailError = true;
+                            } else if (error.code === "auth/email-invalid-email") {
                                 //(#error)auth-invalid-email
-                                $scope.adminEmailInvalid = true;
-                                $scope.adminEmailError = true;
+                                $scope.staffEmailInvalid = true;
+                                $scope.staffEmailError = true;
                             } else {
                                 //(#error)unknown-error
                                 $scope.notify("An unknown error has occured (Error #000)", "danger");

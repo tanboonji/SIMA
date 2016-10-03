@@ -500,15 +500,10 @@ app.controller('AdminController', ['$route', '$rootScope', '$routeParams', '$sco
     $scope.addAdmin = function () {
         var phone = document.getElementById("phoneNo").value;
         
-        $scope.adminEmailError = false;
-        
-        if ($scope.newadmin.name === undefined) {
+        if ($scope.newadmin.name === undefined)
             $scope.adminNameEmpty = true;
-            $scope.adminEmailError = true;
-        } else {
+        else
             $scope.adminNameEmpty = false;
-            $scope.adminEmailError = false;
-        }
 
         if (phone === undefined || phone.trim() === "") {
             $scope.adminPhoneEmpty = true;
@@ -527,11 +522,16 @@ app.controller('AdminController', ['$route', '$rootScope', '$routeParams', '$sco
             $scope.adminPhoneDigits = false;
         } else 
             defaultPhone();
+        
+        $scope.adminEmailError = false;
 
-        if ($scope.newadmin.email === undefined)
+        if ($scope.newadmin.email === undefined) {
             $scope.adminEmailEmpty = true;
-        else 
+            $scope.adminEmailError = true;
+        } else { 
             $scope.adminEmailEmpty = false;
+            $scope.adminEmailError = false;
+        }
         
         if ($scope.adminStatusMessage) {
             if ($scope.newadmin.statusMessage === undefined || $scope.newadmin.statusMessage === "")
@@ -544,7 +544,7 @@ app.controller('AdminController', ['$route', '$rootScope', '$routeParams', '$sco
         $scope.adminEmailUsed = false;
         $scope.adminEmailInvalid = false;
 
-        if (!$scope.adminPhoneError && !$scope.adminNameEmpty && !$scope.adminEmailEmpty && !$scope.adminStatusEmpty) {
+        if (!$scope.adminPhoneError && !$scope.adminNameEmpty && !$scope.adminEmailError && !$scope.adminStatusEmpty) {
             firebase.database().ref('count/adminCount').once('value').then(function (snapshot, error) {
                 if (snapshot.val() != null) {
                     $scope.id = snapshot.val().count + 1;
@@ -628,7 +628,7 @@ app.controller('AdminController', ['$route', '$rootScope', '$routeParams', '$sco
                                 //(#error)auth-email-already-in-use
                                 $scope.adminEmailUsed = true;
                                 $scope.adminEmailError = true;
-                            } else if (error.code === "auth/email-already-in-use") {
+                            } else if (error.code === "auth/invalid-email") {
                                 //(#error)auth-invalid-email
                                 $scope.adminEmailInvalid = true;
                                 $scope.adminEmailError = true;

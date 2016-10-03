@@ -520,6 +520,15 @@ html, body {
 .profile-link {
     border-bottom: 1px dotted black;
 }
+.info-block {
+    display: block;
+    margin-top: 5px;
+}
+.has-error .info-block {
+    display: block;
+    margin-top: 5px;
+    color: #a94442;
+}
 
 /* Facilities 5 Box *//*
 .facility-list ul {
