@@ -319,10 +319,21 @@ app.controller('ChecklistsController', ['$rootScope', '$route', '$routeParams', 
         
     $scope.validateAddForm = function() {
         $scope.btnValidate = true;
-        if ($scope.name === undefined || $scope.name === "")
+        
+        $scope.facilityNameError = false;
+        if ($scope.name === undefined || $scope.name === "") {
             $scope.facilityNameEmpty = true;
-        else
+            $scope.facilityNameLimit = false;
+            $scope.facilityNameError = true;
+        } else if ($scope.name.length > 25) {
             $scope.facilityNameEmpty = false;
+            $scope.facilityNameLimit = true;
+            $scope.facilityNameError = true;
+        } else {
+            $scope.facilityNameEmpty = false;
+            $scope.facilityNameLimit = false;
+            $scope.facilityNameError = false;
+        }
         
         if ($scope.photo === undefined || $scope.photo === null)
             $scope.facilityPhotoEmpty = true;
@@ -349,7 +360,7 @@ app.controller('ChecklistsController', ['$rootScope', '$route', '$routeParams', 
             }
         });
         
-        if (!error && !$scope.facilityNameEmpty && !$scope.facilityPhotoEmpty)
+        if (!error && !$scope.facilityNameError && !$scope.facilityPhotoEmpty)
             $scope.addFacility();
         else
             $scope.btnValidate = false;
@@ -786,10 +797,21 @@ app.controller('ChecklistsController', ['$rootScope', '$route', '$routeParams', 
         
     $scope.validateEditForm = function() {
         $scope.btnValidate = true;
-        if ($scope.facility.name === undefined || $scope.facility.name === "")
+        
+        $scope.facilityNameError = false;
+        if ($scope.facility.name === undefined || $scope.facility.name === "") {
             $scope.facilityNameEmpty = true;
-        else
+            $scope.facilityNameLimit = false;
+            $scope.facilityNameError = true;
+        } else if ($scope.facility.name.length > 25) {
             $scope.facilityNameEmpty = false;
+            $scope.facilityNameLimit = true;
+            $scope.facilityNameError = true;
+        } else {
+            $scope.facilityNameEmpty = false;
+            $scope.facilityNameLimit = false;
+            $scope.facilityNameError = false;
+        }
         
         if ($scope.facility.photoURL === undefined || $scope.facility.photoURL === null)
             $scope.facilityPhotoEmpty = true;
@@ -819,7 +841,7 @@ app.controller('ChecklistsController', ['$rootScope', '$route', '$routeParams', 
             }
         });
         
-        if (!error && !$scope.facilityNameEmpty && !$scope.facilityPhotoEmpty)
+        if (!error && !$scope.facilityNameError && !$scope.facilityPhotoEmpty)
             $scope.saveFacility();
         else
             $scope.btnValidate = false;
