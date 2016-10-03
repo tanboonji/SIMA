@@ -137,7 +137,7 @@ app.controller('AdminController', ['$route', '$rootScope', '$routeParams', '$sco
         
     $scope.checkRouting = function() {
         if (!$scope.user.isSuperAdmin) {
-            alert("You do not have permission to view this webpage");
+            alert("You do not have permission to view this webpage (admin)");
             $location.path("/dashboard").search("adminID",null).search("edit",null).search("add",null);
             $route.reload();
         }

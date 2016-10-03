@@ -591,13 +591,13 @@ html, body {
     display: inline;
     margin-right: 20px;
 }
-.facility-list img {
+.facility-list .facility-img {
     height: 142.6px;
     width: 142.6px;
     overflow: hidden;
     margin-bottom: 7px;
 }
-.facility-list div {
+.facility-list .facility-body {
     padding-bottom: 7px;
     max-width: 142.6px;
     display: inline-block;
@@ -607,6 +607,12 @@ html, body {
     border-radius: 7px;
     overflow: hidden;
     box-shadow: 1px 1px 3px #888;
+}
+.facility-list .facility-name {
+    width: 142.6px;
+    height: 40px;
+    display: table-cell;
+    vertical-align: middle;
 }
 
 /* Restrict */

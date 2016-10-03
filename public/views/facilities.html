@@ -59,9 +59,9 @@
         <div class="margin-top-25 margin-bottom-25 facility-list">
             <ul>
                 <li ng-repeat="f in facilityList | filter:search | filter:isdeleted" ng-click="viewFacility(f)">
-                    <div>
-                        <img ng-src="{{f.photoURL}}"/>
-                        {{f.name}}
+                    <div class="facility-body">
+                        <img class="facility-img" ng-src="{{f.photoURL}}"/>
+                        <div class="facility-name">{{f.name}}</div>
                     </div>
                 </li>
             </ul>

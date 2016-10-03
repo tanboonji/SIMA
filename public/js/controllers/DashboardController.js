@@ -128,7 +128,7 @@ app.controller('DashboardController', ['$rootScope', '$route', '$routeParams', '
     $scope.checkRouting = function(sendAlert) {
         if ($scope.user.isSuperAdmin) {
             if (sendAlert) {
-                alert("You do not have permission to view this webpage");
+                alert("You do not have permission to view this webpage (dashboard)");
             }
             $location.path("/admin");
             $route.reload();

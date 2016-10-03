@@ -18,6 +18,10 @@ app.config(function($routeProvider){
 			controller: 'DashboardController',
 			templateUrl: 'views/dashboard.html'
 		})
+//        .when('/dashboard', {
+//            resolve: resolveController('js/controllers/DashboardController.js'),
+//			templateUrl: 'views/dashboard.html'
+//		})
 		.when('/projects', {
 			controller: 'ProjectsController',
 			templateUrl: 'views/projects.html'

@@ -139,13 +139,13 @@ app.controller('StaffController', ['$route', '$rootScope', '$routeParams', '$sco
     $scope.checkRouting = function() {
         if ($scope.user.isSuperAdmin) {
             if ($location.path() !== "/edit-profile") {
-                alert("You do not have permission to view this webpage");
+                alert("You do not have permission to view this webpage (staff1)");
                 $location.path("/admin").search("staffID",null).search("edit",null).search("add",null);
                 $route.reload();
             }
         } else if (!$scope.user.isAdmin) {
             if ($location.path() !== "/edit-profile") {
-                alert("You do not have permission to view this webpage");
+                alert("You do not have permission to view this webpage (staff2)");
                 $location.path("/dashboard").search("staffID",null).search("edit",null).search("add",null);
                 $route.reload();
             }

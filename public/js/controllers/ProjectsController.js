@@ -154,16 +154,16 @@ app.controller('ProjectsController', ['$rootScope', '$route', '$routeParams', '$
         
     $scope.checkRouting = function() {
         if ($scope.user.isSuperAdmin) {
-            alert("You do not have permission to view this webpage");
+            alert("You do not have permission to view this webpage (projects1)");
             $location.path("/admin").search("projectID",null).search("edit",null).search("add",null);
             $route.reload();
         } else if (!$scope.user.isBUH) {
-            alert("You do not have permission to view this webpage");
+            alert("You do not have permission to view this webpage (projects2)");
             $location.path("/dashboard").search("projectID",null).search("edit",null).search("add",null);
             $route.reload();
         } else if (!$scope.user.isAdmin) {
             if ($location.path() === "/add-project") {
-                alert("You do not have permission to view this webpage");
+                alert("You do not have permission to view this webpage (projects3)");
                 $location.path("/dashboard").search("projectID",null).search("edit",null).search("add",null);
                 $route.reload();
             }

@@ -139,11 +139,11 @@ app.controller('FacilitiesController', ['$rootScope', '$route', '$routeParams', 
         
     $scope.checkRouting = function() {
         if ($scope.user.isSuperAdmin) {
-            alert("You do not have permission to view this webpage");
+            alert("You do not have permission to view this webpage (facilities1)");
             $location.path("/admin").search("facilityID",null).search("edit",null).search("add",null);
             $route.reload();
         } else if (!$scope.user.isAdmin) {
-            alert("You do not have permission to view this webpage");
+            alert("You do not have permission to view this webpage (facilities2)");
             $location.path("/dashboard").search("facilityID",null).search("edit",null).search("add",null);
             $route.reload();
         }
