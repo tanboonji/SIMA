@@ -76,7 +76,7 @@
                         <h3>{{facility.name}}</h3>
                     </div>
                 </div>
-                <div class="row">
+                <div class="row" ng-show="checklistShow">
                     <div class="col-md-12 col-lg-12">
                         <div class="category-group-without-padding" ng-repeat="c in checklist">
                             <div class="category-group-title">
@@ -105,6 +105,14 @@
                         </div>
                     </div>
                 </div>
+                <button class="btn btn-default margin-bottom-13" type="button" ng-click="showChecklist()" ng-show="!checklistShow">
+                    <span class="glyphicon glyphicon-menu-down button-icon" aria-hidden="true"></span>
+                    Show Checklist
+                </button>
+                <button class="btn btn-default margin-bottom-13" type="button" ng-click="showChecklist()" ng-show="checklistShow">
+                    <span class="glyphicon glyphicon-menu-up button-icon" aria-hidden="true"></span>
+                    Hide Checklist
+                </button>
                 <div class="row margin-bottom-20 margin-top-7">
                     <div class="col-md-12 col-lg-12">
                         <button class="btn btn-primary" type="button" ng-click="closeOverlay()">

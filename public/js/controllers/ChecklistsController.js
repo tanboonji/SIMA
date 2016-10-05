@@ -670,7 +670,12 @@ app.controller('ChecklistsController', ['$rootScope', '$route', '$routeParams', 
         $event.stopPropagation();
     };
         
+    $scope.showChecklist = function() {
+        $scope.checklistShow = !$scope.checklistShow;
+    }
+        
     $scope.viewFacility = function(facility) {
+        $scope.checklistShow = false;
         $scope.overlay = true;
         $scope.facility = facility;
         $scope.checklist = [];
