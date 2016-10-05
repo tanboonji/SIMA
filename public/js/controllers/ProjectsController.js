@@ -884,6 +884,9 @@ app.controller('ProjectsController', ['$rootScope', '$route', '$routeParams', '$
                 return (p.BUHName === $scope.user.name);
     }
     
+    $scope.sortType = "name";
+    $scope.sortReverse = false;
+    
     /*********************
     **** Project View ****
     *********************/

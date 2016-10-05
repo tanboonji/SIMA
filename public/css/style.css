@@ -529,6 +529,38 @@ html, body {
     margin-top: 5px;
     color: #a94442;
 }
+.no-style {
+    color: black;
+    text-decoration: none;
+}
+.no-style:hover, no-style:active {
+    text-decoration: none;
+    color: black;
+}
+.caret {
+    display: inline-block;
+    width: 0;
+    height: 0;
+    margin-left: 2px;
+    vertical-align: middle;
+    border-top: 4px dashed;
+    border-top: 4px solid;
+    border-right: 4px solid transparent;
+    border-left: 4px solid transparent;
+    border-bottom: 0;
+}
+.caret-reverse {
+    display: inline-block;
+    width: 0;
+    height: 0;
+    margin-left: 2px;
+    vertical-align: middle;
+    border-top: 0;
+    border-right: 4px solid transparent;
+    border-left: 4px solid transparent;
+    border-bottom: 4px dashed;
+    border-bottom: 4px solid;
+}
 
 /* Facilities 5 Box *//*
 .facility-list ul {

@@ -237,6 +237,9 @@ app.controller('StaffController', ['$route', '$rootScope', '$routeParams', '$sco
         else
             return true;
     }
+    
+    $scope.sortType = "name";
+    $scope.sortReverse = false;
 	
     /********************
     ****** Routing ******

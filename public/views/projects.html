@@ -61,7 +61,13 @@
         	<thead>
         	<tr>
             	<td>MCSTS</td>
-                <td>Name</td>
+                <td>
+                    <a ng-click="sortType='name'; sortReverse=!sortReverse" class="no-style">
+                        Name
+                        <span ng-show="sortType=='name' && !sortReverse" class="caret"></span>
+                        <span ng-show="sortType=='name' && sortReverse" class="caret-reverse"></span>
+                    </a>
+                </td>
                 <td>BUH</td>
                 <td>TM</td>
                 <td>CM</td>
@@ -69,7 +75,7 @@
             </tr>
             </thead>
             <tbody>
-            <tr ng-repeat="p in projectList | filter:search | filter:isdeleted | filter:isrole">
+            <tr ng-repeat="p in projectList | filter:search | filter:isdeleted | filter:isrole | orderBy:sortType:sortReverse">
             	<td ng-click="viewProject(p)">{{p.MCSTS}}</td>
                 <td ng-click="viewProject(p)">{{p.name}}</td>
                 <td ng-click="viewProject(p)">{{p.BUHName}}</td>
