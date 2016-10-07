@@ -875,15 +875,29 @@ app.controller('StaffController', ['$route', '$rootScope', '$routeParams', '$sco
         if ($scope.pwdEmpty1 === false && $scope.pwdEmpty2 === false) {
             //if confirm password field is identical, update password
             $scope.auth.$updatePassword($scope.newPassword).then(function () {
+                var newDate = new Date();
+                var datetime = newDate.dayNow() + " @ " + newDate.timeNow();
+                var updates = {};
+                
+                firebase.database().ref('adminstaff/' + $scope.user.authID).once('value').then(function (snapshot, error) {
+                    if (snapshot.val() != null) {
+                        updates["/adminstaff/" + $scope.user.authID + '/lastPasswordChange'] = datetime;
+                        firebase.database().ref().update(updates);
+                    } else {
+                        updates["/staff/" + $scope.user.authID + '/lastPasswordChange'] = datetime;
+                        firebase.database().ref().update(updates);
+                    }
+                });
                 $scope.popupform = !$scope.popupform;
-                alert("You have successfully updated your password\n\nPlease login again");
+                alert("You have successfully updated your password\n\nPlease login again\n");
                 $scope.auth.$signOut();
             }).catch(function (error) {
                 console.log(error);
-                if (error.code === "auth/requires-recent-login")
+                if (error.code === "auth/requires-recent-login") {
                     //(#error)auth-requires-recent-login
                     alert(error);
-                else if (error.code === "auth/email-already-in-use")
+                    $scope.auth.$signOut();
+                } else if (error.code === "auth/email-already-in-use")
                     //(#error)auth-email-already-in-use
                     alert(error);
                 else
@@ -891,7 +905,7 @@ app.controller('StaffController', ['$route', '$rootScope', '$routeParams', '$sco
                     $scope.notify("An unknown error has occured (Error #200)", "danger");
             });
         }
-    }
+    }; //end of $scope.updatePassword()
 
     $scope.saveProfile = function () {
         var phone = document.getElementById("phoneNo").value;

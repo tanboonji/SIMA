@@ -244,6 +244,19 @@ app.controller('DashboardController', ['$rootScope', '$route', '$routeParams', '
         if ($scope.pwdEmpty1 === false && $scope.pwdEmpty2 === false) {
             //if confirm password field is identical, update password
             $scope.auth.$updatePassword($scope.newPassword).then(function () {
+                var newDate = new Date();
+                var datetime = newDate.dayNow() + " @ " + newDate.timeNow();
+                var updates = {};
+                
+                firebase.database().ref('adminstaff/' + $scope.user.authID).once('value').then(function (snapshot, error) {
+                    if (snapshot.val() != null) {
+                        updates["/adminstaff/" + $scope.user.authID + '/lastPasswordChange'] = datetime;
+                        firebase.database().ref().update(updates);
+                    } else {
+                        updates["/staff/" + $scope.user.authID + '/lastPasswordChange'] = datetime;
+                        firebase.database().ref().update(updates);
+                    }
+                });
                 $scope.popupform = !$scope.popupform;
                 alert("You have successfully updated your password\n\nPlease login again\n");
                 $scope.auth.$signOut();
@@ -261,16 +274,30 @@ app.controller('DashboardController', ['$rootScope', '$route', '$routeParams', '
                     $scope.notify("An unknown error has occured (Error #200)", "danger");
             });
         }
-    }
+    }; //end of $scope.updatePassword()
     
     /*********************
     ******** Date ********
     *********************/
     
+    
+    //get current date in yyyy/mm/dd format
     Date.prototype.dayNow = function () { 
-        return (this.getFullYear() + (((this.getMonth()+1) < 10)?"0":"") + (this.getMonth()+1) + 
-                ((this.getDate() < 10)?"0":"") + this.getDate());
-    };
+        return (this.getFullYear() + "/" + (((this.getMonth()+1) < 10)?"0":"") + (this.getMonth()+1) + "/" + 
+            ((this.getDate() < 10)?"0":"") + this.getDate());
+    }
+    
+//    //get current date in yyyymmdd format
+//    Date.prototype.dayNow = function () { 
+//        return (this.getFullYear() + (((this.getMonth()+1) < 10)?"0":"") + (this.getMonth()+1) + 
+//                ((this.getDate() < 10)?"0":"") + this.getDate());
+//    };
+    
+    //get current time in hh:mm:ss format
+    Date.prototype.timeNow = function () {
+        return ((this.getHours() < 10)?"0":"") + this.getHours() + ":" + ((this.getMinutes() < 10)?"0":"") + 
+            this.getMinutes() + ":" + ((this.getSeconds() < 10)?"0":"") + this.getSeconds();
+    }
     
     /********************
     ** Search & Filter **
