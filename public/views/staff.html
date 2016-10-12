@@ -1,4 +1,5 @@
-<header>
+<div class="restrict">
+    
     <nav class="navbar navbar-default navbar-static-top restrict">
         <div class="container restrict">
             <a href="#/dashboard" ng-show="!user.isSuperAdmin">
@@ -27,149 +28,150 @@
             </div>
         </div>
     </nav>
-</header>
 
-<div class="staff restrict container">
-    <h3 class="title">Staff</h3>
-    <div class="row">
-        <div class="col-md-12">
-            <button type="button" class="btn btn-success pull-left" ng-click="goToAddStaff()">
-                <span class="glyphicon glyphicon-plus button-icon" aria-hidden="true"></span> Add
-            </button>
-            <div class="pull-left col-md-4 force-col-margin force-col-padding has-icon">
-                <span class="glyphicon glyphicon-search form-control-icon"></span>
-                <input type="text" class="form-control" placeholder="Search for..." ng-model="query">
-            </div>
-            <div class="pull-right">
-                <label for="">Role:&nbsp;</label>
-                <div class="btn-group margin-right-5">
-                    <button type="button" class="btn btn-default dropdown-toggle dropdown-style" data-toggle="dropdown" 
-                            aria-haspopup="true" aria-expanded="true">
-                        <div class="dropdown-text-left">{{sortByRoleItem}}&nbsp;</div>
-                        <span class="caret dropdown-text-right"></span>
-                    </button>
-                    <ul class="dropdown-menu">
-                        <li ng-repeat="s in sortByRoleList"><a ng-click="sortByRoleItemSelected(s)">{{s}}</a></li>
-                    </ul>
+    <div class="staff container">
+        <h3 class="title">Staff</h3>
+        <div class="row">
+            <div class="col-md-12">
+                <button type="button" class="btn btn-success pull-left" ng-click="goToAddStaff()">
+                    <span class="glyphicon glyphicon-plus button-icon" aria-hidden="true"></span> Add
+                </button>
+                <div class="pull-left col-md-4 force-col-margin force-col-padding has-icon">
+                    <span class="glyphicon glyphicon-search form-control-icon"></span>
+                    <input type="text" class="form-control" placeholder="Search for..." ng-model="query">
                 </div>
-                <label for="">Status:&nbsp;</label>
-                <div class="btn-group">
-                    <button type="button" class="btn btn-default dropdown-toggle dropdown-style" data-toggle="dropdown" 
-                            aria-haspopup="true" aria-expanded="true">
-                        <div class="dropdown-text-left">{{sortByDeletedItem}}&nbsp;</div>
-                        <span class="caret dropdown-text-right"></span>
-                    </button>
-                    <ul class="dropdown-menu">
-                        <li ng-repeat="s in sortByDeletedList"><a ng-click="sortByDeletedItemSelected(s)">{{s}}</a></li>
-                    </ul>
+                <div class="pull-right">
+                    <label for="">Role:&nbsp;</label>
+                    <div class="btn-group margin-right-5">
+                        <button type="button" class="btn btn-default dropdown-toggle dropdown-style" data-toggle="dropdown" 
+                                aria-haspopup="true" aria-expanded="true">
+                            <div class="dropdown-text-left">{{sortByRoleItem}}&nbsp;</div>
+                            <span class="caret dropdown-text-right"></span>
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li ng-repeat="s in sortByRoleList"><a ng-click="sortByRoleItemSelected(s)">{{s}}</a></li>
+                        </ul>
+                    </div>
+                    <label for="">Status:&nbsp;</label>
+                    <div class="btn-group">
+                        <button type="button" class="btn btn-default dropdown-toggle dropdown-style" data-toggle="dropdown" 
+                                aria-haspopup="true" aria-expanded="true">
+                            <div class="dropdown-text-left">{{sortByDeletedItem}}&nbsp;</div>
+                            <span class="caret dropdown-text-right"></span>
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li ng-repeat="s in sortByDeletedList"><a ng-click="sortByDeletedItemSelected(s)">{{s}}</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="margin-top-25">
+            <table class="col-md-12 table table-hover table-bordered">
+                <thead>
+                    <tr>
+                        <td>ID</td>
+                        <td>
+                            <a ng-click="sortType='name'; sortReverse=!sortReverse" class="no-style">
+                                Name
+                                <span ng-show="sortType=='name' && !sortReverse" class="caret"></span>
+                                <span ng-show="sortType=='name' && sortReverse" class="caret-reverse"></span>
+                            </a>
+                        </td>
+                        <td>Contact</td>
+                        <td>Email</td>
+                        <td>Role</td>
+                        <td>Status</td>
+                        <td class="col-md-2"></td>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr ng-repeat="s in staffList | filter:search | filter:isdeleted | filter:isrole | orderBy:sortType:sortReverse" ng-click="viewStaff(s)">
+                        <td>{{s.ID}}</td>
+                        <td>{{s.name}}</td>
+                        <td>{{s.phone}}</td>
+                        <td>{{s.email}}</td>
+                        <td>{{s.role}}</td>
+                        <td>{{s.status}}</td>
+                        <td>
+                            <div class="pull-right">
+                                <button class="btn btn-default" type="button" ng-click="viewStaff(s)">
+                                    <span class="glyphicon glyphicon-eye-open button-icon" aria-hidden="true"></span> View
+                                </button>
+                                <button class="btn btn-default" type="button" ng-click="goToEditStaff(s)">
+                                    <span class="glyphicon glyphicon-pencil button-icon" aria-hidden="true"></span> Edit
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="overlay" ng-show="overlay" ng-click="closeOverlay()">
+        <div class="overlay-popup" ng-click="openOverlay($event)">
+            <div class="form-horizontal">
+                <div class="row">
+                    <div class="col-md-12 col-lg-12 header">
+                        <h3>{{staff.name}}</h3>
+                    </div>
+                </div>
+                <div class="row">
+                    <label class="control-label col-md-2">ID</label>
+                    <div class="col-md-9">
+                        <input type="text" ng-model="staff.ID" class="form-control" disabled/>
+                    </div>
+                </div>
+                <div class="row margin-top-13">
+                    <label class="control-label col-md-2">Name</label>
+                    <div class="col-md-9">
+                        <input type="text" ng-model="staff.name" class="form-control" disabled/>
+                    </div>
+                </div>
+                <div class="row margin-top-13">
+                    <label class="control-label col-md-2">Email</label>
+                    <div class="col-md-9">
+                        <input type="text" ng-model="staff.email" class="form-control" disabled/>
+                    </div>
+                </div>
+                <div class="row margin-top-13">
+                    <label class="control-label col-md-2">Phone</label>
+                    <div class="col-md-9">
+                        <input type="text" ng-model="staff.phone" class="form-control" disabled/>
+                    </div>
+                </div>
+                <div class="row margin-top-13">
+                    <label class="control-label col-md-2">Role</label>
+                    <div class="col-md-9">
+                        <input type="text" ng-model="staff.role" class="form-control" disabled/>
+                    </div>
+                </div>
+                <div class="row margin-top-13" ng-class="{'margin-bottom-20':!staffStatusMessage}">
+                    <label class="control-label col-md-2">Status</label>
+                    <div class="col-md-9">
+                        <input type="text" ng-model="staff.status" class="form-control" disabled/>
+                    </div>
+                </div>
+                <div class="row margin-top-13 margin-bottom-20" ng-show="staffStatusMessage">
+                    <div class="col-md-offset-2 col-md-9">
+                        <input type="text" ng-model="staff.statusMessage" class="form-control" disabled/>
+                    </div>
+                </div>
+                <div class="row margin-bottom-20 margin-top-7">
+                    <div class="col-md-offset-2 col-md-10 col-lg-10">
+                        <button class="btn btn-primary" type="button" ng-click="closeOverlay()">
+                            <span class="glyphicon glyphicon-remove button-icon" aria-hidden="true"></span>
+                            Close
+                        </button>
+                        <button class="btn btn-warning" type="button" ng-click="goToEditStaff(staff)">
+                            <span class=" glyphicon glyphicon-pencil button-icon " aria-hidden="true "></span>
+                            Edit
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-    <div class="margin-top-25">
-        <table class="col-md-12 table table-hover table-bordered">
-            <thead>
-                <tr>
-                    <td>ID</td>
-                    <td>
-                        <a ng-click="sortType='name'; sortReverse=!sortReverse" class="no-style">
-                            Name
-                            <span ng-show="sortType=='name' && !sortReverse" class="caret"></span>
-                            <span ng-show="sortType=='name' && sortReverse" class="caret-reverse"></span>
-                        </a>
-                    </td>
-                    <td>Contact</td>
-                    <td>Email</td>
-                    <td>Role</td>
-                    <td>Status</td>
-                    <td class="col-md-2"></td>
-                </tr>
-            </thead>
-            <tbody>
-                <tr ng-repeat="s in staffList | filter:search | filter:isdeleted | filter:isrole | orderBy:sortType:sortReverse" ng-click="viewStaff(s)">
-                    <td>{{s.ID}}</td>
-                    <td>{{s.name}}</td>
-                    <td>{{s.phone}}</td>
-                    <td>{{s.email}}</td>
-                    <td>{{s.role}}</td>
-                    <td>{{s.status}}</td>
-                    <td>
-                        <div class="pull-right">
-                            <button class="btn btn-default" type="button" ng-click="viewStaff(s)">
-                                <span class="glyphicon glyphicon-eye-open button-icon" aria-hidden="true"></span> View
-                            </button>
-                            <button class="btn btn-default" type="button" ng-click="goToEditStaff(s)">
-                                <span class="glyphicon glyphicon-pencil button-icon" aria-hidden="true"></span> Edit
-                            </button>
-                        </div>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
-</div>
-
-<div class="overlay" ng-show="overlay" ng-click="closeOverlay()">
-    <div class="overlay-popup" ng-click="openOverlay($event)">
-        <div class="form-horizontal">
-            <div class="row">
-                <div class="col-md-12 col-lg-12 header">
-                    <h3>{{staff.name}}</h3>
-                </div>
-            </div>
-            <div class="row">
-                <label class="control-label col-md-2">ID</label>
-                <div class="col-md-9">
-                    <input type="text" ng-model="staff.ID" class="form-control" disabled/>
-                </div>
-            </div>
-            <div class="row margin-top-13">
-                <label class="control-label col-md-2">Name</label>
-                <div class="col-md-9">
-                    <input type="text" ng-model="staff.name" class="form-control" disabled/>
-                </div>
-            </div>
-            <div class="row margin-top-13">
-                <label class="control-label col-md-2">Email</label>
-                <div class="col-md-9">
-                    <input type="text" ng-model="staff.email" class="form-control" disabled/>
-                </div>
-            </div>
-            <div class="row margin-top-13">
-                <label class="control-label col-md-2">Phone</label>
-                <div class="col-md-9">
-                    <input type="text" ng-model="staff.phone" class="form-control" disabled/>
-                </div>
-            </div>
-            <div class="row margin-top-13">
-                <label class="control-label col-md-2">Role</label>
-                <div class="col-md-9">
-                    <input type="text" ng-model="staff.role" class="form-control" disabled/>
-                </div>
-            </div>
-            <div class="row margin-top-13" ng-class="{'margin-bottom-20':!staffStatusMessage}">
-                <label class="control-label col-md-2">Status</label>
-                <div class="col-md-9">
-                    <input type="text" ng-model="staff.status" class="form-control" disabled/>
-                </div>
-            </div>
-            <div class="row margin-top-13 margin-bottom-20" ng-show="staffStatusMessage">
-                <div class="col-md-offset-2 col-md-9">
-                    <input type="text" ng-model="staff.statusMessage" class="form-control" disabled/>
-                </div>
-            </div>
-            <div class="row margin-bottom-20 margin-top-7">
-                <div class="col-md-offset-2 col-md-10 col-lg-10">
-                    <button class="btn btn-primary" type="button" ng-click="closeOverlay()">
-                        <span class="glyphicon glyphicon-remove button-icon" aria-hidden="true"></span>
-                        Close
-                    </button>
-                    <button class="btn btn-warning" type="button" ng-click="goToEditStaff(staff)">
-                        <span class=" glyphicon glyphicon-pencil button-icon " aria-hidden="true "></span>
-                        Edit
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
+    
 </div>

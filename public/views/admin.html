@@ -1,4 +1,5 @@
-<header>
+<div class="restrict">
+    
     <nav class="navbar navbar-default navbar-static-top restrict">
         <div class="container restrict">
             <a href="#/dashboard" ng-show="!user.isSuperAdmin">
@@ -27,122 +28,123 @@
             </div>
         </div>
     </nav>
-</header>
 
-<div class="admin restrict container">
-    <h3 class="title">Admin</h3>
-    <div class="row">
-        <div class="col-md-12">
-            <button type="button" class="btn btn-success pull-left" ng-click="goToAddAdmin()">
-                <span class="glyphicon glyphicon-plus button-icon" aria-hidden="true"></span> Add
-            </button>
-            <div class="pull-left col-md-4 force-col-margin force-col-padding has-icon">
-                <span class="glyphicon glyphicon-search form-control-icon"></span>
-                <input type="text" class="form-control" placeholder="Search for..." ng-model="query">
+    <div class="admin restrict container">
+        <h3 class="title">Admin</h3>
+        <div class="row">
+            <div class="col-md-12">
+                <button type="button" class="btn btn-success pull-left" ng-click="goToAddAdmin()">
+                    <span class="glyphicon glyphicon-plus button-icon" aria-hidden="true"></span> Add
+                </button>
+                <div class="pull-left col-md-4 force-col-margin force-col-padding has-icon">
+                    <span class="glyphicon glyphicon-search form-control-icon"></span>
+                    <input type="text" class="form-control" placeholder="Search for..." ng-model="query">
+                </div>
+                <div class="pull-right">
+                    <label for="">Sort By:&nbsp;</label>
+                    <div class="btn-group">
+                        <button type="button" class="btn btn-default dropdown-toggle dropdown-style" 
+                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                            <div class="dropdown-text-left">{{sortByDeletedItem}}&nbsp;</div>
+                            <span class="caret dropdown-text-right"></span>
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li ng-repeat="s in sortByDeletedList"><a ng-click="sortByDeletedItemSelected(s)">{{s}}</a></li>
+                        </ul>
+                    </div>
+                </div>
             </div>
-            <div class="pull-right">
-                <label for="">Sort By:&nbsp;</label>
-                <div class="btn-group">
-                    <button type="button" class="btn btn-default dropdown-toggle dropdown-style" 
-                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-                        <div class="dropdown-text-left">{{sortByDeletedItem}}&nbsp;</div>
-                        <span class="caret dropdown-text-right"></span>
-                    </button>
-                    <ul class="dropdown-menu">
-                        <li ng-repeat="s in sortByDeletedList"><a ng-click="sortByDeletedItemSelected(s)">{{s}}</a></li>
-                    </ul>
+        </div>
+        <div class="margin-top-25">
+            <table class="col-md-12 table table-hover table-bordered">
+                <thead>
+                    <tr>
+                        <td>ID</td>
+                        <td>Name</td>
+                        <td>Contact</td>
+                        <td>Email</td>
+                        <td>Status</td>
+                        <td class="col-md-2"></td>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr ng-repeat="s in adminList | filter:search | filter:isdeleted" ng-click="viewAdmin(s)">
+                        <td>{{s.ID}}</td>
+                        <td>{{s.name}}</td>
+                        <td>{{s.phone}}</td>
+                        <td>{{s.email}}</td>
+                        <td>{{s.status}}</td>
+                        <td>
+                            <div class="pull-right">
+                                <button class="btn btn-default" type="button" ng-click="viewAdmin(s)">
+                                    <span class="glyphicon glyphicon-eye-open button-icon" aria-hidden="true"></span> View
+                                </button>
+                                <button class="btn btn-default" type="button" ng-click="goToEditAdmin(s)">
+                                    <span class="glyphicon glyphicon-pencil button-icon" aria-hidden="true"></span> Edit
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="overlay" ng-show="overlay" ng-click="closeOverlay()">
+        <div class="overlay-popup" ng-click="openOverlay($event)">
+            <div class="form-horizontal">
+                <div class="row">
+                    <div class="col-md-12 col-lg-12 header">
+                        <h3>{{admin.name}}</h3>
+                    </div>
+                </div>
+                <div class="row">
+                    <label class="control-label col-md-2">ID</label>
+                    <div class="col-md-9">
+                        <input type="text" ng-model="admin.ID" class="form-control" disabled/>
+                    </div>
+                </div>
+                <div class="row margin-top-13">
+                    <label class="control-label col-md-2">Name</label>
+                    <div class="col-md-9">
+                        <input type="text" ng-model="admin.name" class="form-control" disabled/>
+                    </div>
+                </div>
+                <div class="row margin-top-13">
+                    <label class="control-label col-md-2">Email</label>
+                    <div class="col-md-9">
+                        <input type="text" ng-model="admin.email" class="form-control" disabled/>
+                    </div>
+                </div>
+                <div class="row margin-top-13">
+                    <label class="control-label col-md-2">Phone</label>
+                    <div class="col-md-9">
+                        <input type="text" ng-model="admin.phone" class="form-control" disabled/>
+                    </div>
+                </div>
+                <div class="row margin-top-13" ng-class="{'margin-bottom-20':!adminStatusMessage}">
+                    <label class="control-label col-md-2">Status</label>
+                    <div class="col-md-9">
+                        <input type="text" ng-model="admin.status" class="form-control" disabled/>
+                    </div>
+                </div>
+                <div class="row margin-top-13 margin-bottom-20" ng-show="adminStatusMessage">
+                    <div class="col-md-offset-2 col-md-9">
+                        <input type="text" ng-model="admin.statusMessage" class="form-control" disabled/>
+                    </div>
+                </div>
+                <div class="row margin-bottom-20 margin-top-7">
+                    <div class="col-md-offset-2 col-md-10 col-lg-10">
+                        <button class="btn btn-primary" type="button" ng-click="closeOverlay()">
+                            <span class="glyphicon glyphicon-remove button-icon" aria-hidden="true"></span> Close
+                        </button>
+                        <button class="btn btn-warning" type="button" ng-click="goToEditAdmin(admin)">
+                            <span class=" glyphicon glyphicon-pencil button-icon " aria-hidden="true"></span> Edit
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-    <div class="margin-top-25">
-        <table class="col-md-12 table table-hover table-bordered">
-            <thead>
-                <tr>
-                    <td>ID</td>
-                    <td>Name</td>
-                    <td>Contact</td>
-                    <td>Email</td>
-                    <td>Status</td>
-                    <td class="col-md-2"></td>
-                </tr>
-            </thead>
-            <tbody>
-                <tr ng-repeat="s in adminList | filter:search | filter:isdeleted" ng-click="viewAdmin(s)">
-                    <td>{{s.ID}}</td>
-                    <td>{{s.name}}</td>
-                    <td>{{s.phone}}</td>
-                    <td>{{s.email}}</td>
-                    <td>{{s.status}}</td>
-                    <td>
-                        <div class="pull-right">
-                            <button class="btn btn-default" type="button" ng-click="viewAdmin(s)">
-                                <span class="glyphicon glyphicon-eye-open button-icon" aria-hidden="true"></span> View
-                            </button>
-                            <button class="btn btn-default" type="button" ng-click="goToEditAdmin(s)">
-                                <span class="glyphicon glyphicon-pencil button-icon" aria-hidden="true"></span> Edit
-                            </button>
-                        </div>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
-</div>
-
-<div class="overlay" ng-show="overlay" ng-click="closeOverlay()">
-    <div class="overlay-popup" ng-click="openOverlay($event)">
-        <div class="form-horizontal">
-            <div class="row">
-                <div class="col-md-12 col-lg-12 header">
-                    <h3>{{admin.name}}</h3>
-                </div>
-            </div>
-            <div class="row">
-                <label class="control-label col-md-2">ID</label>
-                <div class="col-md-9">
-                    <input type="text" ng-model="admin.ID" class="form-control" disabled/>
-                </div>
-            </div>
-            <div class="row margin-top-13">
-                <label class="control-label col-md-2">Name</label>
-                <div class="col-md-9">
-                    <input type="text" ng-model="admin.name" class="form-control" disabled/>
-                </div>
-            </div>
-            <div class="row margin-top-13">
-                <label class="control-label col-md-2">Email</label>
-                <div class="col-md-9">
-                    <input type="text" ng-model="admin.email" class="form-control" disabled/>
-                </div>
-            </div>
-            <div class="row margin-top-13">
-                <label class="control-label col-md-2">Phone</label>
-                <div class="col-md-9">
-                    <input type="text" ng-model="admin.phone" class="form-control" disabled/>
-                </div>
-            </div>
-            <div class="row margin-top-13" ng-class="{'margin-bottom-20':!adminStatusMessage}">
-                <label class="control-label col-md-2">Status</label>
-                <div class="col-md-9">
-                    <input type="text" ng-model="admin.status" class="form-control" disabled/>
-                </div>
-            </div>
-            <div class="row margin-top-13 margin-bottom-20" ng-show="adminStatusMessage">
-                <div class="col-md-offset-2 col-md-9">
-                    <input type="text" ng-model="admin.statusMessage" class="form-control" disabled/>
-                </div>
-            </div>
-            <div class="row margin-bottom-20 margin-top-7">
-                <div class="col-md-offset-2 col-md-10 col-lg-10">
-                    <button class="btn btn-primary" type="button" ng-click="closeOverlay()">
-                        <span class="glyphicon glyphicon-remove button-icon" aria-hidden="true"></span> Close
-                    </button>
-                    <button class="btn btn-warning" type="button" ng-click="goToEditAdmin(admin)">
-                        <span class=" glyphicon glyphicon-pencil button-icon " aria-hidden="true"></span> Edit
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
+    
 </div>
