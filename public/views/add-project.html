@@ -139,6 +139,7 @@
                         <div id="right">
                             <div class="col-md-12 facility-group" ng-repeat="f in facilityAddedList" id="{{f.name}}" 
                                  ng-class="{'category-group-error': f.error}">
+<!--
                                 <div class="category-group-title margin-bottom-13">
                                     <span class="facility-group-title">{{f.name}}</span>
                                     <div class="btn-group facility-frequency">
@@ -154,48 +155,73 @@
                                     <span class="glyphicon glyphicon-remove facility-group-delete" aria-hidden="true"
                                         ng-click="deleteFacility(f)"></span>
                                 </div>
-                                <div class="margin-left-10 margin-right-10 margin-bottom-13">
-                                    <div ng-class="{'category-group-error': c.error}" class="category-group-without-padding" 
-                                         ng-repeat="c in f.checklist">
-                                        <div class="category-group-title">
-                                            <span class="group-addon">{{c.no}}.</span>
-                                            <input type="text" class="form-control group-input" ng-model="c.name"
-                                                placeholder="Enter category name" required>
-                                            <span class="glyphicon glyphicon-remove group-delete" aria-hidden="true"
-                                                ng-click="deleteCategory(f,c)"></span>
-                                        </div>
-                                        <div ng-repeat="q in c.question">
-                                            <div class="question-group col-md-9 force-col-padding">
-                                                <span class="group-addon">{{q.no}}.</span>
-                                                <input type="text" class="form-control group-input" ng-model="q.name"
-                                                    placeholder="Enter question name" required>
-                                                <span class="glyphicon glyphicon-remove group-delete" aria-hidden="true"
-                                                    ng-click="deleteQuestion(c,q)"></span>
-                                            </div>
-                                            <div class="question-radio col-md-2 force-col-padding">
-                                                <div class="radio radio-first">
-                                                    <label><input type="radio" value="MCQ" ng-model="q.type"
-                                                        name="questionType-{{f.name}}-{{c.formID}}-{{q.formID}}">MCQ</label>
-                                                </div>
-                                                <div class="radio radio-last">
-                                                    <label><input type="radio" value="Short Answer" ng-model="q.type"
-                                                        name="questionType-{{f.name}}-{{c.formID}}-{{q.formID}}">Short Ans</label>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <button class="btn btn-default add-question-btn-with-margin" type="button" ng-click="addQuestion(c)">
-                                            <span class="glyphicon glyphicon-plus button-icon" aria-hidden="true"></span>
-                                            Add Question
+-->
+                                <div class="facility-input-title margin-bottom-13">
+                                    <input type="text" class="form-control group-input" ng-model="f.name" placeholder="Enter facility name" required>
+                                    <div class="btn-group facility-frequency">
+                                        <button type="button" class="btn btn-default dropdown-toggle dropdown-style" 
+                                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                                            <div class="dropdown-text-left">{{f.frequency}}</div>
+                                            <span class="caret dropdown-text-right"></span>
                                         </button>
-                                        <div class="has-error category-error" ng-show="c.error">
-                                            <span class="help-block">Category or question name is required.</span>
-                                        </div>
+                                        <ul class="dropdown-menu">
+                                            <li ng-repeat="s in frequencyList"><a ng-click="frequencyItemSelected(f,s)">{{s}}</a></li>
+                                        </ul>
                                     </div>
-                                    <button class="btn btn-default" type="button" ng-click="addCategory(f)">
-                                        <span class="glyphicon glyphicon-plus button-icon" aria-hidden="true"></span>
-                                        Add Category
-                                    </button>
+                                    <span class="glyphicon glyphicon-remove facility-group-delete" aria-hidden="true" ng-click="deleteProjectFacility(f)"></span>
                                 </div>
+                                <div ng-show="f.show">    
+                                    <div class="margin-left-10 margin-right-10 margin-bottom-13">
+                                        <div ng-class="{'category-group-error': c.error}" class="category-group-without-padding" 
+                                             ng-repeat="c in f.checklist">
+                                            <div class="category-group-title">
+                                                <span class="group-addon">{{c.no}}.</span>
+                                                <input type="text" class="form-control group-input" ng-model="c.name"
+                                                    placeholder="Enter category name" required>
+                                                <span class="glyphicon glyphicon-remove group-delete" aria-hidden="true"
+                                                    ng-click="deleteCategory(f,c)"></span>
+                                            </div>
+                                            <div ng-repeat="q in c.question">
+                                                <div class="question-group col-md-9 force-col-padding">
+                                                    <span class="group-addon">{{q.no}}.</span>
+                                                    <input type="text" class="form-control group-input" ng-model="q.name"
+                                                        placeholder="Enter question name" required>
+                                                    <span class="glyphicon glyphicon-remove group-delete" aria-hidden="true"
+                                                        ng-click="deleteQuestion(c,q)"></span>
+                                                </div>
+                                                <div class="question-radio col-md-2 force-col-padding">
+                                                    <div class="radio radio-first">
+                                                        <label><input type="radio" value="MCQ" ng-model="q.type"
+                                                            name="questionType-{{f.name}}-{{c.formID}}-{{q.formID}}">MCQ</label>
+                                                    </div>
+                                                    <div class="radio radio-last">
+                                                        <label><input type="radio" value="Short Answer" ng-model="q.type"
+                                                            name="questionType-{{f.name}}-{{c.formID}}-{{q.formID}}">Short Ans</label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <button class="btn btn-default add-question-btn-with-margin" type="button" ng-click="addQuestion(c)">
+                                                <span class="glyphicon glyphicon-plus button-icon" aria-hidden="true"></span>
+                                                Add Question
+                                            </button>
+                                            <div class="has-error category-error" ng-show="c.error">
+                                                <span class="help-block">Category or question name is required.</span>
+                                            </div>
+                                        </div>
+                                        <button class="btn btn-default" type="button" ng-click="addCategory(f)">
+                                            <span class="glyphicon glyphicon-plus button-icon" aria-hidden="true"></span>
+                                            Add Category
+                                        </button>
+                                    </div>
+                                </div>
+                                <button class="btn btn-default margin-bottom-13 margin-left-10" type="button" ng-click="f.show = !f.show" ng-show="!f.show">
+                                    <span class="glyphicon glyphicon-menu-down button-icon" aria-hidden="true"></span>
+                                    Show Checklist
+                                </button>
+                                <button class="btn btn-default margin-bottom-13 margin-left-10" type="button" ng-click="f.show = !f.show" ng-show="f.show">
+                                    <span class="glyphicon glyphicon-menu-up button-icon" aria-hidden="true"></span>
+                                    Hide Checklist
+                                </button>
                             </div>
                         </div>
                     </div>

@@ -152,6 +152,29 @@
 #left {
     min-height: 430px;
 }
+.facility-input-title {
+    display: table;
+    border-bottom: 1px solid #ccc;
+    margin-bottom: 3px;
+    width: 100%;
+    /* extra */
+    position: relative;
+    border-collapse: separate;
+}
+.facility-input-title .group-input {
+    border: 0;
+    border-radius: 4px 0 0 0;
+}
+.facility-input-title .facility-frequency {
+    float: none !important;
+    display: table-cell;
+    width: 10%;
+}
+.facility-input-title .facility-frequency .btn {
+    border-radius: 0;
+    border-top: 0;
+    border-bottom: 0;
+}
 
 /* General - Checklist */
 .category-group {

@@ -303,7 +303,10 @@ app.controller('ProjectsController', ['$rootScope', '$route', '$routeParams', '$
     ********************/
     
     if ($location.path() === "/add-project") {
-        $scope.staffList = [];
+//        $scope.staffList = [];
+        $scope.buhList = [];
+        $scope.tmList = [];
+        $scope.cmList = [];
         $scope.fullStaff = [];
 
         firebase.database().ref('staff/').once('value').then(function (snapshot) {
@@ -311,27 +314,36 @@ app.controller('ProjectsController', ['$rootScope', '$route', '$routeParams', '$
             snapshot.forEach(function(staffValue) {
                 if (staffValue.val().status === "Active") {
                     $scope.fullStaff.push(staffValue.val());
-                    $scope.staffList.push("(" + staffValue.val().ID + ") " + staffValue.val().name);
+//                    $scope.staffList.push("(" + staffValue.val().ID + ") " + staffValue.val().name);
+                    if (staffValue.val().role === "CM") {
+                        $scope.cmList.push("(" + staffValue.val().ID + ") " + staffValue.val().name);
+                    } else if (staffValue.val().role === "TM") {
+                        $scope.cmList.push("(" + staffValue.val().ID + ") " + staffValue.val().name);
+                        $scope.tmList.push("(" + staffValue.val().ID + ") " + staffValue.val().name);
+                    } else if (staffValue.val().role === "EXCO") {
+                        $scope.tmList.push("(" + staffValue.val().ID + ") " + staffValue.val().name);
+                        $scope.buhList.push("(" + staffValue.val().ID + ") " + staffValue.val().name);
+                    }
                 }
             });
 
             $scope.BUH = $('#magicsuggestBUH').magicSuggest({
                 allowFreeEntries: false,
-                data: $scope.staffList,
+                data: $scope.buhList,
                 highlight: false,
                 placeholder: "Enter project BUH",
                 maxSelection: 1
             });
             $scope.TM = $('#magicsuggestTM').magicSuggest({
                 allowFreeEntries: false,
-                data: $scope.staffList,
+                data: $scope.tmList,
                 highlight: false,
                 placeholder: "Enter project TM",
                 maxSelection: 1
             });
             $scope.CM = $('#magicsuggestCM').magicSuggest({
                 allowFreeEntries: false,
-                data: $scope.staffList,
+                data: $scope.cmList,
                 highlight: false,
                 placeholder: "Enter project CM",
                 maxSelection: 1
@@ -487,6 +499,7 @@ app.controller('ProjectsController', ['$rootScope', '$route', '$routeParams', '$
                 angular.forEach(snapshot.val(), function(facilityValue, key) {
                     $scope.facilityAddedList[0].ID = facilityValue.ID;
                     $scope.facilityAddedList[0].category = facilityValue.category;
+                    $scope.facilityAddedList[0].show = true;
                 });
                 $scope.facilityAddedList[0].categoryCount = -1;
                 $scope.facilityAddedList[0].checklist = [];
@@ -623,23 +636,24 @@ app.controller('ProjectsController', ['$rootScope', '$route', '$routeParams', '$
             });
         });
         
-        if ($scope.projectCMError === false) {
+//        if ($scope.projectCMError === false) {
             var CM = $scope.CM.getValue()[0];
             $scope.CMName = CM.substr(8);
             $scope.CMID = CM.substr(1,5);
-            
-            var index = $scope.fullStaff.map(function(x) {return x.name}).indexOf($scope.CMName);
-            if ($scope.fullStaff[index].hasProject) {
-                $scope.projectCMInvalid = true;
-                $scope.projectCMError = true;
-            } else {
-                $scope.newCM = $scope.fullStaff[index];
-                $scope.projectCMInvalid = false;
-                $scope.projectCMError = false;
-            }
-        }
+//            
+//            var index = $scope.fullStaff.map(function(x) {return x.name}).indexOf($scope.CMName);
+//            if ($scope.fullStaff[index].hasProject) {
+//                $scope.projectCMInvalid = true;
+//                $scope.projectCMError = true;
+//            } else {
+//                $scope.newCM = $scope.fullStaff[index];
+//                $scope.projectCMInvalid = false;
+//                $scope.projectCMError = false;
+//            }
+//        }
         
-        if (!error && !$scope.MCSTSError && !$scope.projectNameEmpty && !$scope.projectAddressEmpty && !$scope.projectBUHEmpty && !$scope.projectTMEmpty && !$scope.projectCMEmpty && !$scope.checklistEmpty && !$scope.projectCMInvalid) {
+//        if (!error && !$scope.MCSTSError && !$scope.projectNameEmpty && !$scope.projectAddressEmpty && !$scope.projectBUHEmpty && !$scope.projectTMEmpty && !$scope.projectCMEmpty && !$scope.checklistEmpty && !$scope.projectCMInvalid) {
+        if (!error && !$scope.MCSTSError && !$scope.projectNameEmpty && !$scope.projectAddressEmpty && !$scope.projectBUHEmpty && !$scope.projectTMEmpty && !$scope.projectCMEmpty && !$scope.checklistEmpty) {
             var BUH = $scope.BUH.getValue()[0];
             $scope.BUHName = BUH.substr(8);
             $scope.BUHID = BUH.substr(1,5);
@@ -789,7 +803,7 @@ app.controller('ProjectsController', ['$rootScope', '$route', '$routeParams', '$
 
                     var error = false;
                     
-                    firebase.database().ref('staff/' + $scope.newCM.authID + '/hasProject').set(true);
+//                    firebase.database().ref('staff/' + $scope.newCM.authID + '/hasProject').set(true);
 
                     angular.forEach($scope.projectFacilityAdded, function(projectFacilityValue, key) {
                         firebase.database().ref('project/' + $scope.projectAlphabet + $scope.projectCount + 
@@ -1027,6 +1041,7 @@ app.controller('ProjectsController', ['$rootScope', '$route', '$routeParams', '$
                         }
                         if (snapshot.val() != null) {
                             newProjectFacility.deleted = false;
+                            newProjectFacility.show = false;
                             newProjectFacility.checklist = [];
                             newProjectFacility.categoryCount = -1;
                             angular.forEach(snapshot.val().category, function(categoryValue, key) {
@@ -1112,45 +1127,59 @@ app.controller('ProjectsController', ['$rootScope', '$route', '$routeParams', '$
     **** Project Edit *****
     **********************/
     
-    $scope.loadMagicSuggest = function() {
-        $scope.staffList = [];
-        $scope.fullStaff = [];
+    if ($location.path() === "/edit-project") {
+        $scope.loadMagicSuggest = function() {
+    //        $scope.staffList = [];
+            $scope.buhList = [];
+            $scope.tmList = [];
+            $scope.cmList = [];
+            $scope.fullStaff = [];
 
-        firebase.database().ref('staff/').once('value').then(function (snapshot) {
-            
-            snapshot.forEach(function(staffValue) {
-                if (staffValue.val().status === "Active") {
-                    $scope.fullStaff.push(staffValue.val());
-                    $scope.staffList.push("(" + staffValue.val().ID + ") " + staffValue.val().name);
-                }
-            });
+            firebase.database().ref('staff/').once('value').then(function (snapshot) {
 
-            $scope.BUH = $('#magicsuggestBUH').magicSuggest({
-                allowFreeEntries: false,
-                data: $scope.staffList,
-                highlight: false,
-                placeholder: "Enter project BUH",
-                maxSelection: 1
-            });
-            $scope.TM = $('#magicsuggestTM').magicSuggest({
-                allowFreeEntries: false,
-                data: $scope.staffList,
-                highlight: false,
-                placeholder: "Enter project TM",
-                maxSelection: 1
-            });
-            $scope.CM = $('#magicsuggestCM').magicSuggest({
-                allowFreeEntries: false,
-                data: $scope.staffList,
-                highlight: false,
-                placeholder: "Enter project CM",
-                maxSelection: 1
-            });
+                snapshot.forEach(function(staffValue) {
+                    if (staffValue.val().status === "Active") {
+                        $scope.fullStaff.push(staffValue.val());
+    //                    $scope.staffList.push("(" + staffValue.val().ID + ") " + staffValue.val().name);
+                        if (staffValue.val().role === "CM") {
+                            $scope.cmList.push("(" + staffValue.val().ID + ") " + staffValue.val().name);
+                        } else if (staffValue.val().role === "TM") {
+                            $scope.cmList.push("(" + staffValue.val().ID + ") " + staffValue.val().name);
+                            $scope.tmList.push("(" + staffValue.val().ID + ") " + staffValue.val().name);
+                        } else if (staffValue.val().role === "EXCO") {
+                            $scope.tmList.push("(" + staffValue.val().ID + ") " + staffValue.val().name);
+                            $scope.buhList.push("(" + staffValue.val().ID + ") " + staffValue.val().name);
+                        }
+                    }
+                });
 
-            $scope.BUH.setValue([$scope.project.fullBUH]);
-            $scope.TM.setValue([$scope.project.fullTM]);
-            $scope.CM.setValue([$scope.project.fullCM]);
-        });
+                $scope.BUH = $('#magicsuggestBUH').magicSuggest({
+                    allowFreeEntries: false,
+                    data: $scope.buhList,
+                    highlight: false,
+                    placeholder: "Enter project BUH",
+                    maxSelection: 1
+                });
+                $scope.TM = $('#magicsuggestTM').magicSuggest({
+                    allowFreeEntries: false,
+                    data: $scope.tmList,
+                    highlight: false,
+                    placeholder: "Enter project TM",
+                    maxSelection: 1
+                });
+                $scope.CM = $('#magicsuggestCM').magicSuggest({
+                    allowFreeEntries: false,
+                    data: $scope.cmList,
+                    highlight: false,
+                    placeholder: "Enter project CM",
+                    maxSelection: 1
+                });
+
+                $scope.BUH.setValue([$scope.project.fullBUH]);
+                $scope.TM.setValue([$scope.project.fullTM]);
+                $scope.CM.setValue([$scope.project.fullCM]);
+            });
+        };
     };
         
     /*********************
@@ -1450,25 +1479,26 @@ app.controller('ProjectsController', ['$rootScope', '$route', '$routeParams', '$
             }
         });
         
-        if ($scope.projectCMError === false) {
+//        if ($scope.projectCMError === false) {
             var CM = $scope.CM.getValue()[0];
             $scope.CMName = CM.substr(8);
             $scope.CMID = CM.substr(1,5);
-            
-            var newCMIndex = $scope.fullStaff.map(function(x) {return x.name}).indexOf($scope.CMName);
-            var oldCMIndex = $scope.fullStaff.map(function(x) {return x.name}).indexOf($scope.project.oldCM);
-            if ($scope.fullStaff[newCMIndex].hasProject && $scope.fullStaff[oldCMIndex].name !== $scope.fullStaff[newCMIndex].name) {
-                $scope.projectCMInvalid = true;
-                $scope.projectCMError = true;
-            } else {
-                $scope.oldCM = $scope.fullStaff[oldCMIndex];
-                $scope.newCM = $scope.fullStaff[newCMIndex];
-                $scope.projectCMInvalid = false;
-                $scope.projectCMError = false;
-            }
-        }
+//            
+//            var newCMIndex = $scope.fullStaff.map(function(x) {return x.name}).indexOf($scope.CMName);
+//            var oldCMIndex = $scope.fullStaff.map(function(x) {return x.name}).indexOf($scope.project.oldCM);
+//            if ($scope.fullStaff[newCMIndex].hasProject && $scope.fullStaff[oldCMIndex].name !== $scope.fullStaff[newCMIndex].name) {
+//                $scope.projectCMInvalid = true;
+//                $scope.projectCMError = true;
+//            } else {
+//                $scope.oldCM = $scope.fullStaff[oldCMIndex];
+//                $scope.newCM = $scope.fullStaff[newCMIndex];
+//                $scope.projectCMInvalid = false;
+//                $scope.projectCMError = false;
+//            }
+//        }
 
-        if (!error && !$scope.MCSTSError && !$scope.projectNameEmpty && !$scope.projectAddressEmpty && !$scope.projectBUHEmpty && !$scope.projectTMEmpty && !$scope.projectCMEmpty && !$scope.checklistEmpty && !$scope.projectCMInvalid) {
+//        if (!error && !$scope.MCSTSError && !$scope.projectNameEmpty && !$scope.projectAddressEmpty && !$scope.projectBUHEmpty && !$scope.projectTMEmpty && !$scope.projectCMEmpty && !$scope.checklistEmpty && !$scope.projectCMInvalid) {
+        if (!error && !$scope.MCSTSError && !$scope.projectNameEmpty && !$scope.projectAddressEmpty && !$scope.projectBUHEmpty && !$scope.projectTMEmpty && !$scope.projectCMEmpty && !$scope.checklistEmpty) {
             var BUH = $scope.BUH.getValue()[0];
             $scope.BUHName = BUH.substr(8);
             $scope.BUHID = BUH.substr(1,5);
@@ -1810,10 +1840,10 @@ app.controller('ProjectsController', ['$rootScope', '$route', '$routeParams', '$
                 }).then(function() {
                     var error = false;
                     
-                    if ($scope.oldCM.ID !== $scope.newCM.ID) {
-                        firebase.database().ref('staff/' + $scope.oldCM.authID + '/hasProject').set(false);
-                        firebase.database().ref('staff/' + $scope.newCM.authID + '/hasProject').set(true);
-                    }
+//                    if ($scope.oldCM.ID !== $scope.newCM.ID) {
+//                        firebase.database().ref('staff/' + $scope.oldCM.authID + '/hasProject').set(false);
+//                        firebase.database().ref('staff/' + $scope.newCM.authID + '/hasProject').set(true);
+//                    }
 
                     angular.forEach($scope.projectFacilityAdded, function(projectFacilityValue, key) {
                         firebase.database().ref('project/' + $scope.project.ID + '/projectFacility/' + projectFacilityValue)
