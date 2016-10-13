@@ -321,6 +321,8 @@ app.controller('ProjectsController', ['$rootScope', '$route', '$routeParams', '$
                         $scope.cmList.push("(" + staffValue.val().ID + ") " + staffValue.val().name);
                         $scope.tmList.push("(" + staffValue.val().ID + ") " + staffValue.val().name);
                     } else if (staffValue.val().role === "EXCO") {
+                        $scope.buhList.push("(" + staffValue.val().ID + ") " + staffValue.val().name);
+                    } else if (staffValue.val().role === "BUH") {
                         $scope.tmList.push("(" + staffValue.val().ID + ") " + staffValue.val().name);
                         $scope.buhList.push("(" + staffValue.val().ID + ") " + staffValue.val().name);
                     }
@@ -1147,6 +1149,8 @@ app.controller('ProjectsController', ['$rootScope', '$route', '$routeParams', '$
                             $scope.cmList.push("(" + staffValue.val().ID + ") " + staffValue.val().name);
                             $scope.tmList.push("(" + staffValue.val().ID + ") " + staffValue.val().name);
                         } else if (staffValue.val().role === "EXCO") {
+                            $scope.buhList.push("(" + staffValue.val().ID + ") " + staffValue.val().name);
+                        } else if (staffValue.val().role === "BUH") {
                             $scope.tmList.push("(" + staffValue.val().ID + ") " + staffValue.val().name);
                             $scope.buhList.push("(" + staffValue.val().ID + ") " + staffValue.val().name);
                         }
