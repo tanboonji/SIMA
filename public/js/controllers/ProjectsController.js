@@ -1238,6 +1238,12 @@ app.controller('ProjectsController', ['$rootScope', '$route', '$routeParams', '$
         facility.deleted = true;
     }
     
+    $scope.deleteAddedProjectFacility = function(facility) {
+        $scope.facilityList.unshift({name:facility.name});
+        var index = $scope.facilityAddedList.map(function(x) {return x.name}).indexOf(facility.name);
+        $scope.facilityAddedList.splice(index,1);
+    }
+    
     $scope.moveProjectFacility = function(facility) {
         $scope.addFacilityToProjectList(facility.name);
         var index = $scope.facilityList.map(function(x) {return x.name}).indexOf(facility.name);
