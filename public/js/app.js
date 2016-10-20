@@ -94,6 +94,10 @@ app.config(function($routeProvider){
             controller: 'AdminController',
             templateUrl: 'views/edit-admin.html'
         })
+        .when('/testing', {
+            controller: 'TestController',
+            templateUrl: 'views/testing.html'
+        })
 		.otherwise({
 			redirectTo: '/login'
 		});
