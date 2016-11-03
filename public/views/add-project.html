@@ -189,6 +189,7 @@
                                                     <span class="glyphicon glyphicon-remove group-delete" aria-hidden="true"
                                                         ng-click="deleteQuestion(c,q)"></span>
                                                 </div>
+<!--
                                                 <div class="question-radio col-md-2 force-col-padding">
                                                     <div class="radio radio-first">
                                                         <label><input type="radio" value="MCQ" ng-model="q.type"
@@ -197,6 +198,15 @@
                                                     <div class="radio radio-last">
                                                         <label><input type="radio" value="Short Answer" ng-model="q.type"
                                                             name="questionType-{{f.name}}-{{c.formID}}-{{q.formID}}">Short Ans</label>
+                                                    </div>
+                                                </div>
+-->
+                                                <div class="question-radio col-md-2 force-col-padding">
+                                                    <div class="radio radio-first">
+                                                        <label><input type="radio" value="MCQ" ng-model="q.type">MCQ</label>
+                                                    </div>
+                                                    <div class="radio radio-last">
+                                                        <label><input type="radio" value="Short Answer" ng-model="q.type">Short Ans</label>
                                                     </div>
                                                 </div>
                                             </div>

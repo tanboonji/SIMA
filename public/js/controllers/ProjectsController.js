@@ -666,74 +666,27 @@ app.controller('ProjectsController', ['$rootScope', '$route', '$routeParams', '$
             $scope.addProject();
         }
     } //end of $scope.validateProject()
-        
+    
+    //new database format - add project method
     $scope.addProject = function() {
         $scope.projectFacilityAdded = [];
-        $scope.categoryAdded = [];
 
         firebase.database().ref('count').once('value').then(function (snapshot, error) {
             if (snapshot.val() !== null) {
 
-                $scope.questionAlphabet = snapshot.val().questionCount.alphabet;
-                $scope.categoryAlphabet = snapshot.val().categoryCount.alphabet;
                 $scope.projectAlphabet = snapshot.val().projectCount.alphabet;
                 $scope.projectFacilityAlphabet = snapshot.val().projectFacilityCount.alphabet;
-                $scope.questionCount = snapshot.val().questionCount.count;
-                $scope.categoryCount = snapshot.val().categoryCount.count;
                 $scope.projectCount = snapshot.val().projectCount.count;
                 $scope.projectFacilityCount = snapshot.val().projectFacilityCount.count;
+                $scope.categoryAlphabet = "C";
+                $scope.categoryCount = 0;
+                $scope.questionAlphabet = "Q";
+                $scope.questionCount = 0;
 
                 $scope.projectCount++;
 
                 angular.forEach($scope.facilityAddedList, function(facilityValue, key) {
-                    angular.forEach(facilityValue.checklist, function(categoryValue, key) {
-                        $scope.categoryCount++;
-                        $scope.categoryAdded.push($scope.categoryAlphabet + $scope.categoryCount);
-
-                        firebase.database().ref('category/' + $scope.categoryAlphabet + $scope.categoryCount).set({
-                            name: categoryValue.name,
-                            ID: $scope.categoryAlphabet + $scope.categoryCount
-                        }).then(function() {
-                            firebase.database().ref('count/categoryCount').set({
-                                count: $scope.categoryCount,
-                                alphabet: $scope.categoryAlphabet
-                            });
-                        }).catch(function(error) {
-                            console.log(error);
-                            if (error.code === "PERMISSION_DENIED") {
-                                //(#error)firebase-permission-denied
-                                $scope.notify("You do not have the permission to access this data (Error #001)", "danger");
-                            } else {
-                                //(#error)unknown-error
-                                $scope.notify("An unknown error has occured (Error #000)", "danger");
-                            }
-                        });
-
-                        angular.forEach(categoryValue.question, function(questionValue, key) {
-                            $scope.questionCount++;
-                            firebase.database().ref('category/' + $scope.categoryAlphabet + $scope.categoryCount + '/question/' + 
-                                $scope.questionAlphabet + $scope.questionCount).set({
-                                name: questionValue.name,
-                                ID: $scope.questionAlphabet + $scope.questionCount,
-                                type: questionValue.type
-                            }).then(function() {
-                                firebase.database().ref('count/questionCount').set({
-                                    count: $scope.questionCount,
-                                    alphabet: $scope.questionAlphabet
-                                });
-                            }).catch(function(error) {
-                                console.log(error);
-                                if (error.code === "PERMISSION_DENIED") {
-                                    //(#error)firebase-permission-denied
-                                    $scope.notify("You do not have the permission to access this data (Error #001)", "danger");
-                                } else {
-                                    //(#error)unknown-error
-                                    $scope.notify("An unknown error has occured (Error #000)", "danger");
-                                }
-                            });
-                        });
-                    });
-
+                    
                     $scope.projectFacilityCount++;
                     $scope.projectFacilityAdded.push($scope.projectFacilityAlphabet + $scope.projectFacilityCount);
 
@@ -759,11 +712,32 @@ app.controller('ProjectsController', ['$rootScope', '$route', '$routeParams', '$
                         }
                     });
 
-                    //add category in each projectFacility
-                    angular.forEach($scope.categoryAdded, function(categoryValue, key) {
-                        firebase.database().ref('projectfacility/' + $scope.projectFacilityAlphabet + $scope.projectFacilityCount 
-                                + '/category/' + categoryValue).set(categoryValue)
-                        .then(function() {
+//                    //add category in each projectFacility
+//                    angular.forEach($scope.categoryAdded, function(categoryValue, key) {
+//                        firebase.database().ref('projectfacility/' + $scope.projectFacilityAlphabet + $scope.projectFacilityCount 
+//                                + '/category/' + categoryValue).set(categoryValue)
+//                        .then(function() {
+//                            //do nothing
+//                        }).catch(function(error) {
+//                            console.log(error);
+//                            if (error.code === "PERMISSION_DENIED") {
+//                                //(#error)firebase-permission-denied
+//                                $scope.notify("You do not have the permission to access this data (Error #001)", "danger");
+//                            } else {
+//                                //(#error)unknown-error
+//                                $scope.notify("An unknown error has occured (Error #000)", "danger");
+//                            }
+//                        });
+//                    });
+                    
+                    angular.forEach(facilityValue.checklist, function(categoryValue, key) {
+                        $scope.categoryCount++;
+
+                        firebase.database().ref('projectfacility/' + $scope.projectFacilityAlphabet + $scope.projectFacilityCount
+                                + '/category/' + $scope.categoryAlphabet + $scope.categoryCount).set({
+                            name: categoryValue.name,
+                            ID: $scope.categoryAlphabet + $scope.categoryCount
+                        }).then(function() {
                             //do nothing
                         }).catch(function(error) {
                             console.log(error);
@@ -775,8 +749,30 @@ app.controller('ProjectsController', ['$rootScope', '$route', '$routeParams', '$
                                 $scope.notify("An unknown error has occured (Error #000)", "danger");
                             }
                         });
+
+                        angular.forEach(categoryValue.question, function(questionValue, key) {
+                            $scope.questionCount++;
+                            
+                            firebase.database().ref('projectfacility/' + $scope.projectFacilityAlphabet + $scope.projectFacilityCount
+                                + '/category/' + $scope.categoryAlphabet + $scope.categoryCount 
+                                + '/question/' + $scope.questionAlphabet + $scope.questionCount).set({
+                                name: questionValue.name,
+                                ID: $scope.questionAlphabet + $scope.questionCount,
+                                type: questionValue.type
+                            }).then(function() {
+                                //do nothing
+                            }).catch(function(error) {
+                                console.log(error);
+                                if (error.code === "PERMISSION_DENIED") {
+                                    //(#error)firebase-permission-denied
+                                    $scope.notify("You do not have the permission to access this data (Error #001)", "danger");
+                                } else {
+                                    //(#error)unknown-error
+                                    $scope.notify("An unknown error has occured (Error #000)", "danger");
+                                }
+                            });
+                        });
                     });
-                    $scope.categoryAdded = [];
                 });
 
                 if ($scope.MCSTS === undefined)
@@ -860,6 +856,200 @@ app.controller('ProjectsController', ['$rootScope', '$route', '$routeParams', '$
         });
     }; //end of $scope.addProject()
     
+    //old database format - add project method
+//    $scope.addProject = function() {
+//        $scope.projectFacilityAdded = [];
+//        $scope.categoryAdded = [];
+//
+//        firebase.database().ref('count').once('value').then(function (snapshot, error) {
+//            if (snapshot.val() !== null) {
+//
+//                $scope.questionAlphabet = snapshot.val().questionCount.alphabet;
+//                $scope.categoryAlphabet = snapshot.val().categoryCount.alphabet;
+//                $scope.projectAlphabet = snapshot.val().projectCount.alphabet;
+//                $scope.projectFacilityAlphabet = snapshot.val().projectFacilityCount.alphabet;
+//                $scope.questionCount = snapshot.val().questionCount.count;
+//                $scope.categoryCount = snapshot.val().categoryCount.count;
+//                $scope.projectCount = snapshot.val().projectCount.count;
+//                $scope.projectFacilityCount = snapshot.val().projectFacilityCount.count;
+//
+//                $scope.projectCount++;
+//
+//                angular.forEach($scope.facilityAddedList, function(facilityValue, key) {
+//                    angular.forEach(facilityValue.checklist, function(categoryValue, key) {
+//                        $scope.categoryCount++;
+//                        $scope.categoryAdded.push($scope.categoryAlphabet + $scope.categoryCount);
+//
+//                        firebase.database().ref('category/' + $scope.categoryAlphabet + $scope.categoryCount).set({
+//                            name: categoryValue.name,
+//                            ID: $scope.categoryAlphabet + $scope.categoryCount
+//                        }).then(function() {
+//                            firebase.database().ref('count/categoryCount').set({
+//                                count: $scope.categoryCount,
+//                                alphabet: $scope.categoryAlphabet
+//                            });
+//                        }).catch(function(error) {
+//                            console.log(error);
+//                            if (error.code === "PERMISSION_DENIED") {
+//                                //(#error)firebase-permission-denied
+//                                $scope.notify("You do not have the permission to access this data (Error #001)", "danger");
+//                            } else {
+//                                //(#error)unknown-error
+//                                $scope.notify("An unknown error has occured (Error #000)", "danger");
+//                            }
+//                        });
+//
+//                        angular.forEach(categoryValue.question, function(questionValue, key) {
+//                            $scope.questionCount++;
+//                            firebase.database().ref('category/' + $scope.categoryAlphabet + $scope.categoryCount + '/question/' + 
+//                                $scope.questionAlphabet + $scope.questionCount).set({
+//                                name: questionValue.name,
+//                                ID: $scope.questionAlphabet + $scope.questionCount,
+//                                type: questionValue.type
+//                            }).then(function() {
+//                                firebase.database().ref('count/questionCount').set({
+//                                    count: $scope.questionCount,
+//                                    alphabet: $scope.questionAlphabet
+//                                });
+//                            }).catch(function(error) {
+//                                console.log(error);
+//                                if (error.code === "PERMISSION_DENIED") {
+//                                    //(#error)firebase-permission-denied
+//                                    $scope.notify("You do not have the permission to access this data (Error #001)", "danger");
+//                                } else {
+//                                    //(#error)unknown-error
+//                                    $scope.notify("An unknown error has occured (Error #000)", "danger");
+//                                }
+//                            });
+//                        });
+//                    });
+//
+//                    $scope.projectFacilityCount++;
+//                    $scope.projectFacilityAdded.push($scope.projectFacilityAlphabet + $scope.projectFacilityCount);
+//
+//                    //add projectFacility details
+//                    firebase.database().ref('projectfacility/' + $scope.projectFacilityAlphabet + $scope.projectFacilityCount).set({
+//                            frequency: facilityValue.frequency,
+//                            name: facilityValue.name,
+//                            ID: $scope.projectFacilityAlphabet + $scope.projectFacilityCount,
+//                            projectID: $scope.projectAlphabet + $scope.projectCount
+//                    }).then(function() {
+//                        firebase.database().ref('count/projectFacilityCount').set({
+//                            count: $scope.projectFacilityCount,
+//                            alphabet: $scope.projectFacilityAlphabet
+//                        });
+//                    }).catch(function(error) {
+//                        console.log(error);
+//                        if (error.code === "PERMISSION_DENIED") {
+//                            //(#error)firebase-permission-denied
+//                            $scope.notify("You do not have the permission to access this data (Error #001)", "danger");
+//                        } else {
+//                            //(#error)unknown-error
+//                            $scope.notify("An unknown error has occured (Error #000)", "danger");
+//                        }
+//                    });
+//
+//                    //add category in each projectFacility
+//                    angular.forEach($scope.categoryAdded, function(categoryValue, key) {
+//                        firebase.database().ref('projectfacility/' + $scope.projectFacilityAlphabet + $scope.projectFacilityCount 
+//                                + '/category/' + categoryValue).set(categoryValue)
+//                        .then(function() {
+//                            //do nothing
+//                        }).catch(function(error) {
+//                            console.log(error);
+//                            if (error.code === "PERMISSION_DENIED") {
+//                                //(#error)firebase-permission-denied
+//                                $scope.notify("You do not have the permission to access this data (Error #001)", "danger");
+//                            } else {
+//                                //(#error)unknown-error
+//                                $scope.notify("An unknown error has occured (Error #000)", "danger");
+//                            }
+//                        });
+//                    });
+//                    $scope.categoryAdded = [];
+//                });
+//
+//                if ($scope.MCSTS === undefined)
+//                    $scope.MCSTS = "";
+//                
+//                var newDate = new Date();
+//                var datetime = newDate.dayNow() + " @ " + newDate.timeNow();
+//                
+//                firebase.database().ref('project/' + $scope.projectAlphabet + $scope.projectCount).set({
+//                    name: $scope.name,
+//                    ID: $scope.projectAlphabet + $scope.projectCount,
+//                    BUH: $scope.BUHID,
+//                    TM: $scope.TMID,
+//                    CM: $scope.CMID,
+//                    address: $scope.address,
+//                    MCSTS: $scope.MCSTS,
+//                    createdAt: datetime,
+//                    createdBy: $scope.user.ID,
+//                    updatedAt: datetime,
+//                    updatedBy: $scope.user.ID
+//                }).then(function() {
+//                    firebase.database().ref('count/projectCount').set({
+//                        count: $scope.projectCount,
+//                        alphabet: $scope.projectAlphabet
+//                    });
+//
+//                    var error = false;
+//                    
+////                    firebase.database().ref('staff/' + $scope.newCM.authID + '/hasProject').set(true);
+//
+//                    angular.forEach($scope.projectFacilityAdded, function(projectFacilityValue, key) {
+//                        firebase.database().ref('project/' + $scope.projectAlphabet + $scope.projectCount + 
+//                            '/projectFacility/' + projectFacilityValue)
+//                            .set(projectFacilityValue)
+//                        .then(function() {
+//                            //do nothing
+//                        }).catch(function(error) {
+//                            error = true;
+//                            console.log(error);
+//                            if (error.code === "PERMISSION_DENIED") {
+//                                //(#error)firebase-permission-denied
+//                                $scope.notify("You do not have the permission to access this data (Error #001)", "danger");
+//                            } else {
+//                                //(#error)unknown-error
+//                                $scope.notify("An unknown error has occured (Error #000)", "danger");
+//                            }
+//                        });
+//                    });
+//
+//                    //redirect to projects if add success
+//                    if (!error) {
+//                        $location.path("/projects").search("add",$scope.name).search("projectID",null).search("edit",null);
+//                        $route.reload();
+//                    }
+//
+//                }).catch(function(error) {
+//                    console.log(error);
+//                    if (error.code === "PERMISSION_DENIED") {
+//                        //(#error)firebase-permission-denied
+//                        $scope.notify("You do not have the permission to access this data (Error #001)", "danger");
+//                    } else {
+//                        //(#error)unknown-error
+//                        $scope.notify("An unknown error has occured (Error #000)", "danger");
+//                    }
+//                });
+//                
+//            } else {
+//                //(#error)database-count-does-not-exist
+//                console.log("database-count-does-not-exist");
+//                $scope.notify("An error occured when accessing firebase database (Error #003)", "danger");
+//            }
+//        }).catch(function(error) {
+//            console.log(error);
+//            if (error.code === "PERMISSION_DENIED") {
+//                //(#error)firebase-permission-denied
+//                $scope.notify("You do not have the permission to access this data (Error #001)", "danger");
+//            } else {
+//                //(#error)unknown-error
+//                $scope.notify("An unknown error has occured (Error #000)", "danger");
+//            }
+//        });
+//    }; //end of $scope.addProject()
+    
     /**********************
     *** Search & Filter ***
     **********************/
@@ -939,38 +1129,22 @@ app.controller('ProjectsController', ['$rootScope', '$route', '$routeParams', '$
                 if (snapshot.val() != null && snapshot.val().category != null) {
                     newProjectFacility.categoryCount = Object.keys(snapshot.val().category).length;
                     var categoryCount = -1;
-                    angular.forEach(snapshot.val().category, function(categoryValue, key) {
-                        firebase.database().ref("category/" + categoryValue).once("value").then(function(categorySnapshot) {
-                            if (snapshot.val() != null) {
-                                categoryCount++;
-                                newProjectFacility.checklist.push(categorySnapshot.val());
-                                newProjectFacility.checklist[categoryCount].questionList = [];
-                                newProjectFacility.checklist[categoryCount].questionCount = Object.keys(categorySnapshot.val().question).length;
-                                newProjectFacility.checklist[categoryCount].no = categoryCount+1;
-                                newProjectFacility.checklist[categoryCount].formID = categoryCount;
-                                var questionCount = -1;
-                                angular.forEach(categorySnapshot.val().question, function(questionValue, key) {
-                                    newProjectFacility.checklist[categoryCount].questionList.push(questionValue);
-                                    questionCount++;
-                                    var questionNo = 'abcdefghijklmnopqrstuvwxyz'[questionCount];
-                                    newProjectFacility.checklist[categoryCount].questionList[questionCount].formID = questionCount;
-                                    newProjectFacility.checklist[categoryCount].questionList[questionCount].no = questionNo;
-                                    $scope.$apply();
-                                });
-                            } else {
-                                //(#error)database-category-not-found
-                                console.log("database-category-not-found");
-                                $scope.notify("An error occured when accessing firebase database (Error #004)", "danger");
-                            }
-                        }).catch(function(error) {
-                            console.log(error);
-                            if (error.code === "PERMISSION_DENIED") {
-                                //(#error)firebase-permission-denied
-                                $scope.notify("You do not have the permission to access this data (Error #001)", "danger");
-                            } else {
-                                //(#error)unknown-error
-                                $scope.notify("An unknown error has occured (Error #000)", "danger");
-                            }
+                    angular.forEach(snapshot.val().category, function(newCategory, key) {
+                        var categoryValue = newCategory;
+                        categoryCount++;
+                        newProjectFacility.checklist.push(categoryValue);
+                        newProjectFacility.checklist[categoryCount].questionList = [];
+                        newProjectFacility.checklist[categoryCount].questionCount = Object.keys(categoryValue.question).length;
+                        newProjectFacility.checklist[categoryCount].no = categoryCount+1;
+                        newProjectFacility.checklist[categoryCount].formID = categoryCount;
+                        var questionCount = -1;
+                        angular.forEach(categoryValue.question, function(questionValue, key) {
+                            newProjectFacility.checklist[categoryCount].questionList.push(questionValue);
+                            questionCount++;
+                            var questionNo = 'abcdefghijklmnopqrstuvwxyz'[questionCount];
+                            newProjectFacility.checklist[categoryCount].questionList[questionCount].formID = questionCount;
+                            newProjectFacility.checklist[categoryCount].questionList[questionCount].no = questionNo;
+                            $scope.$apply();
                         });
                     });
                 //tempfix #001
@@ -994,6 +1168,70 @@ app.controller('ProjectsController', ['$rootScope', '$route', '$routeParams', '$
                 }
             });
         });
+        
+//        angular.forEach($scope.project.projectFacility, function(projectFacilityValue, key) {
+//            firebase.database().ref("projectfacility/" + projectFacilityValue).once("value").then(function(snapshot) {
+//                var newProjectFacility = snapshot.val();
+//                newProjectFacility.checklist = [];
+//                //tempfix #001
+//                if (snapshot.val() != null && snapshot.val().category != null) {
+//                    newProjectFacility.categoryCount = Object.keys(snapshot.val().category).length;
+//                    var categoryCount = -1;
+//                    angular.forEach(snapshot.val().category, function(categoryValue, key) {
+//                        firebase.database().ref("category/" + categoryValue).once("value").then(function(categorySnapshot) {
+//                            if (snapshot.val() != null) {
+//                                categoryCount++;
+//                                newProjectFacility.checklist.push(categorySnapshot.val());
+//                                newProjectFacility.checklist[categoryCount].questionList = [];
+//                                newProjectFacility.checklist[categoryCount].questionCount = Object.keys(categorySnapshot.val().question).length;
+//                                newProjectFacility.checklist[categoryCount].no = categoryCount+1;
+//                                newProjectFacility.checklist[categoryCount].formID = categoryCount;
+//                                var questionCount = -1;
+//                                angular.forEach(categorySnapshot.val().question, function(questionValue, key) {
+//                                    newProjectFacility.checklist[categoryCount].questionList.push(questionValue);
+//                                    questionCount++;
+//                                    var questionNo = 'abcdefghijklmnopqrstuvwxyz'[questionCount];
+//                                    newProjectFacility.checklist[categoryCount].questionList[questionCount].formID = questionCount;
+//                                    newProjectFacility.checklist[categoryCount].questionList[questionCount].no = questionNo;
+//                                    $scope.$apply();
+//                                });
+//                            } else {
+//                                //(#error)database-category-not-found
+//                                console.log("database-category-not-found");
+//                                $scope.notify("An error occured when accessing firebase database (Error #004)", "danger");
+//                            }
+//                        }).catch(function(error) {
+//                            console.log(error);
+//                            if (error.code === "PERMISSION_DENIED") {
+//                                //(#error)firebase-permission-denied
+//                                $scope.notify("You do not have the permission to access this data (Error #001)", "danger");
+//                            } else {
+//                                //(#error)unknown-error
+//                                $scope.notify("An unknown error has occured (Error #000)", "danger");
+//                            }
+//                        });
+//                    });
+//                //tempfix #001
+//                } else if (snapshot.val().category == null) {
+//                    
+//                } else {
+//                    //(#error)database-project-not-found
+//                    console.log("database-project-not-found");
+//                    $scope.notify("An error occured when accessing firebase database (Error #006)", "danger");
+//                }
+//                $scope.project.projectFacilityList.push(newProjectFacility);
+//                $scope.$apply();
+//            }).catch(function(error) {
+//                console.log(error);
+//                if (error.code === "PERMISSION_DENIED") {
+//                    //(#error)firebase-permission-denied
+//                    $scope.notify("You do not have the permission to access this data (Error #001)", "danger");
+//                } else {
+//                    //(#error)unknown-error
+//                    $scope.notify("An unknown error has occured (Error #000)", "danger");
+//                }
+//            });
+//        });
     }; //end of $scope.viewFacility()
         
     /*********************
@@ -1036,54 +1274,97 @@ app.controller('ProjectsController', ['$rootScope', '$route', '$routeParams', '$
                 
                 angular.forEach($scope.project.projectFacility, function(projectFacilityValue, key) {
                     firebase.database().ref("projectfacility/" + projectFacilityValue).once("value").then(function(snapshot) {
+                        //old database load project
+//                        var newProjectFacility = snapshot.val();
+//                        if ($scope.facilityList !== undefined) {
+//                            var index = $scope.facilityList.map(function(x) {return x.name}).indexOf(newProjectFacility.name);
+//                            $scope.facilityList.splice(index,1);
+//                        }
+//                        if (snapshot.val() != null) {
+//                            newProjectFacility.deleted = false;
+//                            newProjectFacility.show = false;
+//                            newProjectFacility.checklist = [];
+//                            newProjectFacility.categoryCount = -1;
+//                            angular.forEach(snapshot.val().category, function(categoryValue, key) {
+//                                firebase.database().ref("category/" + categoryValue).once("value").then(function(categorySnapshot) {
+//                                    if (categorySnapshot.val() != null) {
+//                                        var categoryCount = ++newProjectFacility.categoryCount;
+//                                        newProjectFacility.checklist.push(categorySnapshot.val());
+//                                        newProjectFacility.checklist[categoryCount].deleted = false;
+//                                        newProjectFacility.checklist[categoryCount].questionList = [];
+//                                        newProjectFacility.checklist[categoryCount].no = categoryCount+1;
+//                                        newProjectFacility.checklist[categoryCount].formID = categoryCount;
+//                                        newProjectFacility.checklist[categoryCount].questionCount = -1;
+//                                        angular.forEach(categorySnapshot.val().question, function(questionValue, key) {
+//                                            newProjectFacility.checklist[categoryCount].questionList.push(questionValue);
+//                                            var questionCount = ++newProjectFacility.checklist[categoryCount].questionCount;
+//                                            var questionNo = 'abcdefghijklmnopqrstuvwxyz'[questionCount];
+//                                            newProjectFacility.checklist[categoryCount].questionList[questionCount].formID = questionCount;
+//                                            newProjectFacility.checklist[categoryCount].questionList[questionCount].no = questionNo;
+//                                            $scope.$apply();
+//                                        });
+//                                    } else {
+//                                        //(#error)database-category-not-found
+//                                        console.log("database-category-not-found");
+//                                        $scope.notify("An error occured when accessing firebase database (Error #004)", "danger");
+//                                    }
+//                                }).catch(function(error) {
+//                                    console.log(error);
+//                                    if (error.code === "PERMISSION_DENIED") {
+//                                        //(#error)firebase-permission-denied
+//                                        $scope.notify("You do not have the permission to access this data (Error #001)", "danger");
+//                                    } else {
+//                                        //(#error)unknown-error
+//                                        $scope.notify("An unknown error has occured (Error #000)", "danger");
+//                                    }
+//                                });
+//                            });
+//                        } else {
+//                            //(#error)database-projectfacility-not-found
+//                            console.log("database-projectfacility-not-found");
+//                            $scope.notify("An error occured when accessing firebase database (Error #007)", "danger");
+//                        }
+//                        $scope.project.projectFacilityList.push(newProjectFacility);
+//                        $scope.$apply();
+                        
                         var newProjectFacility = snapshot.val();
-                        if ($scope.facilityList !== undefined) {
-                            var index = $scope.facilityList.map(function(x) {return x.name}).indexOf(newProjectFacility.name);
-                            $scope.facilityList.splice(index,1);
-                        }
-                        if (snapshot.val() != null) {
+                        //tempfix #001
+                        if (snapshot.val() != null && snapshot.val().category != null) {
+                            if ($scope.facilityList !== undefined) {
+                                var index = $scope.facilityList.map(function(x) {return x.name}).indexOf(newProjectFacility.name);
+                                $scope.facilityList.splice(index,1);
+                            }
                             newProjectFacility.deleted = false;
                             newProjectFacility.show = false;
                             newProjectFacility.checklist = [];
                             newProjectFacility.categoryCount = -1;
-                            angular.forEach(snapshot.val().category, function(categoryValue, key) {
-                                firebase.database().ref("category/" + categoryValue).once("value").then(function(categorySnapshot) {
-                                    if (categorySnapshot.val() != null) {
-                                        var categoryCount = ++newProjectFacility.categoryCount;
-                                        newProjectFacility.checklist.push(categorySnapshot.val());
-                                        newProjectFacility.checklist[categoryCount].deleted = false;
-                                        newProjectFacility.checklist[categoryCount].questionList = [];
-                                        newProjectFacility.checklist[categoryCount].no = categoryCount+1;
-                                        newProjectFacility.checklist[categoryCount].formID = categoryCount;
-                                        newProjectFacility.checklist[categoryCount].questionCount = -1;
-                                        angular.forEach(categorySnapshot.val().question, function(questionValue, key) {
-                                            newProjectFacility.checklist[categoryCount].questionList.push(questionValue);
-                                            var questionCount = ++newProjectFacility.checklist[categoryCount].questionCount;
-                                            var questionNo = 'abcdefghijklmnopqrstuvwxyz'[questionCount];
-                                            newProjectFacility.checklist[categoryCount].questionList[questionCount].formID = questionCount;
-                                            newProjectFacility.checklist[categoryCount].questionList[questionCount].no = questionNo;
-                                            $scope.$apply();
-                                        });
-                                    } else {
-                                        //(#error)database-category-not-found
-                                        console.log("database-category-not-found");
-                                        $scope.notify("An error occured when accessing firebase database (Error #004)", "danger");
-                                    }
-                                }).catch(function(error) {
-                                    console.log(error);
-                                    if (error.code === "PERMISSION_DENIED") {
-                                        //(#error)firebase-permission-denied
-                                        $scope.notify("You do not have the permission to access this data (Error #001)", "danger");
-                                    } else {
-                                        //(#error)unknown-error
-                                        $scope.notify("An unknown error has occured (Error #000)", "danger");
-                                    }
+                            newProjectFacility.categoryCount = Object.keys(snapshot.val().category).length;
+                            var categoryCount = -1;
+                            angular.forEach(snapshot.val().category, function(newCategory, key) {
+                                var categoryValue = newCategory;
+                                categoryCount++;
+                                newProjectFacility.checklist.push(categoryValue);
+                                newProjectFacility.checklist[categoryCount].questionList = [];
+                                newProjectFacility.checklist[categoryCount].questionCount = Object.keys(categoryValue.question).length;
+                                newProjectFacility.checklist[categoryCount].no = categoryCount+1;
+                                newProjectFacility.checklist[categoryCount].formID = categoryCount;
+                                var questionCount = -1;
+                                angular.forEach(categoryValue.question, function(questionValue, key) {
+                                    newProjectFacility.checklist[categoryCount].questionList.push(questionValue);
+                                    questionCount++;
+                                    var questionNo = 'abcdefghijklmnopqrstuvwxyz'[questionCount];
+                                    newProjectFacility.checklist[categoryCount].questionList[questionCount].formID = questionCount;
+                                    newProjectFacility.checklist[categoryCount].questionList[questionCount].no = questionNo;
+                                    $scope.$apply();
                                 });
                             });
+                        //tempfix #001
+                        } else if (snapshot.val().category == null) {
+
                         } else {
-                            //(#error)database-projectfacility-not-found
-                            console.log("database-projectfacility-not-found");
-                            $scope.notify("An error occured when accessing firebase database (Error #007)", "danger");
+                            //(#error)database-project-not-found
+                            console.log("database-project-not-found");
+                            $scope.notify("An error occured when accessing firebase database (Error #006)", "danger");
                         }
                         $scope.project.projectFacilityList.push(newProjectFacility);
                         $scope.$apply();
@@ -1527,32 +1808,32 @@ app.controller('ProjectsController', ['$rootScope', '$route', '$routeParams', '$
         firebase.database().ref('count').once('value').then(function (snapshot, error) {
             if (snapshot.val() !== null) {
 
-                $scope.questionAlphabet = snapshot.val().questionCount.alphabet;
-                $scope.categoryAlphabet = snapshot.val().categoryCount.alphabet;
+                $scope.questionAlphabet = "Q";
+                $scope.categoryAlphabet = "C";
                 $scope.projectFacilityAlphabet = snapshot.val().projectFacilityCount.alphabet;
-                $scope.questionCount = snapshot.val().questionCount.count;
-                $scope.categoryCount = snapshot.val().categoryCount.count;
+                $scope.questionCount = 0;
+                $scope.categoryCount = 0;
                 $scope.projectFacilityCount = snapshot.val().projectFacilityCount.count;
                 
                 angular.forEach($scope.project.projectFacilityList, function(facilityValue, key) {
                     if (facilityValue.deleted === true && facilityValue.ID !== undefined) {
                         //deleted facility from firebase
-                        //delete category in facility
-                        angular.forEach(facilityValue.checklist, function(categoryValue, key) {
-                            var categoryRef = firebase.database().ref('category/' + categoryValue.ID);
-                            categoryRef.remove().then(function() {
-                                //do nothing
-                            }).catch(function(error) {
-                                console.log(error);
-                                if (error.code === "PERMISSION_DENIED") {
-                                    //(#error)firebase-permission-denied
-                                    $scope.notify("You do not have the permission to access this data (Error #001)", "danger");
-                                } else {
-                                    //(#error)unknown-error
-                                    $scope.notify("An unknown error has occured (Error #000)", "danger");
-                                }
-                            });
-                        });
+                        //do not need to delete anymore //delete category in facility
+//                        angular.forEach(facilityValue.checklist, function(categoryValue, key) {
+//                            var categoryRef = firebase.database().ref('category/' + categoryValue.ID);
+//                            categoryRef.remove().then(function() {
+//                                //do nothing
+//                            }).catch(function(error) {
+//                                console.log(error);
+//                                if (error.code === "PERMISSION_DENIED") {
+//                                    //(#error)firebase-permission-denied
+//                                    $scope.notify("You do not have the permission to access this data (Error #001)", "danger");
+//                                } else {
+//                                    //(#error)unknown-error
+//                                    $scope.notify("An unknown error has occured (Error #000)", "danger");
+//                                }
+//                            });
+//                        });
                         var projectFacilityRef = firebase.database().ref('projectfacility/' + facilityValue.ID);
                         projectFacilityRef.remove().then(function() {
                             //do nothing
@@ -1568,129 +1849,129 @@ app.controller('ProjectsController', ['$rootScope', '$route', '$routeParams', '$
                         });
                     } else if (facilityValue.deleted === false && facilityValue.ID !== undefined) {
                         //update category in firebase
-                        angular.forEach(facilityValue.checklist, function(categoryValue, key) {
-                            if (categoryValue.deleted === true && categoryValue.ID !== undefined) {
-                                var categoryRef = firebase.database().ref('category/' + categoryValue.ID);
-                                categoryRef.remove().then(function() {
-                                    //do nothing
-                                }).catch(function(error) {
-                                    console.log(error);
-                                    if (error.code === "PERMISSION_DENIED") {
-                                        //(#error)firebase-permission-denied
-                                        $scope.notify("You do not have the permission to access this data (Error #001)", "danger");
-                                    } else {
-                                        //(#error)unknown-error
-                                        $scope.notify("An unknown error has occured (Error #000)", "danger");
-                                    }
-                                });
-                            } else if (categoryValue.deleted === false && categoryValue.ID !== undefined) {
-                                $scope.categoryAdded.push(categoryValue.ID);
-                                firebase.database().ref('category/' + categoryValue.ID).set({
-                                    ID: categoryValue.ID,
-                                    name: categoryValue.name
-                                }).then(function() {
-                                    //do nothing
-                                }).catch(function(error) {
-                                    console.log(error);
-                                    if (error.code === "PERMISSION_DENIED") {
-                                        //(#error)firebase-permission-denied
-                                        $scope.notify("You do not have the permission to access this data (Error #001)", "danger");
-                                    } else {
-                                        //(#error)unknown-error
-                                        $scope.notify("An unknown error has occured (Error #000)", "danger");
-                                    }
-                                });
-
-                                //remove existing questions
-                                var questionRef = firebase.database().ref('category/' + categoryValue.ID + '/question');
-                                questionRef.remove().then(function() {
-                                    //do nothing
-                                }).catch(function(error) {
-                                    console.log(error);
-                                    if (error.code === "PERMISSION_DENIED") {
-                                        //(#error)firebase-permission-denied
-                                        $scope.notify("You do not have the permission to access this data (Error #001)", "danger");
-                                    } else {
-                                        //(#error)unknown-error
-                                        $scope.notify("An unknown error has occured (Error #000)", "danger");
-                                    }
-                                });
-
-                                //add new questions
-                                angular.forEach(categoryValue.questionList, function(questionValue, key) {
-                                    $scope.questionCount++;
-                                    firebase.database().ref('category/' + categoryValue.ID + '/question/' + 
-                                        $scope.questionAlphabet + $scope.questionCount)
-                                    .set({
-                                        name: questionValue.name,
-                                        ID: $scope.questionAlphabet + $scope.questionCount,
-                                        type: questionValue.type
-                                    }).then(function() {
-                                        firebase.database().ref('count/questionCount').set({
-                                            count: $scope.questionCount,
-                                            alphabet: $scope.questionAlphabet
-                                        });
-                                    }).catch(function(error) {
-                                        console.log(error);
-                                        if (error.code === "PERMISSION_DENIED") {
-                                            //(#error)firebase-permission-denied
-                                            $scope.notify("You do not have the permission to access this data (Error #001)", "danger");
-                                        } else {
-                                            //(#error)unknown-error
-                                            $scope.notify("An unknown error has occured (Error #000)", "danger");
-                                        }
-                                    });
-                                });
-                            } else if (categoryValue.deleted === false && categoryValue.ID === undefined) {
-                                //add new category to firebase
-                                $scope.categoryCount++;
-                                $scope.categoryAdded.push($scope.categoryAlphabet + $scope.categoryCount);
-                                firebase.database().ref('category/' + $scope.categoryAlphabet + $scope.categoryCount).set({
-                                    name: categoryValue.name,
-                                    ID: $scope.categoryAlphabet + $scope.categoryCount
-                                }).then(function() {
-                                    firebase.database().ref('count/categoryCount').set({
-                                        count: $scope.categoryCount,
-                                        alphabet: $scope.categoryAlphabet
-                                    });
-                                }).catch(function(error) {
-                                    console.log(error);
-                                    if (error.code === "PERMISSION_DENIED") {
-                                        //(#error)firebase-permission-denied
-                                        $scope.notify("You do not have the permission to access this data (Error #001)", "danger");
-                                    } else {
-                                        //(#error)unknown-error
-                                        $scope.notify("An unknown error has occured (Error #000)", "danger");
-                                    }
-                                });
-
-                                //add new questions to firebase
-                                angular.forEach(categoryValue.questionList, function(questionValue, key) {
-                                    $scope.questionCount++;
-                                    firebase.database().ref('category/' + $scope.categoryAlphabet + $scope.categoryCount + '/question/' + 
-                                        $scope.questionAlphabet + $scope.questionCount).set({
-                                        name: questionValue.name,
-                                        ID: $scope.questionAlphabet + $scope.questionCount,
-                                        type: questionValue.type
-                                    }).then(function() {
-                                        firebase.database().ref('count/questionCount').set({
-                                            count: $scope.questionCount,
-                                            alphabet: $scope.questionAlphabet
-                                        });
-                                    }).catch(function(error) {
-                                        console.log(error);
-                                        if (error.code === "PERMISSION_DENIED") {
-                                            //(#error)firebase-permission-denied
-                                            $scope.notify("You do not have the permission to access this data (Error #001)", "danger");
-                                        } else {
-                                            //(#error)unknown-error
-                                            $scope.notify("An unknown error has occured (Error #000)", "danger");
-                                        }
-                                    });
-                                }); 
-                            }
-                        });
-                            
+//                        angular.forEach(facilityValue.checklist, function(categoryValue, key) {
+//                            if (categoryValue.deleted === true && categoryValue.ID !== undefined) {
+//                                var categoryRef = firebase.database().ref('category/' + categoryValue.ID);
+//                                categoryRef.remove().then(function() {
+//                                    //do nothing
+//                                }).catch(function(error) {
+//                                    console.log(error);
+//                                    if (error.code === "PERMISSION_DENIED") {
+//                                        //(#error)firebase-permission-denied
+//                                        $scope.notify("You do not have the permission to access this data (Error #001)", "danger");
+//                                    } else {
+//                                        //(#error)unknown-error
+//                                        $scope.notify("An unknown error has occured (Error #000)", "danger");
+//                                    }
+//                                });
+//                            } else if (categoryValue.deleted === false && categoryValue.ID !== undefined) {
+//                                $scope.categoryAdded.push(categoryValue.ID);
+//                                firebase.database().ref('category/' + categoryValue.ID).set({
+//                                    ID: categoryValue.ID,
+//                                    name: categoryValue.name
+//                                }).then(function() {
+//                                    //do nothing
+//                                }).catch(function(error) {
+//                                    console.log(error);
+//                                    if (error.code === "PERMISSION_DENIED") {
+//                                        //(#error)firebase-permission-denied
+//                                        $scope.notify("You do not have the permission to access this data (Error #001)", "danger");
+//                                    } else {
+//                                        //(#error)unknown-error
+//                                        $scope.notify("An unknown error has occured (Error #000)", "danger");
+//                                    }
+//                                });
+//
+//                                //remove existing questions
+//                                var questionRef = firebase.database().ref('category/' + categoryValue.ID + '/question');
+//                                questionRef.remove().then(function() {
+//                                    //do nothing
+//                                }).catch(function(error) {
+//                                    console.log(error);
+//                                    if (error.code === "PERMISSION_DENIED") {
+//                                        //(#error)firebase-permission-denied
+//                                        $scope.notify("You do not have the permission to access this data (Error #001)", "danger");
+//                                    } else {
+//                                        //(#error)unknown-error
+//                                        $scope.notify("An unknown error has occured (Error #000)", "danger");
+//                                    }
+//                                });
+//
+//                                //add new questions
+//                                angular.forEach(categoryValue.questionList, function(questionValue, key) {
+//                                    $scope.questionCount++;
+//                                    firebase.database().ref('category/' + categoryValue.ID + '/question/' + 
+//                                        $scope.questionAlphabet + $scope.questionCount)
+//                                    .set({
+//                                        name: questionValue.name,
+//                                        ID: $scope.questionAlphabet + $scope.questionCount,
+//                                        type: questionValue.type
+//                                    }).then(function() {
+//                                        firebase.database().ref('count/questionCount').set({
+//                                            count: $scope.questionCount,
+//                                            alphabet: $scope.questionAlphabet
+//                                        });
+//                                    }).catch(function(error) {
+//                                        console.log(error);
+//                                        if (error.code === "PERMISSION_DENIED") {
+//                                            //(#error)firebase-permission-denied
+//                                            $scope.notify("You do not have the permission to access this data (Error #001)", "danger");
+//                                        } else {
+//                                            //(#error)unknown-error
+//                                            $scope.notify("An unknown error has occured (Error #000)", "danger");
+//                                        }
+//                                    });
+//                                });
+//                            } else if (categoryValue.deleted === false && categoryValue.ID === undefined) {
+//                                //add new category to firebase
+//                                $scope.categoryCount++;
+//                                $scope.categoryAdded.push($scope.categoryAlphabet + $scope.categoryCount);
+//                                firebase.database().ref('category/' + $scope.categoryAlphabet + $scope.categoryCount).set({
+//                                    name: categoryValue.name,
+//                                    ID: $scope.categoryAlphabet + $scope.categoryCount
+//                                }).then(function() {
+//                                    firebase.database().ref('count/categoryCount').set({
+//                                        count: $scope.categoryCount,
+//                                        alphabet: $scope.categoryAlphabet
+//                                    });
+//                                }).catch(function(error) {
+//                                    console.log(error);
+//                                    if (error.code === "PERMISSION_DENIED") {
+//                                        //(#error)firebase-permission-denied
+//                                        $scope.notify("You do not have the permission to access this data (Error #001)", "danger");
+//                                    } else {
+//                                        //(#error)unknown-error
+//                                        $scope.notify("An unknown error has occured (Error #000)", "danger");
+//                                    }
+//                                });
+//
+//                                //add new questions to firebase
+//                                angular.forEach(categoryValue.questionList, function(questionValue, key) {
+//                                    $scope.questionCount++;
+//                                    firebase.database().ref('category/' + $scope.categoryAlphabet + $scope.categoryCount + '/question/' + 
+//                                        $scope.questionAlphabet + $scope.questionCount).set({
+//                                        name: questionValue.name,
+//                                        ID: $scope.questionAlphabet + $scope.questionCount,
+//                                        type: questionValue.type
+//                                    }).then(function() {
+//                                        firebase.database().ref('count/questionCount').set({
+//                                            count: $scope.questionCount,
+//                                            alphabet: $scope.questionAlphabet
+//                                        });
+//                                    }).catch(function(error) {
+//                                        console.log(error);
+//                                        if (error.code === "PERMISSION_DENIED") {
+//                                            //(#error)firebase-permission-denied
+//                                            $scope.notify("You do not have the permission to access this data (Error #001)", "danger");
+//                                        } else {
+//                                            //(#error)unknown-error
+//                                            $scope.notify("An unknown error has occured (Error #000)", "danger");
+//                                        }
+//                                    });
+//                                }); 
+//                            }
+//                        });
+                        
                         //update existing projectFacility
                         $scope.projectFacilityAdded.push(facilityValue.ID);
                         firebase.database().ref('projectfacility/' + facilityValue.ID).set({
@@ -1711,36 +1992,17 @@ app.controller('ProjectsController', ['$rootScope', '$route', '$routeParams', '$
                             }
                         });
 
-                        angular.forEach($scope.categoryAdded, function(categoryValue, key) {
-                            firebase.database().ref('projectfacility/' + facilityValue.ID + '/category/' + categoryValue)
-                            .set(categoryValue)
-                            .then(function() {
-                                //do nothing
-                            }).catch(function(error) {
-                                console.log(error);
-                                if (error.code === "PERMISSION_DENIED") {
-                                    //(#error)firebase-permission-denied
-                                    $scope.notify("You do not have the permission to access this data (Error #001)", "danger");
-                                } else {
-                                    //(#error)unknown-error
-                                    $scope.notify("An unknown error has occured (Error #000)", "danger");
-                                }
-                            });
-                        });
-                        $scope.categoryAdded = [];
-                    } else if (facilityValue.deleted === false && facilityValue.ID === undefined) {
                         angular.forEach(facilityValue.checklist, function(categoryValue, key) {
-                            if (categoryValue.deleted === false) {
+                            
+                            if (!categoryValue.deleted) {
                                 $scope.categoryCount++;
-                                $scope.categoryAdded.push($scope.categoryAlphabet + $scope.categoryCount);
-                                firebase.database().ref('category/' + $scope.categoryAlphabet + $scope.categoryCount).set({
+
+                                firebase.database().ref('projectfacility/' + facilityValue.ID
+                                        + '/category/' + $scope.categoryAlphabet + $scope.categoryCount).set({
                                     name: categoryValue.name,
                                     ID: $scope.categoryAlphabet + $scope.categoryCount
                                 }).then(function() {
-                                    firebase.database().ref('count/categoryCount').set({
-                                        count: $scope.categoryCount,
-                                        alphabet: $scope.categoryAlphabet
-                                    });
+                                    //do nothing
                                 }).catch(function(error) {
                                     console.log(error);
                                     if (error.code === "PERMISSION_DENIED") {
@@ -1752,18 +2014,17 @@ app.controller('ProjectsController', ['$rootScope', '$route', '$routeParams', '$
                                     }
                                 });
 
-                                angular.forEach(categoryValue.questionList, function(questionValue, key) {
+                                angular.forEach(categoryValue.question, function(questionValue, key) {
                                     $scope.questionCount++;
-                                    firebase.database().ref('category/' + $scope.categoryAlphabet + $scope.categoryCount + '/question/' + 
-                                        $scope.questionAlphabet + $scope.questionCount).set({
+
+                                    firebase.database().ref('projectfacility/' + facilityValue.ID
+                                        + '/category/' + $scope.categoryAlphabet + $scope.categoryCount 
+                                        + '/question/' + $scope.questionAlphabet + $scope.questionCount).set({
                                         name: questionValue.name,
                                         ID: $scope.questionAlphabet + $scope.questionCount,
                                         type: questionValue.type
                                     }).then(function() {
-                                        firebase.database().ref('count/questionCount').set({
-                                            count: $scope.questionCount,
-                                            alphabet: $scope.questionAlphabet
-                                        });
+                                        //do nothing
                                     }).catch(function(error) {
                                         console.log(error);
                                         if (error.code === "PERMISSION_DENIED") {
@@ -1777,6 +2038,74 @@ app.controller('ProjectsController', ['$rootScope', '$route', '$routeParams', '$
                                 });
                             }
                         });
+                        
+                        //for old database format
+//                        angular.forEach($scope.categoryAdded, function(categoryValue, key) {
+//                            firebase.database().ref('projectfacility/' + facilityValue.ID + '/category/' + categoryValue)
+//                            .set(categoryValue)
+//                            .then(function() {
+//                                //do nothing
+//                            }).catch(function(error) {
+//                                console.log(error);
+//                                if (error.code === "PERMISSION_DENIED") {
+//                                    //(#error)firebase-permission-denied
+//                                    $scope.notify("You do not have the permission to access this data (Error #001)", "danger");
+//                                } else {
+//                                    //(#error)unknown-error
+//                                    $scope.notify("An unknown error has occured (Error #000)", "danger");
+//                                }
+//                            });
+//                        });
+                        $scope.categoryAdded = [];
+                    } else if (facilityValue.deleted === false && facilityValue.ID === undefined) {
+//                        angular.forEach(facilityValue.checklist, function(categoryValue, key) {
+//                            if (categoryValue.deleted === false) {
+//                                $scope.categoryCount++;
+//                                $scope.categoryAdded.push($scope.categoryAlphabet + $scope.categoryCount);
+//                                firebase.database().ref('category/' + $scope.categoryAlphabet + $scope.categoryCount).set({
+//                                    name: categoryValue.name,
+//                                    ID: $scope.categoryAlphabet + $scope.categoryCount
+//                                }).then(function() {
+//                                    firebase.database().ref('count/categoryCount').set({
+//                                        count: $scope.categoryCount,
+//                                        alphabet: $scope.categoryAlphabet
+//                                    });
+//                                }).catch(function(error) {
+//                                    console.log(error);
+//                                    if (error.code === "PERMISSION_DENIED") {
+//                                        //(#error)firebase-permission-denied
+//                                        $scope.notify("You do not have the permission to access this data (Error #001)", "danger");
+//                                    } else {
+//                                        //(#error)unknown-error
+//                                        $scope.notify("An unknown error has occured (Error #000)", "danger");
+//                                    }
+//                                });
+//
+//                                angular.forEach(categoryValue.questionList, function(questionValue, key) {
+//                                    $scope.questionCount++;
+//                                    firebase.database().ref('category/' + $scope.categoryAlphabet + $scope.categoryCount + '/question/' + 
+//                                        $scope.questionAlphabet + $scope.questionCount).set({
+//                                        name: questionValue.name,
+//                                        ID: $scope.questionAlphabet + $scope.questionCount,
+//                                        type: questionValue.type
+//                                    }).then(function() {
+//                                        firebase.database().ref('count/questionCount').set({
+//                                            count: $scope.questionCount,
+//                                            alphabet: $scope.questionAlphabet
+//                                        });
+//                                    }).catch(function(error) {
+//                                        console.log(error);
+//                                        if (error.code === "PERMISSION_DENIED") {
+//                                            //(#error)firebase-permission-denied
+//                                            $scope.notify("You do not have the permission to access this data (Error #001)", "danger");
+//                                        } else {
+//                                            //(#error)unknown-error
+//                                            $scope.notify("An unknown error has occured (Error #000)", "danger");
+//                                        }
+//                                    });
+//                                });
+//                            }
+//                        });
                             
                         $scope.projectFacilityCount++;
                         $scope.projectFacilityAdded.push($scope.projectFacilityAlphabet + $scope.projectFacilityCount);
@@ -1801,23 +2130,69 @@ app.controller('ProjectsController', ['$rootScope', '$route', '$routeParams', '$
                                 $scope.notify("An unknown error has occured (Error #000)", "danger");
                             }
                         });
+                        
+                        angular.forEach(facilityValue.checklist, function(categoryValue, key) {
+                            if (!categoryValue.deleted) {
+                                $scope.categoryCount++;
 
-                        angular.forEach($scope.categoryAdded, function(categoryValue, key) {
-                            firebase.database().ref('projectfacility/' + $scope.projectFacilityAlphabet + $scope.projectFacilityCount 
-                                    + '/category/' + categoryValue).set(categoryValue)
-                            .then(function() {
-                                //do nothing
-                            }).catch(function(error) {
-                                console.log(error);
-                                if (error.code === "PERMISSION_DENIED") {
-                                    //(#error)firebase-permission-denied
-                                    $scope.notify("You do not have the permission to access this data (Error #001)", "danger");
-                                } else {
-                                    //(#error)unknown-error
-                                    $scope.notify("An unknown error has occured (Error #000)", "danger");
-                                }
-                            });
+                                firebase.database().ref('projectfacility/' + $scope.projectFacilityAlphabet + $scope.projectFacilityCount
+                                        + '/category/' + $scope.categoryAlphabet + $scope.categoryCount).set({
+                                    name: categoryValue.name,
+                                    ID: $scope.categoryAlphabet + $scope.categoryCount
+                                }).then(function() {
+                                    //do nothing
+                                }).catch(function(error) {
+                                    console.log(error);
+                                    if (error.code === "PERMISSION_DENIED") {
+                                        //(#error)firebase-permission-denied
+                                        $scope.notify("You do not have the permission to access this data (Error #001)", "danger");
+                                    } else {
+                                        //(#error)unknown-error
+                                        $scope.notify("An unknown error has occured (Error #000)", "danger");
+                                    }
+                                });
+
+                                angular.forEach(categoryValue.questionList, function(questionValue, key) {
+                                    $scope.questionCount++;
+
+                                    firebase.database().ref('projectfacility/' + $scope.projectFacilityAlphabet + $scope.projectFacilityCount
+                                        + '/category/' + $scope.categoryAlphabet + $scope.categoryCount 
+                                        + '/question/' + $scope.questionAlphabet + $scope.questionCount).set({
+                                        name: questionValue.name,
+                                        ID: $scope.questionAlphabet + $scope.questionCount,
+                                        type: questionValue.type
+                                    }).then(function() {
+                                        //do nothing
+                                    }).catch(function(error) {
+                                        console.log(error);
+                                        if (error.code === "PERMISSION_DENIED") {
+                                            //(#error)firebase-permission-denied
+                                            $scope.notify("You do not have the permission to access this data (Error #001)", "danger");
+                                        } else {
+                                            //(#error)unknown-error
+                                            $scope.notify("An unknown error has occured (Error #000)", "danger");
+                                        }
+                                    });
+                                });
+                            }
                         });
+
+//                        angular.forEach($scope.categoryAdded, function(categoryValue, key) {
+//                            firebase.database().ref('projectfacility/' + $scope.projectFacilityAlphabet + $scope.projectFacilityCount 
+//                                    + '/category/' + categoryValue).set(categoryValue)
+//                            .then(function() {
+//                                //do nothing
+//                            }).catch(function(error) {
+//                                console.log(error);
+//                                if (error.code === "PERMISSION_DENIED") {
+//                                    //(#error)firebase-permission-denied
+//                                    $scope.notify("You do not have the permission to access this data (Error #001)", "danger");
+//                                } else {
+//                                    //(#error)unknown-error
+//                                    $scope.notify("An unknown error has occured (Error #000)", "danger");
+//                                }
+//                            });
+//                        });
                         $scope.categoryAdded = [];
                     }
                 });

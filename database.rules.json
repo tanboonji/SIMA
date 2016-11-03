@@ -40,7 +40,7 @@
          ".indexOn":["role","status","ID"],
             
          "$staff":{
-             ".write":"root.child('admin/'+ auth.uid + '/isSuperAdmin').val() != true && (root.child('admin/'+ auth.uid).exists() || root.child('staff/'+$staff + '/authID').val() == auth.uid)"}},
+             ".write":"root.child('admin/'+ auth.uid + '/isSuperAdmin').val() != true && (root.child('admin/'+ auth.uid).exists() || root.child('staff/'+$staff+'/authID').val() == auth.uid)"}},
    
      // to read: auth needed
      // to write: need to be super-admin

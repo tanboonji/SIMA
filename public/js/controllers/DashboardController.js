@@ -527,5 +527,99 @@ app.controller('DashboardController', ['$rootScope', '$route', '$routeParams', '
         $scope.record.fullTM = "(" + $scope.record.TM + ") " + $scope.record.TMName;
         $scope.record.fullCM = "(" + $scope.record.CM + ") " + $scope.record.CMName;
     };
+        
+    /********************
+    ** Generate Report **
+    ********************/
+        
+    $scope.generateReport = function() {
+        
+        var reportData = {
+            "projectName":$scope.record.name,
+            "date": $scope.record.inspectionDate,
+            "issue":[]
+        };
+        
+        angular.forEach($scope.record.projectFacility, function(projectFacilityValue, projectFacilityKey) {
+            angular.forEach(projectFacilityValue.category, function(categoryValue, categoryKey) {
+                angular.forEach(categoryValue.question, function(questionValue, questionKey) {
+                    if (questionValue.isMCQ) {
+                        if (questionValue.isNo) {
+                            reportData.issue.push({
+                                "id":questionValue.ID,
+                                "beforePhoto":questionValue.image,
+                                "location":projectFacilityValue.name,
+                                "question":questionValue.name,
+                                "comments": questionValue.comments,
+                                "afterPhoto":"",
+                                "remarks":""
+                            })
+                        }
+                    } else {
+                        reportData.issue.push({
+                            "id":questionValue.ID,
+                            "beforePhoto":questionValue.image,
+                            "location":projectFacilityValue.name,
+                            "question":questionValue.name,
+                            "comments": questionValue.comments,
+                            "afterPhoto":"",
+                            "remarks":""
+                        })
+                    }
+                })
+            })
+        })
+        
+//                {
+//                    "id":"1",
+//                    "beforePhoto":"before",
+//                    "location":"location",
+//                    "observations":"observations",
+//                    "afterPhoto":"after",
+//                    "remarks":"remarks"
+//                },{
+//                    "id":"2",
+//                    "beforePhoto":"before",
+//                    "location":"location",
+//                    "observations":"observations",
+//                    "afterPhoto":"after",
+//                    "remarks":"remarks"
+//                }
+        
+        var loadFile=function(url,callback){
+            JSZipUtils.getBinaryContent(url,callback);
+        }
+        loadFile("examples/tagExample.docx",function(err,content){
+            if (err) { throw err };
+            doc=new Docxgen(content);
+//            doc.setData( {"first_name":"Hipp",
+//                "last_name":"Edgar",
+//                "phone":"0652455478",
+//                "description":"New Website"
+//                }
+//            ) //set the templateVariables
+//            doc.setData({
+//                "issue":[{
+//                    "id":"1",
+//                    "beforePhoto":"before",
+//                    "location":"location",
+//                    "observations":"observations",
+//                    "afterPhoto":"after",
+//                    "remarks":"remarks"
+//                },{
+//                    "id":"2",
+//                    "beforePhoto":"before",
+//                    "location":"location",
+//                    "observations":"observations",
+//                    "afterPhoto":"after",
+//                    "remarks":"remarks"
+//                }]
+//            }); //set the templateVariables
+            doc.setData(reportData); //set the templateVariables
+            doc.render() //apply them (replace all occurences of {first_name} by Hipp, ...)
+            out=doc.getZip().generate({type:"blob"}) //Output the document using Data-URI
+            saveAs(out,"output.docx")
+        })
+    };
     
 }]);
