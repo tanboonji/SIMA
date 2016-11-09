@@ -10,11 +10,11 @@
             </a>
             <div class="nav-menu">
                 <ul>
-                    <li class="selected" ng-show="user.isCM"><a href="#/dashboard">Dashboard</a></li>
+                    <li ng-show="user.isCM"><a href="#/dashboard">Dashboard</a></li>
                     <li ng-show="user.isBUH"><a href="#/projects">Projects</a></li>
                     <li ng-show="user.isAdmin"><a href="#/staff">Staff</a></li>
                     <li ng-show="user.isAdmin"><a href="#/checklists">Checklists</a></li>
-                    <li ng-show="user.isAdmin"><a href="#/contracts">Contracts</a></li>
+                    <li class="selected" ng-show="user.isAdmin"><a href="#/contracts">Contracts</a></li>
                     <li ng-show="user.isSuperAdmin"><a href="#/admin">Admin</a></li>
                 </ul>
             </div>
@@ -31,7 +31,7 @@
 	</nav>
 
     <div class="dashboard restrict container">
-        <h3 class="title">List of outstanding issues</h3>
+        <h3 class="title">Contracts</h3>
         <div class="row">
             <div class="col-md-12">
                 <div class="pull-left col-md-4 force-col-padding has-icon">
@@ -39,19 +39,8 @@
                     <input type="text" class="form-control" placeholder="Search for..." ng-model="query">
                 </div>
                 <div class="pull-right">
-                    <label for="">Date:&nbsp;</label>
-                    <div class="btn-group margin-right-5">
-                        <button type="button" class="btn btn-default dropdown-toggle dropdown-style" 
-                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-                            <div class="dropdown-text-left">{{sortByDateItem}}</div>
-                            <span class="caret dropdown-text-right"></span>
-                        </button>
-                        <ul class="dropdown-menu">
-                            <li ng-repeat="s in sortByDateList"><a ng-click="sortByDateItemSelected(s)">{{s}}</a></li>
-                        </ul>
-                    </div>
                     <label for="">Order:&nbsp;</label>
-                    <div class="btn-group">
+                    <div class="btn-group margin-right-5">
                         <button type="button" class="btn btn-default dropdown-toggle dropdown-style" 
                             data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
                             <div class="dropdown-text-left">{{sortByOrderItem}}&nbsp;</div>
@@ -59,6 +48,17 @@
                         </button>
                         <ul class="dropdown-menu">
                             <li ng-repeat="s in sortByOrderList"><a ng-click="sortByOrderItemSelected(s)">{{s}}</a></li>
+                        </ul>
+                    </div>
+                    <label for="">Status:&nbsp;</label>
+                    <div class="btn-group">
+                        <button type="button" class="btn btn-default dropdown-toggle dropdown-style" 
+                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                            <div class="dropdown-text-left">{{sortByStatusItem}}</div>
+                            <span class="caret dropdown-text-right"></span>
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li ng-repeat="s in sortByStatusList"><a ng-click="sortByStatusItemSelected(s)">{{s}}</a></li>
                         </ul>
                     </div>
                 </div>
@@ -70,26 +70,22 @@
                 <tr>
                     <td>MCSTS</td>
                     <td>Name</td>
-                    <td>BUH</td>
-                    <td>TM</td>
-                    <td>CM</td>
-                    <td>Inspection Date</td>
-                    <td>Issue(s)</td>
+                    <td>Type</td>
+                    <td>Expiry Date</td>
+                    <td>Remarks</td>
                     <td class="col-md-2"></td>
                 </tr>
                 </thead>
                 <tbody>
-                <tr ng-repeat="r in recordList | filter:search | filter:dateRange | filter:userrole" ng-class="{'table-issue': r.hasIssue}">
-                    <td ng-click="viewRecord(r)">{{r.MCSTS}}</td>
-                    <td ng-click="viewRecord(r)">{{r.name}}</td>
-                    <td ng-click="viewRecord(r)">{{r.BUHName}}</td>
-                    <td ng-click="viewRecord(r)">{{r.TMName}}</td>
-                    <td ng-click="viewRecord(r)">{{r.CMName}}</td>
-                    <td ng-click="viewRecord(r)">{{r.inspectionDate}}</td>
-                    <td ng-click="viewRecord(r)">{{r.issueCount}}</td>
+                <tr ng-repeat="c in contractList | filter:search | filter:isexpired | filter:userrole" ng-class="{'table-issue': c.hasIssue}">
+                    <td ng-click="viewRecord(c)">{{c.MCSTS}}</td>
+                    <td ng-click="viewRecord(c)">{{c.name}}</td>
+                    <td ng-click="viewRecord(c)">{{c.type}}</td>
+                    <td ng-click="viewRecord(c)">{{c.expiryDate}}</td>
+                    <td ng-click="viewRecord(c)">{{c.remarks}}</td>
                     <td>
                         <div class="pull-right">
-                            <button class="btn btn-default" type="button" ng-click="viewRecord(r)">
+                            <button class="btn btn-default" type="button" ng-click="viewContract(c)">
                                 <span class="glyphicon glyphicon-eye-open button-icon" aria-hidden="true"></span>
                                 View
                             </button>
@@ -130,6 +126,7 @@
         <!-- Password Popup Div Ends Here -->
     </div>
 
+<!--
     <div class="overlay" ng-show="overlay" ng-click="closeOverlay()">
         <div class="overlay-large-popup" ng-click="openOverlay($event)">
             <div class="form-horizontal">
@@ -265,5 +262,6 @@
             </div>
         </div>
     </div>
+-->
     
 </div>
