@@ -303,47 +303,51 @@ app.controller('ContractController', ['$rootScope', '$route', '$routeParams', '$
     ** Search & Filter **
     ********************/
         
-    $scope.sortByOrderList = ['Descending','Ascending'];
-    $scope.sortByOrderItem = 'Descending';
+    $scope.sortByOrderList = ['Ascending','Descending'];
+    $scope.sortByOrderItem = 'Ascending';
     
     $scope.sortByOrderItemSelected = function(itemSelected) {
         $scope.sortByOrderItem = itemSelected;
         if (itemSelected === "Ascending") {
-            $scope.recordList.sort(function(a,b) {
-                a = a.inspectionDate.split('/').reverse().join('');
-                b = b.inspectionDate.split('/').reverse().join('');
+            $scope.contractList.sort(function(a,b) {
+                a = a.expiryDate;
+                b = b.expiryDate;
                 return a > b ? 1 : a < b ? -1 : 0;
             });
         } else if (itemSelected === "Descending") {
-            $scope.recordList.sort(function(a,b) {
-                a = a.inspectionDate.split('/').reverse().join('');
-                b = b.inspectionDate.split('/').reverse().join('');
+            $scope.contractList.sort(function(a,b) {
+                a = a.expiryDate;
+                b = b.expiryDate;
                 return a > b ? -1 : a < b ? 1 : 0;
             });
         }
     };
         
     $scope.search = function(c) {
-    return (angular.lowercase(c.name).indexOf(angular.lowercase($scope.query) || '') !== -1 ||
-            angular.lowercase(c.MCSTS).toString().indexOf(angular.lowercase($scope.query) || '') !== -1 ||
-            angular.lowercase(c.type).indexOf(angular.lowercase($scope.query) || '') !== -1);
+        return (angular.lowercase(c.name).indexOf(angular.lowercase($scope.query) || '') !== -1 ||
+                angular.lowercase(c.MCSTS).toString().indexOf(angular.lowercase($scope.query) || '') !== -1 ||
+                angular.lowercase(c.type).indexOf(angular.lowercase($scope.query) || '') !== -1);
     };
     
-    $scope.userrole = function(r) {
-        if ($scope.user.isAdmin)
-            return true;
-        else if (r.CMName === $scope.user.name || r.TMName === $scope.user.name || r.BUHName === $scope.user.name)
-            return true;
-        else
-            return false;
-    };
+//    $scope.userrole = function(r) {
+//        if ($scope.user.isAdmin)
+//            return true;
+//        else if (r.CMName === $scope.user.name || r.TMName === $scope.user.name || r.BUHName === $scope.user.name)
+//            return true;
+//        else
+//            return false;
+//    };
         
-    $scope.sortByStatusList = ['Expiring','Expired'];
-    $scope.sortByStatusItem = 'Expiring';
+    $scope.sortByStatusList = ['Existing','Expired'];
+    $scope.sortByStatusItem = 'Existing';
+        
+    $scope.sortByStatusItemSelected = function(itemSelected) {
+        $scope.sortByStatusItem = itemSelected;
+    };
     
     $scope.isexpired = function(c) {
-        if ($scope.sortByStatusItem === 'Expiring')
-            return (c.status === 'Expiring');
+        if ($scope.sortByStatusItem === 'Existing')
+            return (c.status === 'Existing');
         else if ($scope.sortByStatusItem === 'Expired')
             return (c.status === 'Expired');
         else
@@ -371,86 +375,100 @@ app.controller('ContractController', ['$rootScope', '$route', '$routeParams', '$
                 firebase.database().ref('project').once('value').then(function (projectSnapshot, error) {
 //                    firebase.database().ref('staff').once('value').then(function (staffSnapshot, error) {
                         var tempList = [];
-                        console.log(contractSnapshot.val());
-                        angular.forEach(contractSnapshot.val(), function(contractValue, contractKey) {
-                            angular.forEach(contractValue, function(recordValue, recordKey) {
-                                var temp = recordValue;
-                                temp.date = recordKey;
-                                temp.projectID = contractKey;
+                        angular.forEach(contractSnapshot.val().existing, function(projectValue, projectKey) {
+                            angular.forEach(projectValue, function(contractValue, contractKey) {
+                                var temp = contractValue;
+                                temp.projectID = projectKey;
+                                temp.contractID = contractKey;
+                                temp.status = 'Existing';
                                 tempList.push(temp);
                             });
                         });
-                        $scope.recordList = tempList;
-                        tempList = [];
-                        angular.forEach(staffSnapshot.val(), function(staffValue, projectKey) {
-                            tempList.push(staffValue);
-                        });
-                        $scope.staffList = tempList;
-                        angular.forEach($scope.recordList, function(recordValue, recordkey) {
-                            recordValue.inspectionDate = $scope.transformDate(recordValue.date);
-                            var projectID = recordValue.projectID;
-                            recordValue.MCSTS = projectSnapshot.val()[projectID].MCSTS;
-                            if (recordValue.MCSTS === "" || recordValue.MCSTS === undefined)
-                                recordValue.MCSTS = "-";
-                            recordValue.name = projectSnapshot.val()[projectID].name;
-                            recordValue.BUH = recordValue.details.BUH;
-                            recordValue.TM = recordValue.details.TM;
-                            recordValue.CM = recordValue.details.CM;
-                            var index = $scope.staffList.map(function(x) {return x.ID}).indexOf(recordValue.BUH);
-                            recordValue.BUHName = $scope.staffList[index].name;
-                            var index = $scope.staffList.map(function(x) {return x.ID}).indexOf(recordValue.TM);
-                            recordValue.TMName = $scope.staffList[index].name;
-                            var index = $scope.staffList.map(function(x) {return x.ID}).indexOf(recordValue.CM);
-                            recordValue.CMName = $scope.staffList[index].name;
-                            recordValue.issueCount = 0;
-                            angular.forEach(recordValue.projectFacility, function(projectFacilityValue, projectFacilitykey) {
-                                var categoryCount = -1;
-                                angular.forEach(projectFacilityValue.category, function(categoryValue, categorykey) {
-                                    categoryCount++;
-                                    categoryValue.formID = categoryCount;
-                                    categoryValue.no = categoryCount+1;
-                                    categoryValue.ID = categorykey;
-                                    var questionCount = -1;
-                                    angular.forEach(categoryValue.question, function(questionValue, questionkey) {
-                                        questionCount++;
-                                        questionValue.formID = questionCount;
-                                        var questionNo = 'abcdefghijklmnopqrstuvwxyz'[questionCount];
-                                        questionValue.no = questionNo;
-                                        questionValue.ID = questionkey;
-                                        if (questionValue.answer === "no" || questionValue.comments.toLowerCase().includes("#issue")) {
-                                            recordValue.issueCount++;
-                                        }
-                                        switch (questionValue.answer) {
-                                            case "no":
-                                                questionValue.isNo = true;
-                                                break;
-                                            case "na":
-                                                questionValue.isNA = true;
-                                                break;
-                                            case "yes":
-                                                questionValue.isYes = true;
-                                                break;
-                                            default:
-                                                break;
-                                        }
-                                        if (questionValue.comments !== "" && questionValue.comments !== undefined)
-                                            questionValue.hasComment = true;
-                                        if (questionValue.type === "MCQ")
-                                            questionValue.isMCQ = true;
-                                        if (questionValue.image !== "")
-                                            questionValue.hasImage = true;
-                                    });
-                                });
+                        angular.forEach(contractSnapshot.val().expired, function(projectValue, projectKey) {
+                            angular.forEach(projectValue, function(contractValue, contractKey) {
+                                var temp = contractValue;
+                                temp.projectID = projectKey;
+                                temp.contractID = contractKey;
+                                temp.status = 'Expired';
+                                tempList.push(temp);
                             });
-                            if (recordValue.issueCount === 0)
-                                recordValue.hasIssue = false;
-                            else
-                                recordValue.hasIssue = true;
                         });
-                        $scope.recordList.sort(function(a,b) {
-                            a = a.inspectionDate.split('/').reverse().join('');
-                            b = b.inspectionDate.split('/').reverse().join('');
-                            return a > b ? -1 : a < b ? 1 : 0;
+                        $scope.contractList = tempList;
+                        tempList = [];
+                    
+                    console.log($scope.contractList);
+                    
+//                        angular.forEach(staffSnapshot.val(), function(staffValue, projectKey) {
+//                            tempList.push(staffValue);
+//                        });
+//                        $scope.staffList = tempList;
+                    
+//                        angular.forEach($scope.contractList, function(recordValue, recordkey) {
+//                            recordValue.inspectionDate = $scope.transformDate(recordValue.date);
+//                            var projectID = recordValue.projectID;
+//                            recordValue.MCSTS = projectSnapshot.val()[projectID].MCSTS;
+//                            if (recordValue.MCSTS === "" || recordValue.MCSTS === undefined)
+//                                recordValue.MCSTS = "-";
+//                            recordValue.name = projectSnapshot.val()[projectID].name;
+//                            recordValue.BUH = recordValue.details.BUH;
+//                            recordValue.TM = recordValue.details.TM;
+//                            recordValue.CM = recordValue.details.CM;
+//                            var index = $scope.staffList.map(function(x) {return x.ID}).indexOf(recordValue.BUH);
+//                            recordValue.BUHName = $scope.staffList[index].name;
+//                            var index = $scope.staffList.map(function(x) {return x.ID}).indexOf(recordValue.TM);
+//                            recordValue.TMName = $scope.staffList[index].name;
+//                            var index = $scope.staffList.map(function(x) {return x.ID}).indexOf(recordValue.CM);
+//                            recordValue.CMName = $scope.staffList[index].name;
+//                            recordValue.issueCount = 0;
+//                            angular.forEach(recordValue.projectFacility, function(projectFacilityValue, projectFacilitykey) {
+//                                var categoryCount = -1;
+//                                angular.forEach(projectFacilityValue.category, function(categoryValue, categorykey) {
+//                                    categoryCount++;
+//                                    categoryValue.formID = categoryCount;
+//                                    categoryValue.no = categoryCount+1;
+//                                    categoryValue.ID = categorykey;
+//                                    var questionCount = -1;
+//                                    angular.forEach(categoryValue.question, function(questionValue, questionkey) {
+//                                        questionCount++;
+//                                        questionValue.formID = questionCount;
+//                                        var questionNo = 'abcdefghijklmnopqrstuvwxyz'[questionCount];
+//                                        questionValue.no = questionNo;
+//                                        questionValue.ID = questionkey;
+//                                        if (questionValue.answer === "no" || questionValue.comments.toLowerCase().includes("#issue")) {
+//                                            recordValue.issueCount++;
+//                                        }
+//                                        switch (questionValue.answer) {
+//                                            case "no":
+//                                                questionValue.isNo = true;
+//                                                break;
+//                                            case "na":
+//                                                questionValue.isNA = true;
+//                                                break;
+//                                            case "yes":
+//                                                questionValue.isYes = true;
+//                                                break;
+//                                            default:
+//                                                break;
+//                                        }
+//                                        if (questionValue.comments !== "" && questionValue.comments !== undefined)
+//                                            questionValue.hasComment = true;
+//                                        if (questionValue.type === "MCQ")
+//                                            questionValue.isMCQ = true;
+//                                        if (questionValue.image !== "")
+//                                            questionValue.hasImage = true;
+//                                    });
+//                                });
+//                            });
+//                            if (recordValue.issueCount === 0)
+//                                recordValue.hasIssue = false;
+//                            else
+//                                recordValue.hasIssue = true;
+//                        });
+                    
+                        $scope.contractList.sort(function(a,b) {
+                            a = a.expiryDate;
+                            b = b.expiryDate;
+                            return a > b ? 1 : a < b ? -1 : 0;
                         });
                         $scope.$apply();
 //                    }).catch(function(error) {
