@@ -30,6 +30,11 @@
      "record":{
          ".read": "auth!=null && root.child('admin/'+ auth.uid + '/isSuperAdmin').val() != true ",
          ".write": "auth!=null && root.child('admin/'+ auth.uid + '/isSuperAdmin').val() != true "},
+    
+     // as long as not super-admin
+     "contract":{
+         ".read": "auth!=null && root.child('admin/'+ auth.uid + '/isSuperAdmin').val() != true ",
+         ".write": "auth!=null && root.child('admin/'+ auth.uid + '/isSuperAdmin').val() != true "},
    
      // to read: auth needed
      // to write: need to be admin !Super

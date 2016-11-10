@@ -363,20 +363,20 @@ app.controller('ContractController', ['$rootScope', '$route', '$routeParams', '$
     };
     
     $scope.loadController = function() {
-        var ref = firebase.database().ref().child("contract");
 
+        var ref = firebase.database().ref().child("contract");
+        
         $scope.refreshContractList = function() {
-                        console.log("hi2");
             firebase.database().ref('contract').once('value').then(function (contractSnapshot, error) {
                 firebase.database().ref('project').once('value').then(function (projectSnapshot, error) {
 //                    firebase.database().ref('staff').once('value').then(function (staffSnapshot, error) {
                         var tempList = [];
                         console.log(contractSnapshot.val());
                         angular.forEach(contractSnapshot.val(), function(contractValue, contractKey) {
-                            angular.forEach(projectValue, function(recordValue, recordKey) {
+                            angular.forEach(contractValue, function(recordValue, recordKey) {
                                 var temp = recordValue;
                                 temp.date = recordKey;
-                                temp.projectID = projectKey;
+                                temp.projectID = contractKey;
                                 tempList.push(temp);
                             });
                         });
@@ -484,10 +484,9 @@ app.controller('ContractController', ['$rootScope', '$route', '$routeParams', '$
                 }
             });
         }; //end of $scope.refreshRecordList()
-
+        
         ref.on('value', function() {
             $scope.refreshContractList();
-                        console.log("hi5");
         });
     }; //end of $scope.loadController()
         

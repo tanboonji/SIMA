@@ -496,6 +496,7 @@ app.controller('DashboardController', ['$rootScope', '$route', '$routeParams', '
         }; //end of $scope.refreshRecordList()
 
         ref.on('value', function() {
+            console.log("hi");
             $scope.refreshRecordList();
         });
     }; //end of $scope.loadController()
