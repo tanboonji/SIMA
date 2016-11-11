@@ -73,25 +73,25 @@
                     <td>Type</td>
                     <td>Expiry Date</td>
                     <td>Remarks</td>
-                    <td class="col-md-2"></td>
+                    <!-- <td class="col-md-2"></td> -->
                 </tr>
                 </thead>
                 <tbody>
 <!--                <tr ng-repeat="c in contractList | filter:search | filter:isexpired | filter:userrole" ng-class="{'table-issue': c.hasIssue}">-->
-                <tr ng-repeat="c in contractList | filter:search | filter:isexpired">
+                <tr ng-repeat="c in contractList | filter:search | filter:isexpired" ng-class="{'table-issue': r.hasIssue}">
                     <td ng-click="viewRecord(c)">{{c.MCSTS}}</td>
                     <td ng-click="viewRecord(c)">{{c.name}}</td>
                     <td ng-click="viewRecord(c)">{{c.type}}</td>
-                    <td ng-click="viewRecord(c)">{{c.expiryDate}}</td>
+                    <td ng-click="viewRecord(c)">{{c.showExpiryDate}}</td>
                     <td ng-click="viewRecord(c)">{{c.remarks}}</td>
-                    <td>
+                    <!-- <td>
                         <div class="pull-right">
                             <button class="btn btn-default" type="button" ng-click="viewContract(c)">
                                 <span class="glyphicon glyphicon-eye-open button-icon" aria-hidden="true"></span>
                                 View
                             </button>
                         </div>
-                    </td>
+                    </td> -->
                 </tr>
                 </tbody>
             </table>
