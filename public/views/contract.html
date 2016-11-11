@@ -39,6 +39,11 @@
                     <input type="text" class="form-control" placeholder="Search for..." ng-model="query">
                 </div>
                 <div class="pull-right">
+                    <div class="btn-group margin-right-5">
+                        <button type="button" class="btn btn-default" ng-click="sendReminder()">
+                            Send Reminder ({{reminderDate}})
+                        </button>
+                    </div>
                     <label for="">Order:&nbsp;</label>
                     <div class="btn-group margin-right-5">
                         <button type="button" class="btn btn-default dropdown-toggle dropdown-style" 

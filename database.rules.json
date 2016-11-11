@@ -35,6 +35,12 @@
      "contract":{
          ".read": "auth!=null && root.child('admin/'+ auth.uid + '/isSuperAdmin').val() != true ",
          ".write": "auth!=null && root.child('admin/'+ auth.uid + '/isSuperAdmin').val() != true "},
+     
+     // to read: auth needed
+     // to write: need to be admin !Super
+     "time":{
+         ".read":"auth !=null",
+         ".write":"root.child('admin/'+ auth.uid + '/isSuperAdmin').val() != true && root.child('admin').child(auth.uid).exists()"},
    
      // to read: auth needed
      // to write: need to be admin !Super

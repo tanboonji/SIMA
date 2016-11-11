@@ -155,6 +155,180 @@ app.controller('ContractController', ['$rootScope', '$route', '$routeParams', '$
         emailjs.init("user_0mk6KgqiS2U166LCZL9om");
     })();
     var service_id = 'gmail';
+        
+    firebase.database().ref("time").once("value").then(function(snapshot) {
+        if (snapshot.val() !== null) {
+            var lastReminderDate = snapshot.val();
+            $scope.reminderDate = $scope.transformDate(lastReminderDate.toString());
+            $scope.$apply();
+        } else {
+            //(#error)database-user-not-found
+            console.log("database-user-not-found");
+            $scope.notify("User cannot be found in database (Error #002)", "danger");
+        }
+    }).catch(function(error) {
+        console.log(error);
+        if (error.code === "PERMISSION_DENIED") {
+            //(#error)firebase-permission-denied
+            $scope.notify("You do not have the permission to access this data (Error #001)", "danger");
+        } else {
+            //(#error)unknown-error
+            $scope.notify("An unknown error has occured (Error #000)", "danger");
+        }
+    });
+        
+    $scope.sendReminder = function() {
+        
+        var newDate = new Date();
+        
+        firebase.database().ref("time").once("value").then(function(snapshot) {
+            if (snapshot.val() !== null) {
+                var lastReminderDate = snapshot.val().substr(0,8);
+                var currentFullDay = newDate.newFullDay();
+                
+                if ($scope.lastReminderDate < currentFullDay) {
+                    console.log("here");
+                    console.log(lastReminderDate);
+                    console.log(currentFullDay);
+                    
+                    angular.forEach($scope.contractList, function(contractValue, contractKey){
+                        if (contractValue.status === "Existing") {
+
+                            var currentYear = newDate.newYearNow();
+                            var currentMonth = newDate.newMonthNow();
+                            var currentDay = newDate.newDayNow();
+                            var contractYear = contractValue.expiryDate.toString().substr(0,4);
+                            var contractMonth = contractValue.expiryDate.toString().substr(4,2);
+                            var contractDay = contractValue.expiryDate.toString().substr(6,2);
+
+                            if ((contractYear - currentYear) == 0) {
+                                var monthDiff = contractMonth - currentMonth;
+                                if (monthDiff == 1) {
+
+                                    var expiry_params = {
+                                        "to_name": contractValue.name,
+                                        "send_email": contractValue.CMEmail,
+                                        "expiry_date": contractValue.showExpiryDate,
+                                        "project_name": contractValue.projectName,
+                                        "contract_name": contractValue.name
+                                    };
+
+                                    emailjs.send(service_id, 'contract_expiry_template', expiry_params)
+                                        .then(function (response) {
+                                            console.log("SUCCESS. status=%d, text=%s", response.status, response.text);
+                                        }, function (err) {
+                                            console.log("FAILED. error=", err);
+                                        });
+
+                                } else if (monthDiff == 0) {
+                                    var dayDiff = contractDay - currentDay;
+                                    if (dayDiff == 0) {
+
+                                        var expiry_params = {
+                                            "to_name": contractValue.name,
+                                            "send_email": contractValue.CMEmail,
+                                            "expiry_date": contractValue.showExpiryDate,
+                                            "project_name": contractValue.projectName,
+                                            "contract_name": contractValue.name
+                                        };
+
+                                        emailjs.send(service_id, 'contract_expiry_template', expiry_params)
+                                            .then(function (response) {
+                                                console.log("SUCCESS. status=%d, text=%s", response.status, response.text);
+                                            }, function (err) {
+                                                console.log("FAILED. error=", err);
+                                            });
+
+                                    } else if (dayDiff < 0) {
+
+                                        var expiry_params = {
+                                            "to_name": contractValue.name,
+                                            "send_email": contractValue.CMEmail,
+                                            "expiry_date": contractValue.showExpiryDate,
+                                            "project_name": contractValue.projectName,
+                                            "contract_name": contractValue.name
+                                        };
+
+                                        emailjs.send(service_id, 'contract_expiry_template', expiry_params)
+                                            .then(function (response) {
+                                                console.log("SUCCESS. status=%d, text=%s", response.status, response.text);
+                                            }, function (err) {
+                                                console.log("FAILED. error=", err);
+                                            });
+
+
+                                    } else {
+
+                                        var expiry_params = {
+                                            "to_name": contractValue.name,
+                                            "send_email": contractValue.CMEmail,
+                                            "expiry_date": contractValue.showExpiryDate,
+                                            "project_name": contractValue.projectName,
+                                            "contract_name": contractValue.name
+                                        };
+
+                                        emailjs.send(service_id, 'contract_expiry_template', expiry_params)
+                                            .then(function (response) {
+                                                console.log("SUCCESS. status=%d, text=%s", response.status, response.text);
+                                            }, function (err) {
+                                                console.log("FAILED. error=", err);
+                                            });
+
+                                    }
+                                } else if (monthDiff <= 3) {
+
+                                    var expiry_params = {
+                                        "to_name": contractValue.name,
+                                        "send_email": contractValue.CMEmail,
+                                        "expiry_date": contractValue.showExpiryDate,
+                                        "project_name": contractValue.projectName,
+                                        "contract_name": contractValue.name
+                                    };
+
+                                    emailjs.send(service_id, 'contract_expiry_template', expiry_params)
+                                        .then(function (response) {
+                                            console.log("SUCCESS. status=%d, text=%s", response.status, response.text);
+                                        }, function (err) {
+                                            console.log("FAILED. error=", err);
+                                        });
+
+                                }
+                            }
+
+                        }
+                    });
+                }
+                
+                var fullDateTime = newDate.newFullDateTime();
+                
+                firebase.database().ref('time').set(''+fullDateTime).then(function () {
+
+                }).catch(function(error) {
+                    console.log(error);
+                    if (error.code === "PERMISSION_DENIED") {
+                        //(#error)firebase-permission-denied
+                        $scope.notify("You do not have the permission to access this data (Error #001)", "danger");
+                    } else {
+                        //(#error)unknown-error
+                        $scope.notify("An unknown error has occured (Error #000)", "danger");
+                    }
+                });
+            } else {
+                //(#error)database-user-not-found
+                console.log("database-user-not-found");
+                $scope.notify("User cannot be found in database (Error #002)", "danger");
+            }
+        }).catch(function(error) {
+            console.log(error);
+            if (error.code === "PERMISSION_DENIED") {
+                //(#error)firebase-permission-denied
+                $scope.notify("You do not have the permission to access this data (Error #001)", "danger");
+            } else {
+                //(#error)unknown-error
+                $scope.notify("An unknown error has occured (Error #000)", "danger");
+            }
+        });
+    };
 
 //    var expiry_params = {
 //        "to_name": name,
@@ -328,11 +502,19 @@ app.controller('ContractController', ['$rootScope', '$route', '$routeParams', '$
             ((this.getDate() < 10)?"0":"") + this.getDate());
     }
 
-   // //get current date in yyyymmdd format
-   // Date.prototype.newDayNow = function () { 
-   //     return (this.getFullYear() + (((this.getMonth()+1) < 10)?"0":"") + (this.getMonth()+1) + 
-   //             ((this.getDate() < 10)?"0":"") + this.getDate());
-   // };
+    //get current date in yyyymmdd format
+    Date.prototype.newFullDay = function () { 
+        return (this.getFullYear() + (((this.getMonth()+1) < 10)?"0":"") + (this.getMonth()+1) + 
+                ((this.getDate() < 10)?"0":"") + this.getDate());
+    };
+        
+        
+    //get date and time in yyyymmdd hhmm format
+    Date.prototype.newFullDateTime = function () { 
+        return (this.getFullYear() + (((this.getMonth()+1) < 10)?"0":"") + (this.getMonth()+1) + 
+            ((this.getDate() < 10)?"0":"") + this.getDate() + " " + ((this.getHours() < 10)?"0":"") + this.getHours() + ((this.getMinutes() < 10)?"0":"") + 
+            this.getMinutes());
+    };
 
    //get current day in dd format
    Date.prototype.newDayNow = function () { 
@@ -429,7 +611,7 @@ app.controller('ContractController', ['$rootScope', '$route', '$routeParams', '$
         $scope.refreshContractList = function() {
             firebase.database().ref('contract').once('value').then(function (contractSnapshot, error) {
                 firebase.database().ref('project').once('value').then(function (projectSnapshot, error) {
-//                    firebase.database().ref('staff').once('value').then(function (staffSnapshot, error) {
+                    firebase.database().ref('staff').once('value').then(function (staffSnapshot, error) {
                         var tempList = [];
                         angular.forEach(contractSnapshot.val().existing, function(projectValue, projectKey) {
                             angular.forEach(projectValue, function(contractValue, contractKey) {
@@ -484,15 +666,28 @@ app.controller('ContractController', ['$rootScope', '$route', '$routeParams', '$
                     
                     console.log($scope.contractList);
                     
-//                        angular.forEach(staffSnapshot.val(), function(staffValue, projectKey) {
-//                            tempList.push(staffValue);
-//                        });
-//                        $scope.staffList = tempList;
+                        angular.forEach(staffSnapshot.val(), function(staffValue, staffKey) {
+                            tempList.push(staffValue);
+                        });
+                        $scope.staffList = tempList;
                     
                        angular.forEach($scope.contractList, function(contractValue, contractkey) {
 
-                            contractValue.MCSTS = projectSnapshot.val()[contractValue.projectID].MCSTS;
-                            contractValue.showExpiryDate = $scope.transformDate(contractValue.expiryDate.toString());
+                           contractValue.MCSTS = projectSnapshot.val()[contractValue.projectID].MCSTS;
+                           contractValue.projectName = projectSnapshot.val()[contractValue.projectID].name;
+                           contractValue.showExpiryDate = $scope.transformDate(contractValue.expiryDate.toString());
+                           contractValue.BUH = projectSnapshot.val()[contractValue.projectID].BUH;
+                           contractValue.TM = projectSnapshot.val()[contractValue.projectID].TM;
+                           contractValue.CM = projectSnapshot.val()[contractValue.projectID].CM;
+                           var index = $scope.staffList.map(function(x) {return x.ID}).indexOf(contractValue.BUH);
+                           contractValue.BUHName = $scope.staffList[index].name;
+                           contractValue.BUHEmail = $scope.staffList[index].email;
+                           var index = $scope.staffList.map(function(x) {return x.ID}).indexOf(contractValue.TM);
+                           contractValue.TMName = $scope.staffList[index].name;
+                           contractValue.TMEmail = $scope.staffList[index].email;
+                           var index = $scope.staffList.map(function(x) {return x.ID}).indexOf(contractValue.CM);
+                           contractValue.CMName = $scope.staffList[index].name;
+                           contractValue.CMEmail = $scope.staffList[index].email;
 
                            // recordValue.inspectionDate = $scope.transformDate(recordValue.date);
                            // var projectID = recordValue.projectID;
@@ -561,16 +756,16 @@ app.controller('ContractController', ['$rootScope', '$route', '$routeParams', '$
                             return a > b ? 1 : a < b ? -1 : 0;
                         });
                         $scope.$apply();
-//                    }).catch(function(error) {
-//                        console.log(error);
-//                        if (error.code === "PERMISSION_DENIED") {
-//                            //(#error)firebase-permission-denied
-//                            $scope.notify("You do not have the permission to access this data (Error #001)", "danger");
-//                        } else {
-//                            //(#error)unknown-error
-//                            $scope.notify("An unknown error has occured (Error #000)", "danger");
-//                        }
-//                    });
+                    }).catch(function(error) {
+                        console.log(error);
+                        if (error.code === "PERMISSION_DENIED") {
+                            //(#error)firebase-permission-denied
+                            $scope.notify("You do not have the permission to access this data (Error #001)", "danger");
+                        } else {
+                            //(#error)unknown-error
+                            $scope.notify("An unknown error has occured (Error #000)", "danger");
+                        }
+                    });
                 }).catch(function(error) {
                     console.log(error);
                     if (error.code === "PERMISSION_DENIED") {
