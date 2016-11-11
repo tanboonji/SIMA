@@ -147,6 +147,47 @@ app.controller('ContractController', ['$rootScope', '$route', '$routeParams', '$
         $scope.auth.$signOut();
     };
         
+    /***********************
+    **** Email Function ****
+    ***********************/
+        
+    (function(){
+        emailjs.init("user_0mk6KgqiS2U166LCZL9om");
+    })();
+    var service_id = 'gmail';
+
+//    var expiry_params = {
+//        "to_name": name,
+//        "send_email": send_email,
+//        "expiry_date": "10 Dec 2016",
+//        "project_name": "Heights Condominum"
+//    };
+//
+//    $scope.sendExpiry = function() {
+//        emailjs.send(service_id, 'expiry_template', expiry_params)
+//            .then(function (response) {
+//                console.log("SUCCESS. status=%d, text=%s", response.status, response.text);
+//            }, function (err) {
+//                console.log("FAILED. error=", err);
+//            });
+//    }
+//
+//    var facility_params = {
+//        "to_name": name,
+//        "send_email": send_email,
+//        "frequency_type": "Weekly",
+//        "project_name": "Heights Condominum"
+//    };
+//
+//    $scope.sendFacility = function() {
+//        emailjs.send(service_id, 'reminder_email', facility_params)
+//            .then(function (response) {
+//                console.log("SUCCESS. status=%d, text=%s", response.status, response.text);
+//            }, function (err) {
+//                console.log("FAILED. error=", err);
+//            });
+//    }
+        
     /*********************
     *** Password Popup ***
     *********************/
