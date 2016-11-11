@@ -367,73 +367,77 @@ app.controller('ChecklistsController', ['$rootScope', '$route', '$routeParams', 
     }; //end of $scope.validateForm()
     
     $scope.addFacility = function() {
-        $scope.categoryAdded = [];
+        // $scope.categoryAdded = [];
 
         firebase.database().ref('count').once('value').then(function (snapshot, error) {
             if (snapshot.val().questionCount !== null && snapshot.val().categoryCount !== null) {
 
-                $scope.questionAlphabet = snapshot.val().questionCount.alphabet;
-                $scope.categoryAlphabet = snapshot.val().categoryCount.alphabet;
+                $scope.questionAlphabet = "Q";
+                $scope.categoryAlphabet = "C";
+                // $scope.questionAlphabet = snapshot.val().questionCount.alphabet;
+                // $scope.categoryAlphabet = snapshot.val().categoryCount.alphabet;
                 $scope.facilityAlphabet = snapshot.val().facilityCount.alphabet;
-                $scope.questionCount = snapshot.val().questionCount.count;
-                $scope.categoryCount = snapshot.val().categoryCount.count;
+                $scope.questionCount = 0;
+                $scope.categoryCount = 0;
+                // $scope.questionCount = snapshot.val().questionCount.count;
+                // $scope.categoryCount = snapshot.val().categoryCount.count;
                 $scope.facilityCount = snapshot.val().facilityCount.count;
 
                 $scope.facilityCount++;
 
-                //loop through checklist to add category
-                angular.forEach($scope.checklist, function(categoryValue, key) {
-                    $scope.categoryCount++;
-                    $scope.categoryAdded.push($scope.categoryAlphabet + $scope.categoryCount);
+                // //loop through checklist to add category
+                // angular.forEach($scope.checklist, function(categoryValue, key) {
+                //     $scope.categoryCount++;
+                //     $scope.categoryAdded.push($scope.categoryAlphabet + $scope.categoryCount);
 
-                    firebase.database().ref('category/' + $scope.categoryAlphabet + $scope.categoryCount).set({
-                        name: categoryValue.name,
-                        ID: $scope.categoryAlphabet + $scope.categoryCount
-                    }).then(function() {
-                        firebase.database().ref('count/categoryCount').set({
-                            count: $scope.categoryCount,
-                            alphabet: $scope.categoryAlphabet
-                        });
-                    }).catch(function(error) {
-                        console.log(error);
-                        if (error.code === "PERMISSION_DENIED") {
-                            //(#error)firebase-permission-denied
-                            $scope.notify("You do not have the permission to access this data (Error #001)", "danger");
-                        } else {
-                            //(#error)unknown-error
-                            $scope.notify("An unknown error has occured (Error #000)", "danger");
-                        }
-                        $scope.btnValidate = false;
-                        $scope.$apply();
-                    });
+                //     firebase.database().ref('category/' + $scope.categoryAlphabet + $scope.categoryCount).set({
+                //         name: categoryValue.name,
+                //         ID: $scope.categoryAlphabet + $scope.categoryCount
+                //     }).then(function() {
+                //         firebase.database().ref('count/categoryCount').set({
+                //             count: $scope.categoryCount,
+                //             alphabet: $scope.categoryAlphabet
+                //         });
+                //     }).catch(function(error) {
+                //         console.log(error);
+                //         if (error.code === "PERMISSION_DENIED") {
+                //             //(#error)firebase-permission-denied
+                //             $scope.notify("You do not have the permission to access this data (Error #001)", "danger");
+                //         } else {
+                //             //(#error)unknown-error
+                //             $scope.notify("An unknown error has occured (Error #000)", "danger");
+                //         }
+                //         $scope.btnValidate = false;
+                //         $scope.$apply();
+                //     });
 
-                    //add question to category
-                    angular.forEach(categoryValue.question, function(questionValue, key) {
-                        $scope.questionCount++;
-                        firebase.database().ref('category/' + $scope.categoryAlphabet + $scope.categoryCount + '/question/' + 
-                            $scope.questionAlphabet + $scope.questionCount).set({
-                            name: questionValue.name,
-                            ID: $scope.questionAlphabet + $scope.questionCount,
-                            type: questionValue.type
-                        }).then(function() {
-                            firebase.database().ref('count/questionCount').set({
-                                count: $scope.questionCount,
-                                alphabet: $scope.questionAlphabet
-                            });
-                        }).catch(function(error) {
-                            console.log(error);
-                            if (error.code === "PERMISSION_DENIED") {
-                                //(#error)firebase-permission-denied
-                                $scope.notify("You do not have the permission to access this data (Error #001)", "danger");
-                            } else {
-                                //(#error)unknown-error
-                                $scope.notify("An unknown error has occured (Error #000)", "danger");
-                            }
-                            $scope.btnValidate = false;
-                            $scope.$apply();
-                        });
-                    });
-                });
+                //     //add question to category
+                //     angular.forEach(categoryValue.question, function(questionValue, key) {
+                //         $scope.questionCount++;
+                //         firebase.database().ref('category/' + $scope.categoryAlphabet + $scope.categoryCount + '/question/' + 
+                //             $scope.questionAlphabet + $scope.questionCount).set({
+                //             name: questionValue.name,
+                //             ID: $scope.questionAlphabet + $scope.questionCount,
+                //             type: questionValue.type
+                //         }).then(function() {
+                //             firebase.database().ref('count/questionCount').set({
+                //                 count: $scope.questionCount,
+                //                 alphabet: $scope.questionAlphabet
+                //             });
+                //         }).catch(function(error) {
+                //             console.log(error);
+                //             if (error.code === "PERMISSION_DENIED") {
+                //                 //(#error)firebase-permission-denied
+                //                 $scope.notify("You do not have the permission to access this data (Error #001)", "danger");
+                //             } else {
+                //                 //(#error)unknown-error
+                //                 $scope.notify("An unknown error has occured (Error #000)", "danger");
+                //             }
+                //             $scope.btnValidate = false;
+                //             $scope.$apply();
+                //         });
+                //     });
+                // });
 
                 //add facility photo to storage
                 var uploadTask = $scope.facilitiesRef.child($scope.facilityAlphabet + $scope.facilityCount).put($scope.photo);
@@ -499,13 +503,37 @@ app.controller('ChecklistsController', ['$rootScope', '$route', '$routeParams', 
 
                         var error = false;
 
-                        //add category to facility
-                        angular.forEach($scope.categoryAdded, function(categoryValue, key) {
-                            firebase.database().ref('facility/' + $scope.facilityAlphabet + $scope.facilityCount + '/category/' + categoryValue)
-                            .set(categoryValue).then(function() {
+                        // //add category to facility
+                        // angular.forEach($scope.categoryAdded, function(categoryValue, key) {
+                        //     firebase.database().ref('facility/' + $scope.facilityAlphabet + $scope.facilityCount + '/category/' + categoryValue)
+                        //     .set(categoryValue).then(function() {
+                        //         //do nothing
+                        //     }).catch(function(error) {
+                        //         error = true;
+                        //         console.log(error);
+                        //         if (error.code === "PERMISSION_DENIED") {
+                        //             //(#error)firebase-permission-denied
+                        //             $scope.notify("You do not have the permission to access this data (Error #001)", "danger");
+                        //         } else {
+                        //             //(#error)unknown-error
+                        //             $scope.notify("An unknown error has occured (Error #000)", "danger");
+                        //         }
+                        //         $scope.btnValidate = false;
+                        //         $scope.$apply();
+                        //     });
+                        // });
+
+                        //loop through checklist to add category
+                        angular.forEach($scope.checklist, function(categoryValue, key) {
+                            $scope.categoryCount++;
+                            // $scope.categoryAdded.push($scope.categoryAlphabet + $scope.categoryCount);
+
+                            firebase.database().ref('facility/' + $scope.facilityAlphabet + $scope.facilityCount + '/category/' + $scope.categoryAlphabet + $scope.categoryCount).set({
+                                name: categoryValue.name,
+                                ID: $scope.categoryAlphabet + $scope.categoryCount
+                            }).then(function() {
                                 //do nothing
                             }).catch(function(error) {
-                                error = true;
                                 console.log(error);
                                 if (error.code === "PERMISSION_DENIED") {
                                     //(#error)firebase-permission-denied
@@ -516,6 +544,30 @@ app.controller('ChecklistsController', ['$rootScope', '$route', '$routeParams', 
                                 }
                                 $scope.btnValidate = false;
                                 $scope.$apply();
+                            });
+
+                            //add question to category
+                            angular.forEach(categoryValue.question, function(questionValue, key) {
+                                $scope.questionCount++;
+                                firebase.database().ref('facility/' + $scope.facilityAlphabet + $scope.facilityCount + '/category/' + $scope.categoryAlphabet + $scope.categoryCount + '/question/' + 
+                                    $scope.questionAlphabet + $scope.questionCount).set({
+                                    name: questionValue.name,
+                                    ID: $scope.questionAlphabet + $scope.questionCount,
+                                    type: questionValue.type
+                                }).then(function() {
+                                    //do nothing
+                                }).catch(function(error) {
+                                    console.log(error);
+                                    if (error.code === "PERMISSION_DENIED") {
+                                        //(#error)firebase-permission-denied
+                                        $scope.notify("You do not have the permission to access this data (Error #001)", "danger");
+                                    } else {
+                                        //(#error)unknown-error
+                                        $scope.notify("An unknown error has occured (Error #000)", "danger");
+                                    }
+                                    $scope.btnValidate = false;
+                                    $scope.$apply();
+                                });
                             });
                         });
 
