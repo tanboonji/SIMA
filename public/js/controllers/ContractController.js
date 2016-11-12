@@ -186,10 +186,11 @@ app.controller('ContractController', ['$rootScope', '$route', '$routeParams', '$
                 var lastReminderDate = snapshot.val().substr(0,8);
                 var currentFullDay = newDate.newFullDay();
                 
-                if ($scope.lastReminderDate < currentFullDay) {
-                    console.log("here");
                     console.log(lastReminderDate);
                     console.log(currentFullDay);
+                
+                if (lastReminderDate < currentFullDay) {
+                    console.log("here");
                     
                     angular.forEach($scope.contractList, function(contractValue, contractKey){
                         if (contractValue.status === "Existing") {
@@ -297,6 +298,8 @@ app.controller('ContractController', ['$rootScope', '$route', '$routeParams', '$
 
                         }
                     });
+                } else {
+                    console.log("herehere");
                 }
                 
                 var fullDateTime = newDate.newFullDateTime();
