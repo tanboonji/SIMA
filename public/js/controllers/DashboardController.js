@@ -133,12 +133,12 @@ app.controller('DashboardController', ['$rootScope', '$route', '$routeParams', '
             $location.path("/admin");
             $route.reload();
         } else {
-            if ($scope.user.lastPasswordChange == undefined) {
-                $scope.changePasswordReason = "this is your first time logging in and you are still using the default password.";
-                $scope.popupform = true;
-            } else {
+            // if ($scope.user.lastPasswordChange == undefined) {
+            //     $scope.changePasswordReason = "this is your first time logging in and you are still using the default password.";
+            //     $scope.popupform = true;
+            // } else {
                 $scope.loadController();
-            }
+            // }
         }
     };
         
