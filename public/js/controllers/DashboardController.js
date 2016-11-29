@@ -1,12 +1,8 @@
 app.controller('DashboardController', ['$rootScope', '$route', '$routeParams', '$scope', '$location', '$firebaseAuth', '$firebaseObject', 
 	'$firebaseArray', function($rootScope, $route, $routeParams, $scope, $location, $firebaseAuth, $firebaseObject, $firebaseArray){
 	
-	/********************
-    ****** General ******
-    ********************/
+	/***** General *****/
     
-    //bootstrap-notify
-    //show pop-up notification
     $scope.notify = function(message, type) {
         $.notify({
             message: message
@@ -21,13 +17,10 @@ app.controller('DashboardController', ['$rootScope', '$route', '$routeParams', '
         });
     };
         
-    /*********************
-    *** Authentication ***
-    *********************/
+    /***** Authentication *****/
         
 	$scope.auth = $firebaseAuth();
         
-	//detect authentication state change (login/logout)
 	$scope.auth.$onAuthStateChanged(function(firebaseUser) {
 		$scope.firebaseUser = firebaseUser;
 		if ($scope.firebaseUser == null) {
@@ -133,12 +126,12 @@ app.controller('DashboardController', ['$rootScope', '$route', '$routeParams', '
             $location.path("/admin");
             $route.reload();
         } else {
-            // if ($scope.user.lastPasswordChange == undefined) {
-            //     $scope.changePasswordReason = "this is your first time logging in and you are still using the default password.";
-            //     $scope.popupform = true;
-            // } else {
+             if ($scope.user.lastPasswordChange == undefined) {
+                 $scope.changePasswordReason = "this is your first time logging in and you are still using the default password.";
+                 $scope.popupform = true;
+             } else {
                 $scope.loadController();
-            // }
+             }
         }
     };
         
