@@ -207,7 +207,7 @@ app.controller('ContractController', ['$rootScope', '$route', '$routeParams', '$
                                 if (monthDiff == 1) {
 
                                     var expiry_params = {
-                                        "to_name": contractValue.name,
+                                        "to_name": contractValue.CMName,
                                         "send_email": contractValue.CMEmail,
                                         "expiry_date": contractValue.showExpiryDate,
                                         "project_name": contractValue.projectName,
@@ -226,7 +226,7 @@ app.controller('ContractController', ['$rootScope', '$route', '$routeParams', '$
                                     if (dayDiff == 0) {
 
                                         var expiry_params = {
-                                            "to_name": contractValue.name,
+                                            "to_name": contractValue.CMName,
                                             "send_email": contractValue.CMEmail,
                                             "expiry_date": contractValue.showExpiryDate,
                                             "project_name": contractValue.projectName,
@@ -243,7 +243,7 @@ app.controller('ContractController', ['$rootScope', '$route', '$routeParams', '$
                                     } else if (dayDiff < 0) {
 
                                         var expiry_params = {
-                                            "to_name": contractValue.name,
+                                            "to_name": contractValue.CMName,
                                             "send_email": contractValue.CMEmail,
                                             "expiry_date": contractValue.showExpiryDate,
                                             "project_name": contractValue.projectName,
@@ -261,7 +261,7 @@ app.controller('ContractController', ['$rootScope', '$route', '$routeParams', '$
                                     } else {
 
                                         var expiry_params = {
-                                            "to_name": contractValue.name,
+                                            "to_name": contractValue.CMName,
                                             "send_email": contractValue.CMEmail,
                                             "expiry_date": contractValue.showExpiryDate,
                                             "project_name": contractValue.projectName,
@@ -279,7 +279,7 @@ app.controller('ContractController', ['$rootScope', '$route', '$routeParams', '$
                                 } else if (monthDiff <= 3) {
 
                                     var expiry_params = {
-                                        "to_name": contractValue.name,
+                                        "to_name": contractValue.CMName,
                                         "send_email": contractValue.CMEmail,
                                         "expiry_date": contractValue.showExpiryDate,
                                         "project_name": contractValue.projectName,
