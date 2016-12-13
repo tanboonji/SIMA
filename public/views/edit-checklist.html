@@ -138,4 +138,34 @@
             </div>
         </div>
     </form>
+    
+    <div class="overlay" ng-show="forcePopupform">
+        <!-- Password Popup Div Starts Here -->
+        <div class="passwordform overlay-popup" ng-click="forceOpenPopup($event)">
+            <form>
+                <h4>Update Password</h4>
+                <p style="color:#a94442">You need to change your password before continuing as {{changePasswordReason}}</p>
+                <div ng-class="{'has-error': forcePwdEmpty1}">
+                    <input class="form-control col-sm-6 margin-top-7" 
+                           placeholder="New Password" type="password" ng-model="forceNewPassword">
+                    <span ng-show="forcePasswordEmpty" class="help-block margin-bottom-0"> Field must not be blank!</span>
+                    <span ng-show="forcePasswordLength" class="help-block margin-bottom-0"> Password must be at least 8 characters long.</span>
+                    <span ng-show="forcePasswordComplex" class="help-block margin-bottom-0"> Password must be at alpha numeric.</span>
+                </div>
+                <div ng-class="{'has-error': forcePwdEmpty2}">
+                    <input class="form-control col-sm-6 margin-top-10" placeholder="Confirm new Password" 
+                           type="password" ng-model="forceConfirmPassword">
+                    <span ng-show="forcePasswordEmpty2" class="help-block margin-bottom-0"> Field must not be blank!</span>
+                    <span ng-show="forcePasswordLength2" class="help-block margin-bottom-0">  Password must be at least 8 characters long.</span>
+                    <span ng-show="forcePasswordComplex2" class="help-block margin-bottom-0"> Password must be at alpha numeric.</span>
+                    <span ng-show="forcePasswordMatch" class="help-block margin-bottom-0"> Passwords do not match!</span>
+                </div>
+                <button class="btn btn-success margin-top-15" type="submit" ng-click="forceUpdatePassword()">
+                    <span class="glyphicon glyphicon-floppy-disk button-icon" aria-hidden="true"></span>Update
+                </button>
+            </form>
+        </div>
+        <!-- Password Popup Div Ends Here -->
+    </div>
+    
 </div>

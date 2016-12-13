@@ -166,7 +166,21 @@ app.controller('ProjectsController', ['$rootScope', '$route', '$routeParams', '$
                 alert("You do not have permission to view this webpage (projects3)");
                 $location.path("/dashboard").search("projectID",null).search("edit",null).search("add",null);
                 $route.reload();
+            } else {
+                 if ($scope.user.lastPasswordChange == undefined) {
+                     $scope.changePasswordReason = "this is your first time logging in and you are still using the default password.";
+                     $scope.popupform = true;
+                 } else {
+//                    $scope.loadController();
+                 }
             }
+        } else {
+             if ($scope.user.lastPasswordChange == undefined) {
+                 $scope.changePasswordReason = "this is your first time logging in and you are still using the default password.";
+                 $scope.popupform = true;
+             } else {
+//                $scope.loadController();
+             }
         }
     };
         
@@ -182,7 +196,22 @@ app.controller('ProjectsController', ['$rootScope', '$route', '$routeParams', '$
                 alert("You do not have permission to view this webpage");
                 $location.path("/dashboard").search("projectID",null).search("edit",null).search("add",null);
                 $route.reload();
+            } else {
+                console.log("here");
+                 if ($scope.user.lastPasswordChange == undefined) {
+                     $scope.changePasswordReason = "this is your first time logging in and you are still using the default password.";
+                     $scope.popupform = true;
+                 } else {
+//                    $scope.loadController();
+                 }
             }
+        } else {
+             if ($scope.user.lastPasswordChange == undefined) {
+                 $scope.changePasswordReason = "this is your first time logging in and you are still using the default password.";
+                 $scope.popupform = true;
+             } else {
+//                $scope.loadController();
+             }
         }
     };
         
@@ -228,6 +257,135 @@ app.controller('ProjectsController', ['$rootScope', '$route', '$routeParams', '$
         return ((this.getHours() < 10)?"0":"") + this.getHours() + ":" + ((this.getMinutes() < 10)?"0":"") + 
             this.getMinutes() + ":" + ((this.getSeconds() < 10)?"0":"") + this.getSeconds();
     }
+    
+    /*********************
+    *** Password Popup ***
+    *********************/
+    
+    $scope.closePopup = function() {
+        $scope.popupform = false;
+    };
+        
+    $scope.openPopup = function($event) {
+        $event.stopPropagation();
+    };
+        
+    //update password of currently logged in user
+    $scope.updatePassword = function () {
+        if ($scope.newPassword == undefined || $scope.newPassword == "") {
+            $scope.passwordEmpty = true;
+            $scope.passwordLength = false;
+            $scope.passwordComplex = false;
+            
+            $scope.passwordMatch = false;
+            $scope.pwdEmpty1 = true;
+        } else {
+            if ($scope.newPassword.length < 8) {
+                $scope.passwordEmpty = false;
+                $scope.passwordLength = true;
+                $scope.passwordComplex = false;
+                
+                $scope.passwordMatch = false;
+                $scope.pwdEmpty1 = true;
+            } else if (!/[A-z]/.test($scope.newPassword) || !/\d/.test($scope.newPassword)) {
+                $scope.passwordEmpty = false;
+                $scope.passwordLength = false;
+                $scope.passwordComplex = true;
+                
+                $scope.passwordMatch = false;
+                $scope.pwdEmpty1 = true;
+            } else {
+                $scope.passwordEmpty = false;
+                $scope.passwordLength = false;
+                $scope.passwordComplex = false;
+
+                $scope.passwordMatch = false;
+                $scope.pwdEmpty1 = false;
+            }
+        }
+        
+        if ($scope.confirmPassword == undefined || $scope.confirmPassword == "") {
+            $scope.passwordEmpty2 = true;
+            $scope.passwordLength2 = false;
+            $scope.passwordComplex2 = false;
+            
+            $scope.passwordMatch = false;
+            $scope.pwdEmpty2 = true;
+        } else {
+            if ($scope.confirmPassword.length < 8) {
+                $scope.passwordEmpty2 = false;
+                $scope.passwordLength2 = true;
+                $scope.passwordComplex2 = false;
+                
+                $scope.passwordMatch = false;
+                $scope.pwdEmpty2 = true;
+            } else if (!/[A-z]/.test($scope.confirmPassword) || !/\d/.test($scope.confirmPassword)) {
+                $scope.passwordEmpty2 = false;
+                $scope.passwordLength2 = false;
+                $scope.passwordComplex2 = true;
+                
+                $scope.passwordMatch = false;
+                $scope.pwdEmpty2 = true;
+            } else {
+                $scope.passwordEmpty2 = false;
+                $scope.passwordLength2 = false;
+                $scope.passwordComplex2 = false;
+
+                $scope.passwordMatch = false;
+                $scope.pwdEmpty2 = false;
+            }
+        }
+        
+        if ($scope.pwdEmpty2 === false) {
+            if ($scope.confirmPassword !== $scope.newPassword) {
+//                $scope.passwordEmpty = false;
+//                $scope.passwordLength = false;
+//                $scope.passwordComplex = false;
+
+                $scope.passwordEmpty2 = false;
+                $scope.passwordLength2 = false;
+                $scope.passwordComplex2 = false;
+
+                $scope.passwordMatch = true;
+                $scope.pwdEmpty2 = true;
+                $scope.pwdEmpty1 = true;
+            }
+        }
+
+        if ($scope.pwdEmpty1 === false && $scope.pwdEmpty2 === false) {
+            //if confirm password field is identical, update password
+            $scope.auth.$updatePassword($scope.newPassword).then(function () {
+                var newDate = new Date();
+                var datetime = newDate.dayNow() + " @ " + newDate.timeNow();
+                var updates = {};
+                
+                firebase.database().ref('adminstaff/' + $scope.user.authID).once('value').then(function (snapshot, error) {
+                    if (snapshot.val() != null) {
+                        updates["/adminstaff/" + $scope.user.authID + '/lastPasswordChange'] = datetime;
+                        firebase.database().ref().update(updates);
+                    } else {
+                        updates["/staff/" + $scope.user.authID + '/lastPasswordChange'] = datetime;
+                        firebase.database().ref().update(updates);
+                    }
+                });
+                $scope.popupform = !$scope.popupform;
+                alert("You have successfully updated your password\n\nPlease login again\n");
+                $scope.auth.$signOut();
+            }).catch(function (error) {
+                console.log(error);
+                if (error.code === "auth/requires-recent-login") {
+                    //(#error)auth-requires-recent-login
+                    alert(error);
+                    $scope.auth.$signOut();
+                } else if (error.code === "auth/email-already-in-use")
+                    //(#error)auth-email-already-in-use
+                    alert(error);
+                else
+                    //(#error)unknown-auth-error
+                    $scope.notify("An unknown error has occured (Error #200)", "danger");
+            });
+        }
+    }; //end of $scope.updatePassword()
         
     /*********************
     **** Project List ****

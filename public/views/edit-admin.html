@@ -30,6 +30,35 @@
     </nav>
 </header>
 
+<div class="overlay" ng-show="popupform">
+    <!-- Password Popup Div Starts Here -->
+    <div class="passwordform overlay-popup" ng-click="openPopup($event)">
+        <form>
+            <h4>Update Password</h4>
+            <p style="color:#a94442">You need to change your password before continuing as {{changePasswordReason}}</p>
+            <div ng-class="{'has-error': pwdEmpty1}">
+                <input class="form-control col-sm-6 margin-top-7" 
+                       placeholder="New Password" type="password" ng-model="newPassword">
+                <span ng-show="passwordEmpty" class="help-block margin-bottom-0"> Field must not be blank!</span>
+                <span ng-show="passwordLength" class="help-block margin-bottom-0"> Password must be at least 8 characters long.</span>
+                <span ng-show="passwordComplex" class="help-block margin-bottom-0"> Password must be at alpha numeric.</span>
+            </div>
+            <div ng-class="{'has-error': pwdEmpty2}">
+                <input class="form-control col-sm-6 margin-top-10" placeholder="Confirm new Password" 
+                       type="password" ng-model="confirmPassword">
+                <span ng-show="passwordEmpty2" class="help-block margin-bottom-0"> Field must not be blank!</span>
+                <span ng-show="passwordLength2" class="help-block margin-bottom-0">  Password must be at least 8 characters long.</span>
+                <span ng-show="passwordComplex2" class="help-block margin-bottom-0"> Password must be at alpha numeric.</span>
+                <span ng-show="passwordMatch" class="help-block margin-bottom-0"> Passwords do not match!</span>
+            </div>
+            <button class="btn btn-success margin-top-15" type="submit" ng-click="updatePassword()">
+                <span class="glyphicon glyphicon-floppy-disk button-icon" aria-hidden="true"></span>Update
+            </button>
+        </form>
+    </div>
+    <!-- Password Popup Div Ends Here -->
+</div>
+
 <div class="edit-admin container">
     <h3 class="title">Edit Admin</h3>
     <form class="form-horizontal" id="adminform">

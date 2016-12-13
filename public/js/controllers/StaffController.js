@@ -142,13 +142,34 @@ app.controller('StaffController', ['$route', '$rootScope', '$routeParams', '$sco
                 alert("You do not have permission to view this webpage (staff1)");
                 $location.path("/admin").search("staffID",null).search("edit",null).search("add",null);
                 $route.reload();
+            } else {
+                if ($scope.user.lastPasswordChange == undefined) {
+                     $scope.changePasswordReason = "this is your first time logging in and you are still using the default password.";
+                     $scope.forcePopupform = true;
+                 } else {
+    //                $scope.loadController();
+                 }
             }
         } else if (!$scope.user.isAdmin) {
             if ($location.path() !== "/edit-profile") {
                 alert("You do not have permission to view this webpage (staff2)");
                 $location.path("/dashboard").search("staffID",null).search("edit",null).search("add",null);
                 $route.reload();
+            } else {
+                if ($scope.user.lastPasswordChange == undefined) {
+                     $scope.changePasswordReason = "this is your first time logging in and you are still using the default password.";
+                     $scope.forcePopupform = true;
+                 } else {
+    //                $scope.loadController();
+                 }
             }
+        } else {
+            if ($scope.user.lastPasswordChange == undefined) {
+                 $scope.changePasswordReason = "this is your first time logging in and you are still using the default password.";
+                 $scope.forcePopupform = true;
+             } else {
+//                $scope.loadController();
+             }
         }
     };
         
@@ -157,12 +178,33 @@ app.controller('StaffController', ['$route', '$rootScope', '$routeParams', '$sco
             if ($location.path() !== "/edit-profile") {
                 $location.path("/admin").search("staffID",null).search("edit",null).search("add",null);
                 $route.reload();
+            } else {
+                if ($scope.user.lastPasswordChange == undefined) {
+                     $scope.changePasswordReason = "this is your first time logging in and you are still using the default password.";
+                     $scope.forcePopupform = true;
+                 } else {
+    //                $scope.loadController();
+                 }
             }
         } else if (!$scope.user.isAdmin) {
             if ($location.path() !== "/edit-profile") {
                 $location.path("/dashboard").search("staffID",null).search("edit",null).search("add",null);
                 $route.reload();
+            } else {
+                if ($scope.user.lastPasswordChange == undefined) {
+                     $scope.changePasswordReason = "this is your first time logging in and you are still using the default password.";
+                     $scope.forcePopupform = true;
+                 } else {
+    //                $scope.loadController();
+                 }
             }
+        } else {
+            if ($scope.user.lastPasswordChange == undefined) {
+                 $scope.changePasswordReason = "this is your first time logging in and you are still using the default password.";
+                 $scope.forcePopupform = true;
+             } else {
+//                $scope.loadController();
+             }
         }
     };
       
@@ -227,6 +269,135 @@ app.controller('StaffController', ['$route', '$rootScope', '$routeParams', '$sco
         return ((this.getHours() < 10)?"0":"") + this.getHours() + ":" + ((this.getMinutes() < 10)?"0":"") + 
             this.getMinutes() + ":" + ((this.getSeconds() < 10)?"0":"") + this.getSeconds();
     }
+    
+    /*********************
+    *** Password Popup ***
+    *********************/
+    
+    $scope.forceClosePopup = function() {
+        $scope.forcePopupform = false;
+    };
+        
+    $scope.forceOpenPopup = function($event) {
+        $event.stopPropagation();
+    };
+        
+    //update password of currently logged in user
+    $scope.forceUpdatePassword = function () {
+        if ($scope.forceNewPassword == undefined || $scope.forceNewPassword == "") {
+            $scope.forcePasswordEmpty = true;
+            $scope.forcePasswordLength = false;
+            $scope.forcePasswordComplex = false;
+            
+            $scope.forcePasswordMatch = false;
+            $scope.forcePwdEmpty1 = true;
+        } else {
+            if ($scope.forceNewPassword.length < 8) {
+                $scope.forcePasswordEmpty = false;
+                $scope.forcePasswordLength = true;
+                $scope.forcePasswordComplex = false;
+                
+                $scope.forcePasswordMatch = false;
+                $scope.forcePwdEmpty1 = true;
+            } else if (!/[A-z]/.test($scope.forceNewPassword) || !/\d/.test($scope.forceNewPassword)) {
+                $scope.forcePasswordEmpty = false;
+                $scope.forcePasswordLength = false;
+                $scope.forcePasswordComplex = true;
+                
+                $scope.forcePasswordMatch = false;
+                $scope.forcePwdEmpty1 = true;
+            } else {
+                $scope.forcePasswordEmpty = false;
+                $scope.forcePasswordLength = false;
+                $scope.forcePasswordComplex = false;
+
+                $scope.forcePasswordMatch = false;
+                $scope.forcePwdEmpty1 = false;
+            }
+        }
+        
+        if ($scope.forceConfirmPassword == undefined || $scope.forceConfirmPassword == "") {
+            $scope.forcePasswordEmpty2 = true;
+            $scope.forcePasswordLength2 = false;
+            $scope.forcePasswordComplex2 = false;
+            
+            $scope.forcePasswordMatch = false;
+            $scope.forcePwdEmpty2 = true;
+        } else {
+            if ($scope.forceConfirmPassword.length < 8) {
+                $scope.forcePasswordEmpty2 = false;
+                $scope.forcePasswordLength2 = true;
+                $scope.forcePasswordComplex2 = false;
+                
+                $scope.forcePasswordMatch = false;
+                $scope.forcePwdEmpty2 = true;
+            } else if (!/[A-z]/.test($scope.forceConfirmPassword) || !/\d/.test($scope.forceConfirmPassword)) {
+                $scope.forcePasswordEmpty2 = false;
+                $scope.forcePasswordLength2 = false;
+                $scope.forcePasswordComplex2 = true;
+                
+                $scope.forcePasswordMatch = false;
+                $scope.forcePwdEmpty2 = true;
+            } else {
+                $scope.forcePasswordEmpty2 = false;
+                $scope.forcePasswordLength2 = false;
+                $scope.forcePasswordComplex2 = false;
+
+                $scope.forcePasswordMatch = false;
+                $scope.forcePwdEmpty2 = false;
+            }
+        }
+        
+        if ($scope.forcePwdEmpty2 === false) {
+            if ($scope.forceConfirmPassword !== $scope.forceNewPassword) {
+//                $scope.passwordEmpty = false;
+//                $scope.passwordLength = false;
+//                $scope.passwordComplex = false;
+
+                $scope.forcePasswordEmpty2 = false;
+                $scope.forcePasswordLength2 = false;
+                $scope.forcePasswordComplex2 = false;
+
+                $scope.forcePasswordMatch = true;
+                $scope.forcePwdEmpty2 = true;
+                $scope.forcePwdEmpty1 = true;
+            }
+        }
+
+        if ($scope.forcePwdEmpty1 === false && $scope.forcePwdEmpty2 === false) {
+            //if confirm password field is identical, update password
+            $scope.auth.$updatePassword($scope.forceNewPassword).then(function () {
+                var newDate = new Date();
+                var datetime = newDate.dayNow() + " @ " + newDate.timeNow();
+                var updates = {};
+                
+                firebase.database().ref('adminstaff/' + $scope.user.authID).once('value').then(function (snapshot, error) {
+                    if (snapshot.val() != null) {
+                        updates["/adminstaff/" + $scope.user.authID + '/lastPasswordChange'] = datetime;
+                        firebase.database().ref().update(updates);
+                    } else {
+                        updates["/staff/" + $scope.user.authID + '/lastPasswordChange'] = datetime;
+                        firebase.database().ref().update(updates);
+                    }
+                });
+                $scope.forcePopupform = !$scope.forcePopupform;
+                alert("You have successfully updated your password\n\nPlease login again\n");
+                $scope.auth.$signOut();
+            }).catch(function (error) {
+                console.log(error);
+                if (error.code === "auth/requires-recent-login") {
+                    //(#error)auth-requires-recent-login
+                    alert(error);
+                    $scope.auth.$signOut();
+                } else if (error.code === "auth/email-already-in-use")
+                    //(#error)auth-email-already-in-use
+                    alert(error);
+                else
+                    //(#error)unknown-auth-error
+                    $scope.notify("An unknown error has occured (Error #200)", "danger");
+            });
+        }
+    }; //end of $scope.updatePassword()
     
     /********************
     ** Search & Filter **
