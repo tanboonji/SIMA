@@ -363,6 +363,15 @@ app.controller('AdminController', ['$route', '$rootScope', '$routeParams', '$sco
         $location.path('/admin').search("adminID", null).search("edit", null).search("add", null);
     };
         
+    /***********************
+    **** Email Function ****
+    ***********************/
+        
+    (function(){
+        emailjs.init("user_0mk6KgqiS2U166LCZL9om");
+    })();
+    var service_id = 'gmail';
+        
     /*******************
     **** Admin View ****
     *******************/
@@ -742,6 +751,20 @@ app.controller('AdminController', ['$route', '$rootScope', '$routeParams', '$sco
                                     firebase.database().ref('admin/' + userData.uid).set({
                                         isSuperAdmin: false
                                     });
+                                    
+                                    var template_params = {
+                                        "to_name": $scope.newadmin.name,
+                                        "send_email": $scope.newadmin.email.trim(),
+                                        "password": "SIMAAdmin",
+                                        "user_id": $scope.finalid
+                                    };
+                                    
+                                    emailjs.send(service_id, "staff_creation_template", template_params)
+                                        .then(function (response) {
+                                            console.log("SUCCESS. status=%d, text=%s", response.status, response.text);
+                                        }, function (err) {
+                                            console.log("FAILED. error=", err);
+                                        });
                                     
                                     $scope.authObj.$signOut();
                                     alert("Login information of admin created\nAdmin ID: " + $scope.finalid + "\nPassword: SIMAAdmin");
