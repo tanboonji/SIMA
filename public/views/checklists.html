@@ -40,7 +40,7 @@
                 </button>
                 <div class="pull-left col-md-4 force-col-margin force-col-padding has-icon">
                     <span class="glyphicon glyphicon-search form-control-icon"></span>
-                    <input type="text" class="form-control" placeholder="Search for..." ng-model="search.name">
+                    <input type="text" class="form-control" placeholder="Search for..." ng-model="search.name"/>
                 </div>
                 <div class="pull-right">
                     <label for="">Status:&nbsp;</label>
@@ -83,30 +83,30 @@
                             <div class="category-group-title">
                                 <span class="group-addon">{{c.no}}.</span>
                                 <input type="text" class="form-control group-input no-border" ng-model="c.name"
-                                    placeholder="Enter category name" disabled>
+                                    placeholder="Enter category name" disabled/>
                             </div>
                             <div ng-repeat="q in c.question">
                                 <div class="question-group col-lg-9 col-md-9 force-col-padding">
                                     <span class="group-addon">{{q.no}}.</span>
                                     <input type="text" class="form-control group-input no-border"  ng-model="q.name"
-                                        placeholder="Enter question name" disabled>
+                                        placeholder="Enter question name" disabled/>
                                 </div>
                                 <div class="question-radio col-lg-2 col-md-2 force-col-padding">
 <!--
                                     <div class="radio radio-first">
                                         <label><input type="radio" value="MCQ" ng-model="q.type"
-                                            name="questionType-{{c.formID}}-{{q.formID}}" disabled>MCQ</label>
+                                            name="questionType-{{c.formID}}-{{q.formID}}" disabled/>MCQ</label>
                                     </div>
                                     <div class="radio radio-last">
                                         <label><input type="radio" value="Short Answer" ng-model="q.type"
-                                            name="questionType-{{c.formID}}-{{q.formID}}" disabled>Short Ans</label>
+                                            name="questionType-{{c.formID}}-{{q.formID}}" disabled/>Short Ans</label>
                                     </div>
 -->
                                     <div class="radio radio-first">
-                                        <label><input type="radio" value="MCQ" ng-model="q.type" disabled>MCQ</label>
+                                        <label><input type="radio" value="MCQ" ng-model="q.type" disabled/>MCQ</label>
                                     </div>
                                     <div class="radio radio-last">
-                                        <label><input type="radio" value="Short Answer" ng-model="q.type" disabled>Short Ans</label>
+                                        <label><input type="radio" value="Short Answer" ng-model="q.type" disabled/>Short Ans</label>
                                     </div>
                                 </div>
                             </div>
@@ -158,14 +158,14 @@
                 <p style="color:#a94442">You need to change your password before continuing as {{changePasswordReason}}</p>
                 <div ng-class="{'has-error': forcePwdEmpty1}">
                     <input class="form-control col-sm-6 margin-top-7" 
-                           placeholder="New Password" type="password" ng-model="forceNewPassword">
+                           placeholder="New Password" type="password" ng-model="forceNewPassword"/>
                     <span ng-show="forcePasswordEmpty" class="help-block margin-bottom-0"> Field must not be blank!</span>
                     <span ng-show="forcePasswordLength" class="help-block margin-bottom-0"> Password must be at least 8 characters long.</span>
                     <span ng-show="forcePasswordComplex" class="help-block margin-bottom-0"> Password must be at alpha numeric.</span>
                 </div>
                 <div ng-class="{'has-error': forcePwdEmpty2}">
                     <input class="form-control col-sm-6 margin-top-10" placeholder="Confirm new Password" 
-                           type="password" ng-model="forceConfirmPassword">
+                           type="password" ng-model="forceConfirmPassword"/>
                     <span ng-show="forcePasswordEmpty2" class="help-block margin-bottom-0"> Field must not be blank!</span>
                     <span ng-show="forcePasswordLength2" class="help-block margin-bottom-0">  Password must be at least 8 characters long.</span>
                     <span ng-show="forcePasswordComplex2" class="help-block margin-bottom-0"> Password must be at alpha numeric.</span>

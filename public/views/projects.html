@@ -108,14 +108,14 @@
                 <p style="color:#a94442">You need to change your password before continuing as {{changePasswordReason}}</p>
                 <div ng-class="{'has-error': pwdEmpty1}">
                     <input class="form-control col-sm-6 margin-top-7" 
-                           placeholder="New Password" type="password" ng-model="newPassword">
+                           placeholder="New Password" type="password" ng-model="newPassword"/>
                     <span ng-show="passwordEmpty" class="help-block margin-bottom-0"> Field must not be blank!</span>
                     <span ng-show="passwordLength" class="help-block margin-bottom-0"> Password must be at least 8 characters long.</span>
                     <span ng-show="passwordComplex" class="help-block margin-bottom-0"> Password must be at alpha numeric.</span>
                 </div>
                 <div ng-class="{'has-error': pwdEmpty2}">
                     <input class="form-control col-sm-6 margin-top-10" placeholder="Confirm new Password" 
-                           type="password" ng-model="confirmPassword">
+                           type="password" ng-model="confirmPassword"/>
                     <span ng-show="passwordEmpty2" class="help-block margin-bottom-0"> Field must not be blank!</span>
                     <span ng-show="passwordLength2" class="help-block margin-bottom-0">  Password must be at least 8 characters long.</span>
                     <span ng-show="passwordComplex2" class="help-block margin-bottom-0"> Password must be at alpha numeric.</span>
@@ -195,29 +195,29 @@
                                     <div class="category-group-title">
                                         <span class="group-addon">{{c.no}}.</span>
                                         <input type="text" class="form-control group-input-view" ng-model="c.name"
-                                            placeholder="Enter category name" disabled>
+                                            placeholder="Enter category name" disabled/>
                                     </div>
                                     <div ng-repeat="q in c.questionList">
                                         <div class="question-group col-md-9 force-col-padding">
                                             <span class="group-addon">{{q.no}}.</span>
                                             <input type="text" class="form-control group-input-view" ng-model="q.name"
-                                                placeholder="Enter question name" disabled>
+                                                placeholder="Enter question name" disabled/>
                                         </div>
                                         <div class="question-radio col-md-2 force-col-padding">
                                             <div class="radio radio-first">
-                                                <label><input type="radio" value="MCQ" ng-model="q.type" disabled>MCQ</label>
+                                                <label><input type="radio" value="MCQ" ng-model="q.type" disabled/>MCQ</label>
                                             </div>
                                             <div class="radio radio-last">
-                                                <label><input type="radio" value="Short Answer" ng-model="q.type" disabled>Short Ans</label>
+                                                <label><input type="radio" value="Short Answer" ng-model="q.type" disabled/>Short Ans</label>
                                             </div>
 <!--
                                             <div class="radio radio-first">
                                                 <label><input type="radio" value="MCQ" ng-model="q.type"
-                                                    name="questionType-{{f.name}}-{{c.formID}}-{{q.formID}}" disabled>MCQ</label>
+                                                    name="questionType-{{f.name}}-{{c.formID}}-{{q.formID}}" disabled/>MCQ</label>
                                             </div>
                                             <div class="radio radio-last">
                                                 <label><input type="radio" value="Short Answer" ng-model="q.type"
-                                                    name="questionType-{{f.name}}-{{c.formID}}-{{q.formID}}" disabled>Short Ans</label>
+                                                    name="questionType-{{f.name}}-{{c.formID}}-{{q.formID}}" disabled/>Short Ans</label>
                                             </div>
 -->
                                         </div>

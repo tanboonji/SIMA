@@ -69,7 +69,7 @@
             <div class="col-md-6" ng-class="{'has-error': projectBUHEmpty}">
                 <div id="magicsuggestBUH">
                     <div class="ms-ctn form-control">
-                        <input type="text" class="form-control">
+                        <input type="text" class="form-control"/>
                         <div class="ms-trigger">
                             <div class="ms-trigger-ico">
                             </div>
@@ -86,7 +86,7 @@
             <div class="col-md-6" ng-class="{'has-error': projectTMEmpty}">
                 <div id="magicsuggestTM">
                     <div class="ms-ctn form-control">
-                        <input type="text" class="form-control">
+                        <input type="text" class="form-control"/>
                         <div class="ms-trigger">
                             <div class="ms-trigger-ico">
                             </div>
@@ -103,7 +103,7 @@
             <div class="col-md-6" ng-class="{'has-error': projectCMError}">
                 <div id="magicsuggestCM">
                     <div class="ms-ctn form-control">
-                        <input type="text" class="form-control">
+                        <input type="text" class="form-control"/>
                         <div class="ms-trigger">
                             <div class="ms-trigger-ico">
                             </div>
@@ -124,7 +124,7 @@
                 <div class="col-md-3 project-group-left" ng-class="{'facility-left-error': checklistEmpty}">
                     <div class="col-md-12 force-col-padding margin-top-13 margin-bottom-13 has-icon">
                         <span class="glyphicon glyphicon-search form-control-icon"></span>
-                        <input type="text" class="form-control" placeholder="Search for..." ng-model="searchFacility.name">
+                        <input type="text" class="form-control" placeholder="Search for..." ng-model="searchFacility.name"/>
                     </div>
                     <div class="col-md-12 force-col-padding">
                         <div id="left">
@@ -158,7 +158,7 @@
                                 </div>
 -->
                                 <div class="facility-input-title margin-bottom-13">
-                                    <input type="text" class="form-control group-input" ng-model="f.name" placeholder="Enter facility name" required>
+                                    <input type="text" class="form-control group-input" ng-model="f.name" placeholder="Enter facility name" required/>
                                     <div class="btn-group facility-frequency">
                                         <button type="button" class="btn btn-default dropdown-toggle dropdown-style" 
                                             data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
@@ -178,7 +178,7 @@
                                             <div class="category-group-title">
                                                 <span class="group-addon">{{c.no}}.</span>
                                                 <input type="text" class="form-control group-input" ng-model="c.name"
-                                                    placeholder="Enter category name" required>
+                                                    placeholder="Enter category name" required/>
                                                 <span class="glyphicon glyphicon-remove group-delete" aria-hidden="true"
                                                     ng-click="deleteCategory(f,c)"></span>
                                             </div>
@@ -186,7 +186,7 @@
                                                 <div class="question-group col-md-9 force-col-padding">
                                                     <span class="group-addon">{{q.no}}.</span>
                                                     <input type="text" class="form-control group-input" ng-model="q.name"
-                                                        placeholder="Enter question name" required>
+                                                        placeholder="Enter question name" required/>
                                                     <span class="glyphicon glyphicon-remove group-delete" aria-hidden="true"
                                                         ng-click="deleteQuestion(c,q)"></span>
                                                 </div>
@@ -194,20 +194,20 @@
                                                 <div class="question-radio col-md-2 force-col-padding">
                                                     <div class="radio radio-first">
                                                         <label><input type="radio" value="MCQ" ng-model="q.type"
-                                                            name="questionType-{{f.name}}-{{c.formID}}-{{q.formID}}">MCQ</label>
+                                                            name="questionType-{{f.name}}-{{c.formID}}-{{q.formID}}"/>MCQ</label>
                                                     </div>
                                                     <div class="radio radio-last">
                                                         <label><input type="radio" value="Short Answer" ng-model="q.type"
-                                                            name="questionType-{{f.name}}-{{c.formID}}-{{q.formID}}">Short Ans</label>
+                                                            name="questionType-{{f.name}}-{{c.formID}}-{{q.formID}}"/>Short Ans</label>
                                                     </div>
                                                 </div>
 -->
                                                 <div class="question-radio col-md-2 force-col-padding">
                                                     <div class="radio radio-first">
-                                                        <label><input type="radio" value="MCQ" ng-model="q.type">MCQ</label>
+                                                        <label><input type="radio" value="MCQ" ng-model="q.type"/>MCQ</label>
                                                     </div>
                                                     <div class="radio radio-last">
-                                                        <label><input type="radio" value="Short Answer" ng-model="q.type">Short Ans</label>
+                                                        <label><input type="radio" value="Short Answer" ng-model="q.type"/>Short Ans</label>
                                                     </div>
                                                 </div>
                                             </div>
@@ -271,14 +271,14 @@
                 <p style="color:#a94442">You need to change your password before continuing as {{changePasswordReason}}</p>
                 <div ng-class="{'has-error': pwdEmpty1}">
                     <input class="form-control col-sm-6 margin-top-7" 
-                           placeholder="New Password" type="password" ng-model="newPassword">
+                           placeholder="New Password" type="password" ng-model="newPassword"/>
                     <span ng-show="passwordEmpty" class="help-block margin-bottom-0"> Field must not be blank!</span>
                     <span ng-show="passwordLength" class="help-block margin-bottom-0"> Password must be at least 8 characters long.</span>
                     <span ng-show="passwordComplex" class="help-block margin-bottom-0"> Password must be at alpha numeric.</span>
                 </div>
                 <div ng-class="{'has-error': pwdEmpty2}">
                     <input class="form-control col-sm-6 margin-top-10" placeholder="Confirm new Password" 
-                           type="password" ng-model="confirmPassword">
+                           type="password" ng-model="confirmPassword"/>
                     <span ng-show="passwordEmpty2" class="help-block margin-bottom-0"> Field must not be blank!</span>
                     <span ng-show="passwordLength2" class="help-block margin-bottom-0">  Password must be at least 8 characters long.</span>
                     <span ng-show="passwordComplex2" class="help-block margin-bottom-0"> Password must be at alpha numeric.</span>
