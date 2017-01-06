@@ -82,6 +82,18 @@
          ".read":"true",
          
          "$logincheck":{
-             ".write":"root.child('admin/'+ auth.uid).exists() || root.child('logincheck/'+$logincheck+'/ID').val() == root.child('staff/'+ auth.uid + '/ID').val()"}}
+             ".write":"root.child('admin/'+ auth.uid).exists() || root.child('logincheck/'+$logincheck+'/ID').val() == root.child('staff/'+ auth.uid + '/ID').val()"}},
+     
+     // to read: need to be super-admin or admin
+     // to write: not allowed
+     "staffpassword":{
+        ".read":"root.child('admin').child(auth.uid).exists()",
+        ".write":"false"},
+     
+     // to read: need to be super-admin or admin
+     // to write: not allowed
+     "adminpassword":{
+        ".read":"root.child('admin').child(auth.uid).exists()",
+        ".write":"false"}
  }
 }

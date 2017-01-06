@@ -698,107 +698,112 @@ app.controller('AdminController', ['$route', '$rootScope', '$routeParams', '$sco
                     $scope.id = snapshot.val().count + 1;
                     $scope.alpha = snapshot.val().alphabet;
                     
-                    //create user in auth
-                    $scope.authObj.$createUserWithEmailAndPassword($scope.newadmin.email.trim(), "SIMAAdmin").then(function (userData) {
-                            //formatting for ID
-                            if (angular.isNumber($scope.id)) {
-                                if ($scope.id < 10)
-                                    $scope.finalid = $scope.alpha + "000" + $scope.id;
-                                else if ($scope.id < 100)
-                                    $scope.finalid = $scope.alpha + "00" + $scope.id;
-                                else if ($scope.id < 1000)
-                                    $scope.finalid = $scope.alpha + "0" + $scope.id;
-                                else if ($scope.id < 10000)
-                                    $scope.finalid = $scope.alpha + $scope.id;
-                                
-                                if ($scope.newadmin.status !== "Inactive")
-                                    $scope.newadmin.statusMessage = null;
-                                
-                                var newDate = new Date();
-                                var datetime = newDate.dayNow() + " @ " + newDate.timeNow();
+                    firebase.database().ref("adminpassword").once("value").then(function(adminpassword) {
+                        if (staffpassword.val() !== null) {
+                            //create user in auth
+                            $scope.authObj.$createUserWithEmailAndPassword($scope.newadmin.email.trim(), adminpassword.val()).then(function (userData) {
+                                    //formatting for ID
+                                    if (angular.isNumber($scope.id)) {
+                                        if ($scope.id < 10)
+                                            $scope.finalid = $scope.alpha + "000" + $scope.id;
+                                        else if ($scope.id < 100)
+                                            $scope.finalid = $scope.alpha + "00" + $scope.id;
+                                        else if ($scope.id < 1000)
+                                            $scope.finalid = $scope.alpha + "0" + $scope.id;
+                                        else if ($scope.id < 10000)
+                                            $scope.finalid = $scope.alpha + $scope.id;
 
-                                //once done, get generated uid and save in admin table
-                                firebase.database().ref('adminstaff/' + userData.uid).set({
-                                    email: $scope.newadmin.email.trim(),
-                                    ID: $scope.finalid,
-                                    name: $scope.newadmin.name,
-                                    status: $scope.newadmin.status,
-                                    phone: $scope.newadmin.phone,
-                                    authID: userData.uid,
-                                    statusMessage: $scope.newadmin.statusMessage,
-                                    updatedAt: datetime,
-                                    createdAt: datetime,
-                                    updatedBy: $scope.user.ID,
-                                    createdBy: $scope.user.ID,
-                                    role: "Admin"
-                                }).then(function () {
-                                    console.log(userData.uid + "--> Created");
-                                    console.log($scope.firebaseUser.uid + "--> Current");
+                                        if ($scope.newadmin.status !== "Inactive")
+                                            $scope.newadmin.statusMessage = null;
 
-                                    //update count in database
-                                    firebase.database().ref('count/adminCount').set({
-                                        alphabet: $scope.alpha,
-                                        count: $scope.id
-                                    });
+                                        var newDate = new Date();
+                                        var datetime = newDate.dayNow() + " @ " + newDate.timeNow();
 
-                                    //add in logincheck table
-                                    firebase.database().ref('logincheck/' + $scope.finalid).set({
-                                        ID: $scope.finalid,
-                                        email: $scope.newadmin.email.trim(),
-                                        status: $scope.newadmin.status
-                                    });
+                                        //once done, get generated uid and save in admin table
+                                        firebase.database().ref('adminstaff/' + userData.uid).set({
+                                            email: $scope.newadmin.email.trim(),
+                                            ID: $scope.finalid,
+                                            name: $scope.newadmin.name,
+                                            status: $scope.newadmin.status,
+                                            phone: $scope.newadmin.phone,
+                                            authID: userData.uid,
+                                            statusMessage: $scope.newadmin.statusMessage,
+                                            updatedAt: datetime,
+                                            createdAt: datetime,
+                                            updatedBy: $scope.user.ID,
+                                            createdBy: $scope.user.ID,
+                                            role: "Admin"
+                                        }).then(function () {
+                                            console.log(userData.uid + "--> Created");
+                                            console.log($scope.firebaseUser.uid + "--> Current");
 
-                                    firebase.database().ref('admin/' + userData.uid).set({
-                                        isSuperAdmin: false
-                                    });
-                                    
-                                    var template_params = {
-                                        "to_name": $scope.newadmin.name,
-                                        "send_email": $scope.newadmin.email.trim(),
-                                        "password": "SIMAAdmin",
-                                        "user_id": $scope.finalid
-                                    };
-                                    
-                                    emailjs.send(service_id, "staff_creation_template", template_params)
-                                        .then(function (response) {
-                                            console.log("SUCCESS. status=%d, text=%s", response.status, response.text);
-                                        }, function (err) {
-                                            console.log("FAILED. error=", err);
+                                            //update count in database
+                                            firebase.database().ref('count/adminCount').set({
+                                                alphabet: $scope.alpha,
+                                                count: $scope.id
+                                            });
+
+                                            //add in logincheck table
+                                            firebase.database().ref('logincheck/' + $scope.finalid).set({
+                                                ID: $scope.finalid,
+                                                email: $scope.newadmin.email.trim(),
+                                                status: $scope.newadmin.status
+                                            });
+
+                                            firebase.database().ref('admin/' + userData.uid).set({
+                                                isSuperAdmin: false
+                                            });
+
+                                            var template_params = {
+                                                "to_name": $scope.newadmin.name,
+                                                "send_email": $scope.newadmin.email.trim(),
+                                                "password": adminpassword.val(),
+                                                "user_id": $scope.finalid
+                                            };
+
+                                            emailjs.send(service_id, "staff_creation_template", template_params)
+                                                .then(function (response) {
+                                                    console.log("SUCCESS. status=%d, text=%s", response.status, response.text);
+                                                }, function (err) {
+                                                    console.log("FAILED. error=", err);
+                                                });
+
+                                            $scope.authObj.$signOut();
+                                            alert("Login information of admin created\nAdmin ID: " + $scope.finalid + "\nPassword: " + adminpassword.val());
+                                            $location.path("/admin").search("add", $scope.newadmin.name).search("adminID", null).search("edit", null);
+                                            $route.reload();
+                                        }).catch(function(error) {
+                                            console.log(error);
+                                            if (error.code === "PERMISSION_DENIED") {
+                                                //(#error)firebase-permission-denied
+                                                $scope.notify("You do not have the permission to access this data (Error #001)", "danger");
+                                            } else {
+                                                //(#error)unknown-error
+                                                $scope.notify("An unknown error has occured (Error #000)", "danger");
+                                            }
                                         });
-                                    
-                                    $scope.authObj.$signOut();
-                                    alert("Login information of admin created\nAdmin ID: " + $scope.finalid + "\nPassword: SIMAAdmin");
-                                    $location.path("/admin").search("add", $scope.newadmin.name).search("adminID", null).search("edit", null);
-                                    $route.reload();
+                                    }
                                 }).catch(function(error) {
                                     console.log(error);
                                     if (error.code === "PERMISSION_DENIED") {
                                         //(#error)firebase-permission-denied
                                         $scope.notify("You do not have the permission to access this data (Error #001)", "danger");
+                                    } else if (error.code === "auth/email-already-in-use") {
+                                        //(#error)auth-email-already-in-use
+                                        $scope.adminEmailUsed = true;
+                                        $scope.adminEmailError = true;
+                                    } else if (error.code === "auth/invalid-email") {
+                                        //(#error)auth-invalid-email
+                                        $scope.adminEmailInvalid = true;
+                                        $scope.adminEmailError = true;
                                     } else {
                                         //(#error)unknown-error
                                         $scope.notify("An unknown error has occured (Error #000)", "danger");
                                     }
                                 });
-                            }
-                        }).catch(function(error) {
-                            console.log(error);
-                            if (error.code === "PERMISSION_DENIED") {
-                                //(#error)firebase-permission-denied
-                                $scope.notify("You do not have the permission to access this data (Error #001)", "danger");
-                            } else if (error.code === "auth/email-already-in-use") {
-                                //(#error)auth-email-already-in-use
-                                $scope.adminEmailUsed = true;
-                                $scope.adminEmailError = true;
-                            } else if (error.code === "auth/invalid-email") {
-                                //(#error)auth-invalid-email
-                                $scope.adminEmailInvalid = true;
-                                $scope.adminEmailError = true;
-                            } else {
-                                //(#error)unknown-error
-                                $scope.notify("An unknown error has occured (Error #000)", "danger");
-                            }
-                        });
+                        }
+                    });
+                    
                 } else {
                     //(#error)database-cannot-get-new-staff-id
                     console.log("database-cannot-get-new-staff-id");

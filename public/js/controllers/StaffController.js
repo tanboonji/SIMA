@@ -855,126 +855,144 @@ app.controller('StaffController', ['$route', '$rootScope', '$routeParams', '$sco
                     $scope.id = snapshot.val().count + 1;
                     $scope.alpha = snapshot.val().alphabet;
 
-                    //create user in authentication
-                    $scope.authObj.$createUserWithEmailAndPassword($scope.staff.email.trim(), "SIMAStaff").then(function (userData) {
-                            //formatting for ID
-                            if (angular.isNumber($scope.id)) {
-                                if ($scope.id < 10)
-                                    $scope.finalid = $scope.alpha + "000" + $scope.id;
-                                else if ($scope.id < 100)
-                                    $scope.finalid = $scope.alpha + "00" + $scope.id;
-                                else if ($scope.id < 1000)
-                                    $scope.finalid = $scope.alpha + "0" + $scope.id;
-                                else if ($scope.id < 10000)
-                                    $scope.finalid = $scope.alpha + $scope.id;
-                                
-                                if ($scope.staff.status !== "Inactive")
-                                    $scope.staff.statusMessage = null;
-                                
-                                var newDate = new Date();
-                                var datetime = newDate.dayNow() + " @ " + newDate.timeNow();
+                    firebase.database().ref("staffpassword").once("value").then(function(staffpassword) {
+                        if (staffpassword.val() !== null) {
+                            //create user in authentication
+                            $scope.authObj.$createUserWithEmailAndPassword($scope.staff.email.trim(), staffpassword.val()).then(function (userData) {
+                                //formatting for ID
+                                if (angular.isNumber($scope.id)) {
+                                    if ($scope.id < 10)
+                                        $scope.finalid = $scope.alpha + "000" + $scope.id;
+                                    else if ($scope.id < 100)
+                                        $scope.finalid = $scope.alpha + "00" + $scope.id;
+                                    else if ($scope.id < 1000)
+                                        $scope.finalid = $scope.alpha + "0" + $scope.id;
+                                    else if ($scope.id < 10000)
+                                        $scope.finalid = $scope.alpha + $scope.id;
 
-                                //once done, get generated uid and save in staff table
-                                firebase.database().ref('staff/' + userData.uid).set({
-                                    email: $scope.staff.email.trim(),
-                                    ID: $scope.finalid,
-                                    name: $scope.staff.name,
-                                    role: $scope.staff.role,
-                                    status: $scope.staff.status,
-                                    phone: $scope.staff.phone,
-                                    authID: userData.uid,
-                                    statusMessage: $scope.staff.statusMessage,
-                                    createdAt: datetime,
-                                    updatedAt: datetime,
-                                    createdBy: $scope.user.ID,
-                                    updatedBy: $scope.user.ID,
-                                    hasProject: false
-                                }).then(function () {
-                                    console.log(userData.uid + "--> Created");
-                                    console.log($scope.firebaseUser.uid + "--> Current");
+                                    if ($scope.staff.status !== "Inactive")
+                                        $scope.staff.statusMessage = null;
 
-                                    //update count in database
-                                    firebase.database().ref('count/staffCount').set({
-                                        alphabet: $scope.alpha,
-                                        count: $scope.id
-                                    });
+                                    var newDate = new Date();
+                                    var datetime = newDate.dayNow() + " @ " + newDate.timeNow();
 
-                                    //add in logincheck table
-                                    firebase.database().ref('logincheck/' + $scope.finalid).set({
-                                        ID: $scope.finalid,
+                                    //once done, get generated uid and save in staff table
+                                    firebase.database().ref('staff/' + userData.uid).set({
                                         email: $scope.staff.email.trim(),
-                                        status: $scope.staff.status
-                                    });
+                                        ID: $scope.finalid,
+                                        name: $scope.staff.name,
+                                        role: $scope.staff.role,
+                                        status: $scope.staff.status,
+                                        phone: $scope.staff.phone,
+                                        authID: userData.uid,
+                                        statusMessage: $scope.staff.statusMessage,
+                                        createdAt: datetime,
+                                        updatedAt: datetime,
+                                        createdBy: $scope.user.ID,
+                                        updatedBy: $scope.user.ID,
+                                        hasProject: false
+                                    }).then(function () {
+                                        console.log(userData.uid + "--> Created");
+                                        console.log($scope.firebaseUser.uid + "--> Current");
 
-                                    //if staff added is EXCO, give admin permissions (add in admin table)
-                                    if ($scope.staff.role == "EXCO") {
-                                        firebase.database().ref('admin/' + userData.uid).set({
-                                            isSuperAdmin: false
-                                        }).then(function() {
+                                        //update count in database
+                                        firebase.database().ref('count/staffCount').set({
+                                            alphabet: $scope.alpha,
+                                            count: $scope.id
+                                        });
+
+                                        //add in logincheck table
+                                        firebase.database().ref('logincheck/' + $scope.finalid).set({
+                                            ID: $scope.finalid,
+                                            email: $scope.staff.email.trim(),
+                                            status: $scope.staff.status
+                                        });
+
+                                        //if staff added is EXCO, give admin permissions (add in admin table)
+                                        if ($scope.staff.role == "EXCO") {
+                                            firebase.database().ref('admin/' + userData.uid).set({
+                                                isSuperAdmin: false
+                                            }).then(function() {
+                                                $scope.authObj.$signOut();
+                                                alert("Login information of staff created\nStaff ID: " + $scope.finalid + "\nPassword: " + staffpassword.val());
+                                                $location.path("/staff").search("add", $scope.staff.name).search("staffID", null).search("edit", null);
+                                                $route.reload();
+                                            }).catch(function(error) {
+                                                console.log(error);
+                                                if (error.code === "PERMISSION_DENIED") {
+                                                    //(#error)firebase-permission-denied
+                                                    $scope.notify("You do not have the permission to access this data (Error #001)", "danger");
+                                                } else {
+                                                    //(#error)unknown-error
+                                                    $scope.notify("An unknown error has occured (Error #000)", "danger");
+                                                }
+                                            });
+                                        } else {
                                             $scope.authObj.$signOut();
-                                            alert("Login information of staff created\nStaff ID: " + $scope.finalid + "\nPassword: SIMAStaff");
+                                            alert("Login information of staff created\nStaff ID: " + $scope.finalid + "\nPassword: " + staffpassword.val());
                                             $location.path("/staff").search("add", $scope.staff.name).search("staffID", null).search("edit", null);
                                             $route.reload();
-                                        }).catch(function(error) {
-                                            console.log(error);
-                                            if (error.code === "PERMISSION_DENIED") {
-                                                //(#error)firebase-permission-denied
-                                                $scope.notify("You do not have the permission to access this data (Error #001)", "danger");
-                                            } else {
-                                                //(#error)unknown-error
-                                                $scope.notify("An unknown error has occured (Error #000)", "danger");
-                                            }
-                                        });
-                                    } else {
-                                        $scope.authObj.$signOut();
-                                        alert("Login information of staff created\nStaff ID: " + $scope.finalid + "\nPassword: SIMAStaff");
-                                        $location.path("/staff").search("add", $scope.staff.name).search("staffID", null).search("edit", null);
-                                        $route.reload();
-                                    }
-                                    
-                                    var template_params = {
-                                        "to_name": $scope.staff.name,
-                                        "send_email": $scope.staff.email.trim(),
-                                        "password": "SIMAStaff",
-                                        "user_id": $scope.finalid
-                                    };
+                                        }
 
-                                    emailjs.send(service_id, "staff_creation_template", template_params)
-                                        .then(function (response) {
-                                            console.log("SUCCESS. status=%d, text=%s", response.status, response.text);
-                                        }, function (err) {
-                                            console.log("FAILED. error=", err);
-                                        });
-                                    
-                                }).catch(function(error) {
-                                    console.log(error);
-                                    if (error.code === "PERMISSION_DENIED") {
-                                        //(#error)firebase-permission-denied
-                                        $scope.notify("You do not have the permission to access this data (Error #001)", "danger");
-                                    } else {
-                                        //(#error)unknown-error
-                                        $scope.notify("An unknown error has occured (Error #000)", "danger");
-                                    }
-                                });
-                            }
-                        }).catch(function(error) {
-                            console.log(error);
-                            if (error.code === "PERMISSION_DENIED") {
-                                //(#error)firebase-permission-denied
-                                $scope.notify("You do not have the permission to access this data (Error #001)", "danger");
-                            } else if (error.code === "auth/email-already-in-use") {
-                                //(#error)auth-email-already-in-use
-                                $scope.staffEmailUsed = true;
-                                $scope.staffEmailError = true;
-                            } else if (error.code === "auth/email-invalid-email") {
-                                //(#error)auth-invalid-email
-                                $scope.staffEmailInvalid = true;
-                                $scope.staffEmailError = true;
-                            } else {
-                                //(#error)unknown-error
-                                $scope.notify("An unknown error has occured (Error #000)", "danger");
-                            }
-                        });
+                                        var template_params = {
+                                            "to_name": $scope.staff.name,
+                                            "send_email": $scope.staff.email.trim(),
+                                            "password": staffpassword.val(),
+                                            "user_id": $scope.finalid
+                                        };
+
+                                        emailjs.send(service_id, "staff_creation_template", template_params)
+                                            .then(function (response) {
+                                                console.log("SUCCESS. status=%d, text=%s", response.status, response.text);
+                                            }, function (err) {
+                                                console.log("FAILED. error=", err);
+                                            });
+
+                                    }).catch(function(error) {
+                                        console.log(error);
+                                        if (error.code === "PERMISSION_DENIED") {
+                                            //(#error)firebase-permission-denied
+                                            $scope.notify("You do not have the permission to access this data (Error #001)", "danger");
+                                        } else {
+                                            //(#error)unknown-error
+                                            $scope.notify("An unknown error has occured (Error #000)", "danger");
+                                        }
+                                    });
+                                }
+                            }).catch(function(error) {
+                                console.log(error);
+                                if (error.code === "PERMISSION_DENIED") {
+                                    //(#error)firebase-permission-denied
+                                    $scope.notify("You do not have the permission to access this data (Error #001)", "danger");
+                                } else if (error.code === "auth/email-already-in-use") {
+                                    //(#error)auth-email-already-in-use
+                                    $scope.staffEmailUsed = true;
+                                    $scope.staffEmailError = true;
+                                } else if (error.code === "auth/email-invalid-email") {
+                                    //(#error)auth-invalid-email
+                                    $scope.staffEmailInvalid = true;
+                                    $scope.staffEmailError = true;
+                                } else {
+                                    //(#error)unknown-error
+                                    $scope.notify("An unknown error has occured (Error #000)", "danger");
+                                }
+                            });
+                        } else {
+                            //edit this
+                            //(#error)database-user-not-found
+                            console.log("database-user-not-found");
+                            $scope.notify("User cannot be found in database (Error #002)", "danger");
+                        }
+                    }).catch(function(error) {
+                        console.log(error);
+                        if (error.code === "PERMISSION_DENIED") {
+                            //(#error)firebase-permission-denied
+                            $scope.notify("You do not have the permission to access this data (Error #001)", "danger");
+                        } else {
+                            //(#error)unknown-error
+                            $scope.notify("An unknown error has occured (Error #000)", "danger");
+                        }
+                    });
                 } else {
                     //(#error)database-cannot-get-new-staff-id
                     console.log("database-cannot-get-new-staff-id");
