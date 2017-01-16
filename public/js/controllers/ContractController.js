@@ -190,11 +190,12 @@ app.controller('ContractController', ['$rootScope', '$route', '$routeParams', '$
                     console.log(currentFullDay);
                 
                 if (lastReminderDate < currentFullDay) {
-                    console.log("here");
+                    console.log("emailjs: sending reminder");
                     
                     angular.forEach($scope.contractList, function(contractValue, contractKey){
                         if (contractValue.status === "Existing") {
 
+                            console.log("emailjs: contract");
                             var currentYear = newDate.newYearNow();
                             var currentMonth = newDate.newMonthNow();
                             var currentDay = newDate.newDayNow();
@@ -203,8 +204,11 @@ app.controller('ContractController', ['$rootScope', '$route', '$routeParams', '$
                             var contractDay = contractValue.expiryDate.toString().substr(6,2);
 
                             if ((contractYear - currentYear) == 0) {
+                                console.log("emailjs: contractYear-currentYear == 0");
+                                
                                 var monthDiff = contractMonth - currentMonth;
                                 if (monthDiff == 1) {
+                                    console.log("emailjs: monthDiff == 1");
 
                                     var expiry_params = {
                                         "to_name": contractValue.CMName,
@@ -221,9 +225,10 @@ app.controller('ContractController', ['$rootScope', '$route', '$routeParams', '$
                                             console.log("FAILED. error=", err);
                                         });
 
-                                } else if (monthDiff == 0) {
+                                } else if (monthDiff <= 0) {
                                     var dayDiff = contractDay - currentDay;
                                     if (dayDiff == 0) {
+                                        console.log("emailjs: monthDiff <= 0 && dayDiff == 0");
 
                                         var expiry_params = {
                                             "to_name": contractValue.CMName,
@@ -241,6 +246,7 @@ app.controller('ContractController', ['$rootScope', '$route', '$routeParams', '$
                                             });
 
                                     } else if (dayDiff < 0) {
+                                        console.log("emailjs: monthDiff <= 0 && dayDiff < 0");
 
                                         var expiry_params = {
                                             "to_name": contractValue.CMName,
@@ -259,6 +265,7 @@ app.controller('ContractController', ['$rootScope', '$route', '$routeParams', '$
 
 
                                     } else {
+                                        console.log("emailjs: monthDiff <= 0 && dayDiff > 0");
 
                                         var expiry_params = {
                                             "to_name": contractValue.CMName,
@@ -277,6 +284,7 @@ app.controller('ContractController', ['$rootScope', '$route', '$routeParams', '$
 
                                     }
                                 } else if (monthDiff <= 3) {
+                                        console.log("emailjs: monthDiff <= 3");
 
                                     var expiry_params = {
                                         "to_name": contractValue.CMName,
@@ -293,19 +301,41 @@ app.controller('ContractController', ['$rootScope', '$route', '$routeParams', '$
                                             console.log("FAILED. error=", err);
                                         });
 
+                                } else {
+                                    console.log("emailjs: failed to send reminder");
                                 }
-                            }
+                            } else if ((contractYear - currentYear) < 0) {
+                                console.log("emailjs: contractYear-currentYear < 0");
+                                
+                                var expiredMonth = (contractYear-currentYear+1)*12;
+                                expiredMonth = expiredMonth + currentMonth + (12-contractMonth);
+                                
+                                var expiry_params = {
+                                    "to_name": contractValue.CMName,
+                                    "send_email": contractValue.CMEmail,
+                                    "expiry_date": contractValue.showExpiryDate,
+                                    "project_name": contractValue.projectName,
+                                    "contract_name": contractValue.name
+                                };
 
+                                emailjs.send(service_id, 'contract_expiry_template', expiry_params)
+                                    .then(function (response) {
+                                        console.log("SUCCESS. status=%d, text=%s", response.status, response.text);
+                                    }, function (err) {
+                                        console.log("FAILED. error=", err);
+                                    });
+                            }
                         }
                     });
                 } else {
-                    console.log("herehere");
+                    console.log("emailjs: already sent reminder");
                 }
                 
                 var fullDateTime = newDate.newFullDateTime();
                 
                 firebase.database().ref('time').set(''+fullDateTime).then(function () {
-
+                    $scope.reminderDate = $scope.transformDate(currentFullDay.toString());
+                    $scope.$apply();
                 }).catch(function(error) {
                     console.log(error);
                     if (error.code === "PERMISSION_DENIED") {
