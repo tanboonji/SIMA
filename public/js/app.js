@@ -98,10 +98,10 @@ app.config(function($routeProvider){
             controller: 'ContractController',
             templateUrl: 'views/contract.html'
         })
-        .when('/testing', {
-            controller: 'TestController',
-            templateUrl: 'views/testing.html'
-        })
+//        .when('/testing', {
+//            controller: 'TestController',
+//            templateUrl: 'views/testing.html'
+//        })
 		.otherwise({
 			redirectTo: '/login'
 		});
