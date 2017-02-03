@@ -165,7 +165,7 @@
                                             <span class="caret dropdown-text-right"></span>
                                         </button>
                                         <ul class="dropdown-menu dropdown-menu-number">
-                                            <li ng-repeat="s in numberList"><a ng-click="numberItemSelected(f,s)">{{s}}</a></li>
+                                            <li ng-repeat="s in numberList"><a ng-click="numberItemSelectedAdd(f,s)">{{s}}</a></li>
                                         </ul>
                                     </div>
                                     <input type="text" class="form-control group-input" ng-model="f.name" placeholder="Enter facility name" required/>
@@ -176,7 +176,7 @@
                                             <span class="caret dropdown-text-right"></span>
                                         </button>
                                         <ul class="dropdown-menu">
-                                            <li ng-repeat="s in frequencyList"><a ng-click="frequencyItemSelected(f,s)">{{s}}</a></li>
+                                            <li ng-repeat="s in frequencyList"><a ng-click="frequencyItemSelectedAdd(f,s)">{{s}}</a></li>
                                         </ul>
                                     </div>
                                     <span class="glyphicon glyphicon-remove facility-group-delete" aria-hidden="true" ng-click="deleteAddedProjectFacility(f)"></span>

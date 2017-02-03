@@ -634,7 +634,9 @@ app.controller('ProjectsController', ['$rootScope', '$route', '$routeParams', '$
     
     /** edit now **/
     $scope.moveFacility = function(facility) {
-        $scope.addFacilityToAddedList(facility.name);
+        if ($scope.validation.length === 0) {
+            $scope.addFacilityToAddedList(facility.name);
+        }
 //        var index = $scope.facilityList.map(function(x) {return x.name}).indexOf(facility.name);
 //        $scope.facilityList.splice(index,1);
     };
@@ -662,15 +664,17 @@ app.controller('ProjectsController', ['$rootScope', '$route', '$routeParams', '$
             dropped: function (el, source, target) {
                 /** edit now **/
                 if (target.id === "left" && source.id === "right") {
-                    $scope.addFacilityToAddedList(el.id);
+                    if ($scope.validation.length === 0) {
+                        $scope.addFacilityToAddedList(el.id);
+                        el.remove();
+                        $scope.$apply();
+                    }
 //                    var index = $scope.facilityList.map(function(x) {return x.name}).indexOf(el.id);
 //                    $scope.facilityList.splice(index,1);
-                    el.remove();
-                    $scope.$apply();
                 } else if (target.id === "right" && source.id === "left") {
 //                    $scope.facilityList.unshift({name:el.id});
                     var index = $scope.facilityAddedList.map(function(x) {return x.name}).indexOf(el.id);
-                    $scope.facilityAddedList.splice(index,1);
+                    $scope.deleteAddedProjectFacility($scope.facilityAddedList[index]);
                     el.remove();
                     $scope.$apply();
                 }
@@ -751,7 +755,6 @@ app.controller('ProjectsController', ['$rootScope', '$route', '$routeParams', '$
                         $scope.facilityAddedList[0].checklist[categoryCount].question[questionCount].ID = questionValue.ID;
                         $scope.facilityAddedList[0].checklist[categoryCount].question[questionCount].type = questionValue.type;
                     });
-                    $scope.btnValidateRemove();
                     
 //                    firebase.database().ref("category/" + categoryID).once("value").then(function(snapshot) {
 //                        if (snapshot.val() != null) {
@@ -794,6 +797,11 @@ app.controller('ProjectsController', ['$rootScope', '$route', '$routeParams', '$
 //                        }
 //                    });
                 });
+                
+                $scope.facilityAddedList[0].no = ++$scope.dailySize;
+                $scope.dailyList.push($scope.dailySize);
+                
+                $scope.btnValidateRemove();
             }
         }).catch(function(error) {
             console.log(error);
@@ -1909,7 +1917,113 @@ app.controller('ProjectsController', ['$rootScope', '$route', '$routeParams', '$
     $scope.deleteAddedProjectFacility = function(facility) {
 //        $scope.facilityList.unshift({name:facility.name});
         var index = $scope.facilityAddedList.map(function(x) {return x.name}).indexOf(facility.name);
+        
+        switch (facility.frequency) {
+            case 'Daily':
+                --$scope.dailySize;
+                $scope.dailyList.pop();
+                break;
+            case 'Weekly':
+                --$scope.weeklySize;
+                $scope.weeklyList.pop();
+                break;
+            case 'Monthly':
+                --$scope.monthlySize;
+                $scope.monthlyList.pop();
+                break;
+            case 'Quarterly':
+                --$scope.quarterlySize;
+                $scope.quarterlyList.pop();
+                break;
+            case 'Yearly':
+                --$scope.yearlySize;
+                $scope.yearlyList.pop();
+                break;
+        }
+        $scope.reorganizeNumberListAdd(facility.frequency, facility.no);
+        
         $scope.facilityAddedList.splice(index,1);
+    }
+    
+    $scope.reorganizeNumberListAdd = function(frequency, number) {
+        angular.forEach($scope.facilityAddedList, function(projectFacilityValue, key) {
+            if (projectFacilityValue.frequency == frequency) {
+                if (number <= projectFacilityValue.no)
+                    projectFacilityValue.no--;
+            }
+        })
+    }
+    
+    $scope.frequencyItemSelectedAdd = function(facility, frequency) {
+        if (facility.frequency != frequency) {
+            var oldFrequency = facility.frequency;
+            var oldNumber = facility.no;
+            facility.frequency = frequency;
+
+            switch (frequency) {
+                case 'Daily':
+                    facility.no = ++$scope.dailySize;
+                    $scope.dailyList.push($scope.dailySize);
+                    break;
+                case 'Weekly':
+                    facility.no = ++$scope.weeklySize;
+                    $scope.weeklyList.push($scope.weeklySize);
+                    break;
+                case 'Monthly':
+                    facility.no = ++$scope.monthlySize;
+                    $scope.monthlyList.push($scope.monthlySize);
+                    break;
+                case 'Quarterly':
+                    facility.no = ++$scope.quarterlySize;
+                    $scope.quarterlyList.push($scope.quarterlySize);
+                    break;
+                case 'Yearly':
+                    facility.no = ++$scope.yearlySize;
+                    $scope.yearlyList.push($scope.yearlySize);
+                    break;
+            }
+
+            switch (oldFrequency) {
+                case 'Daily':
+                    --$scope.dailySize;
+                    $scope.dailyList.pop();
+                    break;
+                case 'Weekly':
+                    --$scope.weeklySize;
+                    $scope.weeklyList.pop();
+                    break;
+                case 'Monthly':
+                    --$scope.monthlySize;
+                    $scope.monthlyList.pop();
+                    break;
+                case 'Quarterly':
+                    --$scope.quarterlySize;
+                    $scope.quarterlyList.pop();
+                    break;
+                case 'Yearly':
+                    --$scope.yearlySize;
+                    $scope.yearlyList.pop();
+                    break;
+            }
+
+            $scope.reorganizeNumberListAdd(oldFrequency, oldNumber);
+        }
+    }
+    
+    $scope.numberItemSelectedAdd = function(facility, number) {
+        if (facility.no != number) {
+            var oldNumber = facility.no;
+            facility.no = 0;
+            angular.forEach($scope.facilityAddedList, function(projectFacilityValue, key) {
+                if (projectFacilityValue.frequency == facility.frequency) {
+                    if (projectFacilityValue.no != 0 && (oldNumber > projectFacilityValue.no && projectFacilityValue.no >= number))
+                        projectFacilityValue.no++;
+                    else if (projectFacilityValue != 0 && (oldNumber < projectFacilityValue.no && projectFacilityValue.no <= number))
+                        projectFacilityValue.no--;
+                }
+            })
+            facility.no = number;
+        }
     }
     
     $scope.moveProjectFacility = function(facility) {
@@ -2041,11 +2155,13 @@ app.controller('ProjectsController', ['$rootScope', '$route', '$routeParams', '$
             },
             dropped: function (el, source, target) {
                 if (target.id === "left" && source.id === "right") {
-                    $scope.addFacilityToProjectList(el.id);
+                    if ($scope.validation.length === 0) {
+                        $scope.addFacilityToProjectList(el.id);
+                        el.remove();
+                        $scope.$apply();
+                    }
 //                    var index = $scope.facilityList.map(function(x) {return x.name}).indexOf(el.id);
 //                    $scope.facilityList.splice(index,1);
-                    el.remove();
-                    $scope.$apply();
                 } else if (target.id === "right" && source.id === "left") {
 //                    $scope.facilityList.unshift({name:el.id});
                     var index = $scope.project.projectFacilityList.map(function(x) {return x.name}).indexOf(el.id);
