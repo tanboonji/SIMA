@@ -138,7 +138,7 @@
                 <div class="col-md-9 force-col-padding project-group-right" ng-class="{'facility-right-error': checklistEmpty}">
                     <div class="col-md-12 margin-top-13">
                         <div id="right">
-                            <div class="col-md-12 facility-group" ng-repeat="f in facilityAddedList" id="{{f.name}}" 
+                            <div class="col-md-12 facility-group" ng-repeat="f in facilityAddedList | orderBy:frequencyType:false:customFrequencyComparison" id="{{f.name}}" 
                                  ng-class="{'category-group-error': f.error}">
 <!--
                                 <div class="category-group-title margin-bottom-13">

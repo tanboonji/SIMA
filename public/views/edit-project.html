@@ -138,9 +138,9 @@
                 <div class="col-md-9 force-col-padding project-group-right" ng-class="{'facility-right-error': checklistEmpty}">
                     <div class="col-md-12 margin-top-13">
                         <div id="right">
-                            <div class="col-md-12 facility-group" ng-repeat="f in project.projectFacilityList | orderBy:frequencyType:false:customFrequencyComparison" id="{{f.name}}" 
+                            <div class="col-md-12 facility-group" ng-repeat="f in project.projectFacilityList | orderBy:'no'| orderBy:frequencyType:false:customFrequencyComparison " id="{{f.name}}" 
                                  ng-class="{'category-group-error': f.error}" ng-show="!f.deleted">
-<!--
+<!--orderBy:frequencyType:false:customFrequencyComparison | 
                                 <div class="category-group-title margin-bottom-13">
                                     <span class="facility-group-title">{{f.name}}</span>
                                     <div class="btn-group facility-frequency">
@@ -158,7 +158,16 @@
                                 </div>
 -->
                                 <div class="facility-input-title margin-bottom-13">
-                                    <span class="group-addon">{{c.no}}.</span>
+                                    <div class="btn-group facility-number">
+                                        <button type="button" class="btn btn-default dropdown-toggle dropdown-style-number" 
+                                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="true" ng-click="getNumberList(f.frequency)">
+                                            <div class="dropdown-text-left-number">{{f.no}}</div>
+                                            <span class="caret dropdown-text-right"></span>
+                                        </button>
+                                        <ul class="dropdown-menu dropdown-menu-number">
+                                            <li ng-repeat="s in numberList"><a ng-click="numberItemSelected(f,s)">{{s}}</a></li>
+                                        </ul>
+                                    </div>
                                     <input type="text" class="form-control group-input" ng-model="f.name" placeholder="Enter facility name" ng-required="!f.deleted"/>
                                     <div class="btn-group facility-frequency">
                                         <button type="button" class="btn btn-default dropdown-toggle dropdown-style" 

@@ -143,6 +143,13 @@
 .facility-frequency button:disabled {
     cursor: default;
 }
+.facility-number {
+    float: right !important;
+    margin-top: 4.3px;
+}
+.facility-number button:disabled {
+    cursor: default;
+}
 .btn-disabled {
     color: #333;
     border-color: #ccc;
@@ -167,7 +174,7 @@
 }
 .facility-input-title .group-input {
     border: 0;
-    border-radius: 4px 0 0 0;
+    border-radius: 0 0 0 0;
 }
 .facility-input-title .facility-frequency {
     float: none !important;
@@ -178,6 +185,17 @@
     border-radius: 0;
     border-top: 0;
     border-bottom: 0;
+}
+.facility-input-title .facility-number {
+    float: none !important;
+    display: table-cell;
+    width: 5%;
+}
+.facility-input-title .facility-number .btn {
+    border-radius: 0;
+    border-top: 0;
+    border-bottom: 0;
+    border-left: 0;
 }
 
 /* General - Checklist */
@@ -405,6 +423,20 @@ html, body {
 }
 .dropdown-menu li {
     cursor: pointer;
+}
+.dropdown-style-number {
+    display: inline-block;
+    min-width: 60px;
+    max-width: 60px;
+}
+.dropdown-text-left-number {
+    text-align: left;
+    display: inline-block;
+    min-width: 20px;
+}
+.dropdown-menu-number {
+    min-width: 60px;
+    max-width: 60px;
 }
 .has-icon .form-control {
     padding-left: 34px;

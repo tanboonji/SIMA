@@ -519,7 +519,68 @@ app.controller('ProjectsController', ['$rootScope', '$route', '$routeParams', '$
     $scope.frequencyList = ["Daily","Weekly","Monthly","Quarterly","Yearly"];
         
     $scope.frequencyItemSelected = function(facility, frequency) {
-        facility.frequency = frequency;
+        if (facility.frequency != frequency) {
+            var oldFrequency = facility.frequency;
+            var oldNumber = facility.no;
+            facility.frequency = frequency;
+
+            switch (frequency) {
+                case 'Daily':
+                    facility.no = ++$scope.dailySize;
+                    $scope.dailyList.push($scope.dailySize);
+                    break;
+                case 'Weekly':
+                    facility.no = ++$scope.weeklySize;
+                    $scope.weeklyList.push($scope.weeklySize);
+                    break;
+                case 'Monthly':
+                    facility.no = ++$scope.monthlySize;
+                    $scope.monthlyList.push($scope.monthlySize);
+                    break;
+                case 'Quarterly':
+                    facility.no = ++$scope.quarterlySize;
+                    $scope.quarterlyList.push($scope.quarterlySize);
+                    break;
+                case 'Yearly':
+                    facility.no = ++$scope.yearlySize;
+                    $scope.yearlyList.push($scope.yearlySize);
+                    break;
+            }
+
+            switch (oldFrequency) {
+                case 'Daily':
+                    --$scope.dailySize;
+                    $scope.dailyList.pop();
+                    break;
+                case 'Weekly':
+                    --$scope.weeklySize;
+                    $scope.weeklyList.pop();
+                    break;
+                case 'Monthly':
+                    --$scope.monthlySize;
+                    $scope.monthlyList.pop();
+                    break;
+                case 'Quarterly':
+                    --$scope.quarterlySize;
+                    $scope.quarterlyList.pop();
+                    break;
+                case 'Yearly':
+                    --$scope.yearlySize;
+                    $scope.yearlyList.pop();
+                    break;
+            }
+
+            $scope.reorganizeNumberList(oldFrequency, oldNumber);
+        }
+    }
+    
+    $scope.reorganizeNumberList = function(frequency, number) {
+        angular.forEach($scope.project.projectFacilityList, function(projectFacilityValue, key) {
+            if (projectFacilityValue.frequency == frequency) {
+                if (number <= projectFacilityValue.no)
+                    projectFacilityValue.no--;
+            }
+        })
     }
     
     $scope.addCategory = function(facility) {
@@ -1278,7 +1339,7 @@ app.controller('ProjectsController', ['$rootScope', '$route', '$routeParams', '$
     
     $scope.sortType = "name";
     $scope.sortReverse = false;
-        
+    
     $scope.frequencyType = "frequency";
         
     $scope.customFrequencyComparison = function(firstObject, secondObject) {
@@ -1286,7 +1347,10 @@ app.controller('ProjectsController', ['$rootScope', '$route', '$routeParams', '$
         secondValue = secondObject.value;
         switch (firstValue) {
             case 'Daily':
-                return (secondValue == 'Daily') ? 0 : -1;
+                if (secondValue == 'Daily')
+                    return (firstObject)
+                else
+                    return -1;
                 break;
             case 'Weekly':
                 if (secondValue == 'Daily')
@@ -1459,6 +1523,56 @@ app.controller('ProjectsController', ['$rootScope', '$route', '$routeParams', '$
     /*********************
     **** Project Edit ****
     *********************/
+        
+    $scope.dailySize = 0;
+    $scope.weeklySize = 0;
+    $scope.monthlySize = 0;
+    $scope.quarterlySize = 0;
+    $scope.yearlySize = 0;
+        
+    $scope.dailyList = [];
+    $scope.weeklyList = [];
+    $scope.monthlyList = [];
+    $scope.quarterlyList = [];
+    $scope.yearlyList = [];
+        
+    $scope.numberList = [];
+        
+    $scope.getNumberList = function(frequency) {
+        switch (frequency) {
+            case 'Daily':
+                $scope.numberList = $scope.dailyList;
+                break;
+            case 'Weekly':
+                $scope.numberList = $scope.weeklyList;
+                break;
+            case 'Monthly':
+                $scope.numberList = $scope.monthlyList;
+                break;
+            case 'Quarterly':
+                $scope.numberList = $scope.quarterlyList;
+                break;
+            case 'Yearly':
+                $scope.numberList = $scope.yearlyList;
+                break;
+        }
+    }
+    
+    $scope.numberItemSelected = function(facility, number) {
+        if (facility.no != number) {
+            var oldNumber = facility.no;
+            facility.no = 0;
+            angular.forEach($scope.project.projectFacilityList, function(projectFacilityValue, key) {
+                if (projectFacilityValue.frequency == facility.frequency) {
+                    if (projectFacilityValue.no != 0 && (oldNumber > projectFacilityValue.no && projectFacilityValue.no >= number))
+                        projectFacilityValue.no++;
+                    else if (projectFacilityValue != 0 && (oldNumber < projectFacilityValue.no && projectFacilityValue.no <= number))
+                        projectFacilityValue.no--;
+                }
+            })
+            facility.no = number;
+        }
+    }
     
     $scope.reloadProject = function() {
         $scope.refreshFacilityList();
@@ -1587,6 +1701,31 @@ app.controller('ProjectsController', ['$rootScope', '$route', '$routeParams', '$
                             console.log("database-project-not-found");
                             $scope.notify("An error occured when accessing firebase database (Error #006)", "danger");
                         }
+                        console.log(newProjectFacility);
+                        
+                        switch (newProjectFacility.frequency) {
+                            case 'Daily':
+                                newProjectFacility.no = ++$scope.dailySize;
+                                $scope.dailyList.push($scope.dailySize);
+                                break;
+                            case 'Weekly':
+                                newProjectFacility.no = ++$scope.weeklySize;
+                                $scope.weeklyList.push($scope.weeklySize);
+                                break;
+                            case 'Monthly':
+                                newProjectFacility.no = ++$scope.monthlySize;
+                                $scope.monthlyList.push($scope.monthlySize);
+                                break;
+                            case 'Quarterly':
+                                newProjectFacility.no = ++$scope.quarterlySize;
+                                $scope.quarterlyList.push($scope.quarterlySize);
+                                break;
+                            case 'Yearly':
+                                newProjectFacility.no = ++$scope.yearlySize;
+                                $scope.yearlyList.push($scope.yearlySize);
+                                break;
+                        }
+                        
                         $scope.project.projectFacilityList.push(newProjectFacility);
                         $scope.$apply();
                     }).catch(function(error) {
@@ -1741,6 +1880,29 @@ app.controller('ProjectsController', ['$rootScope', '$route', '$routeParams', '$
         
     $scope.deleteProjectFacility = function(facility) {
 //        $scope.facilityList.unshift({name:facility.name});
+        switch (facility.frequency) {
+            case 'Daily':
+                --$scope.dailySize;
+                $scope.dailyList.pop();
+                break;
+            case 'Weekly':
+                --$scope.weeklySize;
+                $scope.weeklyList.pop();
+                break;
+            case 'Monthly':
+                --$scope.monthlySize;
+                $scope.monthlyList.pop();
+                break;
+            case 'Quarterly':
+                --$scope.quarterlySize;
+                $scope.quarterlyList.pop();
+                break;
+            case 'Yearly':
+                --$scope.yearlySize;
+                $scope.yearlyList.pop();
+                break;
+        }
+        $scope.reorganizeNumberList(facility.frequency, facility.no);
         facility.deleted = true;
     }
     
@@ -1751,7 +1913,11 @@ app.controller('ProjectsController', ['$rootScope', '$route', '$routeParams', '$
     }
     
     $scope.moveProjectFacility = function(facility) {
-        $scope.addFacilityToProjectList(facility.name);
+        if ($scope.validation.length === 0) {
+//            $scope.btnValidate = false;
+//            $scope.$apply();
+            $scope.addFacilityToProjectList(facility.name);
+        }
 //        var index = $scope.facilityList.map(function(x) {return x.name}).indexOf(facility.name);
 //        $scope.facilityList.splice(index,1);
     }
@@ -1792,7 +1958,6 @@ app.controller('ProjectsController', ['$rootScope', '$route', '$routeParams', '$
                         $scope.project.projectFacilityList[0].checklist[categoryCount].questionList[questionCount].ID = questionValue.ID;
                         $scope.project.projectFacilityList[0].checklist[categoryCount].questionList[questionCount].type = questionValue.type;
                     });
-                    $scope.btnValidateRemove();
                     
 //                    firebase.database().ref("category/" + categoryID).once("value").then(function(categorySnapshot) {
 //                        if (categorySnapshot.val() != null) {
@@ -1836,6 +2001,11 @@ app.controller('ProjectsController', ['$rootScope', '$route', '$routeParams', '$
 //                        }
 //                    });
                 });
+                
+                $scope.project.projectFacilityList[0].no = ++$scope.dailySize;
+                $scope.dailyList.push($scope.dailySize);
+                
+                $scope.btnValidateRemove();
             }
         }).catch(function(error) {
             console.log(error);
