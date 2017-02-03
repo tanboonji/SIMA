@@ -2050,6 +2050,7 @@ app.controller('ProjectsController', ['$rootScope', '$route', '$routeParams', '$
 //                    $scope.facilityList.unshift({name:el.id});
                     var index = $scope.project.projectFacilityList.map(function(x) {return x.name}).indexOf(el.id);
                     $scope.project.projectFacilityList[index].deleted = true;
+                    $scope.deleteProjectFacility($scope.project.projectFacilityList[index]);
                     el.remove();
                     $scope.$apply();
                 }
