@@ -1278,6 +1278,42 @@ app.controller('ProjectsController', ['$rootScope', '$route', '$routeParams', '$
     
     $scope.sortType = "name";
     $scope.sortReverse = false;
+        
+    $scope.frequencyType = "frequency";
+        
+    $scope.customFrequencyComparison = function(firstObject, secondObject) {
+        firstValue = firstObject.value;
+        secondValue = secondObject.value;
+        switch (firstValue) {
+            case 'Daily':
+                return (secondValue == 'Daily') ? 0 : -1;
+                break;
+            case 'Weekly':
+                if (secondValue == 'Daily')
+                    return 1;
+                else
+                    return (secondValue == 'Weekly') ? 0 : -1;
+                break;
+            case 'Monthly':
+                if (secondValue == 'Daily' || secondValue == 'Weekly')
+                    return 1;
+                else
+                    return (secondValue == 'Monthly') ? 0 : -1;
+                break;
+            case 'Quarterly':
+                if (secondValue == 'Daily' || secondValue == 'Weekly' || secondValue == 'Monthly')
+                    return 1;
+                else
+                    return (secondValue == 'Quaterly') ? 0 : -1;
+                break;
+            case 'Yearly':
+                if (secondValue == 'Daily' || secondValue == 'Weekly' || secondValue == 'Monthly' || secondValue == 'Quarterly')
+                    return 1;
+                else
+                    return (secondValue == 'Yearly') ? 0 : -1;
+                break;
+        }
+    }
     
     /*********************
     **** Project View ****
