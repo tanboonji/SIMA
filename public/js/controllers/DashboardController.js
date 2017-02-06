@@ -520,6 +520,30 @@ app.controller('DashboardController', ['$rootScope', '$route', '$routeParams', '
         $scope.record.fullTM = "(" + $scope.record.TM + ") " + $scope.record.TMName;
         $scope.record.fullCM = "(" + $scope.record.CM + ") " + $scope.record.CMName;
     };
+    
+    /**************************
+    ** Convert IMG to Base64 **
+    **************************/
+        
+    $scope.convertImgToDataURLviaCanvas = function(url, callback, outputFormat) {
+        var img = new Image();
+        img.crossOrigin = 'Anonymous';
+        img.onload = function() {
+            console.log("here1");
+            var canvas = document.createElement('CANVAS');
+            var ctx = canvas.getContext('2d');
+            var dataURL;
+            canvas.height = this.height;
+            canvas.width = this.width;
+            ctx.drawImage(this, 0, 0);
+            dataURL = canvas.toDataURL(outputFormat);
+            callback(dataURL);
+            console.log("here1");
+            canvas = null;
+        };
+        console.log("here2");
+        img.src = url;
+    }
         
     /********************
     ** Generate Report **
@@ -536,6 +560,13 @@ app.controller('DashboardController', ['$rootScope', '$route', '$routeParams', '
         angular.forEach($scope.record.projectFacility, function(projectFacilityValue, projectFacilityKey) {
             angular.forEach(projectFacilityValue.category, function(categoryValue, categoryKey) {
                 angular.forEach(categoryValue.question, function(questionValue, questionKey) {
+                    if(questionValue.image != ""){
+                        $scope.convertImgToDataURLviaCanvas(questionValue.image, function(base64img){
+                            console.log(base64img);
+                            questionValue.image64 = base64img;
+                        });
+                        console.log(questionValue.image + ":" + questionValue.image64);
+                    };
                     if (questionValue.isMCQ) {
                         if (questionValue.isNo) {
                             reportData.issue.push({
@@ -579,40 +610,40 @@ app.controller('DashboardController', ['$rootScope', '$route', '$routeParams', '
 //                    "remarks":"remarks"
 //                }
         
-        var loadFile=function(url,callback){
-            JSZipUtils.getBinaryContent(url,callback);
-        }
-        loadFile("examples/tagExample.docx",function(err,content){
-            if (err) { throw err };
-            doc=new Docxgen(content);
-//            doc.setData( {"first_name":"Hipp",
-//                "last_name":"Edgar",
-//                "phone":"0652455478",
-//                "description":"New Website"
-//                }
-//            ) //set the templateVariables
-//            doc.setData({
-//                "issue":[{
-//                    "id":"1",
-//                    "beforePhoto":"before",
-//                    "location":"location",
-//                    "observations":"observations",
-//                    "afterPhoto":"after",
-//                    "remarks":"remarks"
-//                },{
-//                    "id":"2",
-//                    "beforePhoto":"before",
-//                    "location":"location",
-//                    "observations":"observations",
-//                    "afterPhoto":"after",
-//                    "remarks":"remarks"
-//                }]
-//            }); //set the templateVariables
-            doc.setData(reportData); //set the templateVariables
-            doc.render() //apply them (replace all occurences of {first_name} by Hipp, ...)
-            out=doc.getZip().generate({type:"blob"}) //Output the document using Data-URI
-            saveAs(out,"output.docx")
-        })
+//        var loadFile=function(url,callback){
+//            JSZipUtils.getBinaryContent(url,callback);
+//        }
+//        loadFile("examples/tagExample.docx",function(err,content){
+//            if (err) { throw err };
+//            doc=new Docxgen(content);
+////            doc.setData( {"first_name":"Hipp",
+////                "last_name":"Edgar",
+////                "phone":"0652455478",
+////                "description":"New Website"
+////                }
+////            ) //set the templateVariables
+////            doc.setData({
+////                "issue":[{
+////                    "id":"1",
+////                    "beforePhoto":"before",
+////                    "location":"location",
+////                    "observations":"observations",
+////                    "afterPhoto":"after",
+////                    "remarks":"remarks"
+////                },{
+////                    "id":"2",
+////                    "beforePhoto":"before",
+////                    "location":"location",
+////                    "observations":"observations",
+////                    "afterPhoto":"after",
+////                    "remarks":"remarks"
+////                }]
+////            }); //set the templateVariables
+//            doc.setData(reportData); //set the templateVariables
+//            doc.render() //apply them (replace all occurences of {first_name} by Hipp, ...)
+//            out=doc.getZip().generate({type:"blob"}) //Output the document using Data-URI
+//            saveAs(out,"output.docx")
+//        })
     };
     
 }]);
