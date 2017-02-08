@@ -613,37 +613,76 @@ app.controller('DashboardController', ['$rootScope', '$route', '$routeParams', '
         var loadFile=function(url,callback){
             JSZipUtils.getBinaryContent(url,callback);
         }
-        loadFile("examples/tagExample.docx",function(err,content){
-            if (err) { throw err };
-            doc=new Docxgen(content);
-//            doc.setData( {"first_name":"Hipp",
-//                "last_name":"Edgar",
-//                "phone":"0652455478",
-//                "description":"New Website"
-//                }
-//            ) //set the templateVariables
-//            doc.setData({
-//                "issue":[{
-//                    "id":"1",
-//                    "beforePhoto":"before",
-//                    "location":"location",
-//                    "observations":"observations",
-//                    "afterPhoto":"after",
-//                    "remarks":"remarks"
-//                },{
-//                    "id":"2",
-//                    "beforePhoto":"before",
-//                    "location":"location",
-//                    "observations":"observations",
-//                    "afterPhoto":"after",
-//                    "remarks":"remarks"
-//                }]
-//            }); //set the templateVariables
-            doc.setData(reportData); //set the templateVariables
-            doc.render() //apply them (replace all occurences of {first_name} by Hipp, ...)
-            out=doc.getZip().generate({type:"blob"}) //Output the document using Data-URI
+        
+//        function loadFile(url,callback){
+//            JSZipUtils.getBinaryContent(url,callback);
+//        }
+        
+//        loadFile("examples/tagExample.docx",function(err,content){
+//            if (err) { throw err };
+//            doc=new Docxgen(content);
+////            doc.setData( {"first_name":"Hipp",
+////                "last_name":"Edgar",
+////                "phone":"0652455478",
+////                "description":"New Website"
+////                }
+////            ) //set the templateVariables
+////            doc.setData({
+////                "issue":[{
+////                    "id":"1",
+////                    "beforePhoto":"before",
+////                    "location":"location",
+////                    "observations":"observations",
+////                    "afterPhoto":"after",
+////                    "remarks":"remarks"
+////                },{
+////                    "id":"2",
+////                    "beforePhoto":"before",
+////                    "location":"location",
+////                    "observations":"observations",
+////                    "afterPhoto":"after",
+////                    "remarks":"remarks"
+////                }]
+////            }); //set the templateVariables
+//            doc.setData(reportData); //set the templateVariables
+//            doc.render() //apply them (replace all occurences of {first_name} by Hipp, ...)
+//            out=doc.getZip().generate({type:"blob"}) //Output the document using Data-URI
+//            saveAs(out,"output.docx")
+//        })
+        
+        loadFile("examples/tagExample.docx",function(error,content){
+            if (error) { throw error };
+            var zip = new JSZip(content);
+            var doc = new Docxtemplater().loadZip(zip)
+            doc.setData({
+                first_name: 'John',
+                last_name: 'Doe',
+                phone: '0652455478',
+                description: 'New Website'
+            });
+
+            try {
+                // render the document (replace all occurences of {first_name} by John, {last_name} by Doe, ...)
+                doc.render()
+            } catch (error) {
+                var e = {
+                    message: error.message,
+                    name: error.name,
+                    stack: error.stack,
+                    properties: error.properties,
+                }
+                console.log(JSON.stringify({error: e}));
+                // The error thrown here contains additional information when logged with JSON.stringify (it contains a property object).
+                throw error;
+            }
+
+            var out=doc.getZip().generate({
+                type:"blob",
+                mimeType: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+            }) //Output the document using Data-URI
             saveAs(out,"output.docx")
         })
+        
     };
     
 }]);
