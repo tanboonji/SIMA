@@ -521,28 +521,28 @@ app.controller('ProjectsController', ['$rootScope', '$route', '$routeParams', '$
     $scope.frequencyItemSelected = function(facility, frequency) {
         if (facility.frequency != frequency) {
             var oldFrequency = facility.frequency;
-            var oldNumber = facility.no;
+            var oldNumber = facility.order;
             facility.frequency = frequency;
 
             switch (frequency) {
                 case 'Daily':
-                    facility.no = ++$scope.dailySize;
+                    facility.order = ++$scope.dailySize;
                     $scope.dailyList.push($scope.dailySize);
                     break;
                 case 'Weekly':
-                    facility.no = ++$scope.weeklySize;
+                    facility.order = ++$scope.weeklySize;
                     $scope.weeklyList.push($scope.weeklySize);
                     break;
                 case 'Monthly':
-                    facility.no = ++$scope.monthlySize;
+                    facility.order = ++$scope.monthlySize;
                     $scope.monthlyList.push($scope.monthlySize);
                     break;
                 case 'Quarterly':
-                    facility.no = ++$scope.quarterlySize;
+                    facility.order = ++$scope.quarterlySize;
                     $scope.quarterlyList.push($scope.quarterlySize);
                     break;
                 case 'Yearly':
-                    facility.no = ++$scope.yearlySize;
+                    facility.order = ++$scope.yearlySize;
                     $scope.yearlyList.push($scope.yearlySize);
                     break;
             }
@@ -577,8 +577,8 @@ app.controller('ProjectsController', ['$rootScope', '$route', '$routeParams', '$
     $scope.reorganizeNumberList = function(frequency, number) {
         angular.forEach($scope.project.projectFacilityList, function(projectFacilityValue, key) {
             if (projectFacilityValue.frequency == frequency) {
-                if (number <= projectFacilityValue.no)
-                    projectFacilityValue.no--;
+                if (number <= projectFacilityValue.order)
+                    projectFacilityValue.order--;
             }
         })
     }
@@ -798,7 +798,7 @@ app.controller('ProjectsController', ['$rootScope', '$route', '$routeParams', '$
 //                    });
                 });
                 
-                $scope.facilityAddedList[0].no = ++$scope.dailySize;
+                $scope.facilityAddedList[0].order = ++$scope.dailySize;
                 $scope.dailyList.push($scope.dailySize);
                 
                 $scope.btnValidateRemove();
@@ -814,6 +814,43 @@ app.controller('ProjectsController', ['$rootScope', '$route', '$routeParams', '$
             }
         });
     };
+        
+//    $scope.sortAddProject = function() {
+//        $scope.facilityAddedList.sort(function(a, b) {
+//            switch (a.frequency) {
+//                case 'Daily':
+//                    if (b.frequency == 'Daily')
+//                        return (a.no - b.no);
+//                    else
+//                        return -1;
+//                    break;
+//                case 'Weekly':
+//                    if (b.frequency == 'Daily')
+//                        return 1;
+//                    else
+//                        return (a.no - b.no);
+//                    break;
+//                case 'Monthly':
+//                    if (b.frequency == 'Daily' || b.frequency == 'Weekly')
+//                        return 1;
+//                    else
+//                        return (a.no - b.no);
+//                    break;
+//                case 'Quarterly':
+//                    if (b.frequency == 'Daily' || b.frequency == 'Weekly' || b.frequency == 'Monthly')
+//                        return 1;
+//                    else
+//                        return (a.no - b.no);
+//                    break;
+//                case 'Yearly':
+//                    if (b.frequency == 'Daily' || b.frequency == 'Weekly' || b.frequency == 'Monthly' || b.frequency == 'Quarterly')
+//                        return 1;
+//                    else
+//                        return (a.no - b.no);
+//                    break;
+//            }
+//        });
+//    };
     
     $scope.validateProject = function() {
         if ($scope.MCSTS === undefined || $scope.MCSTS === "") {
@@ -949,6 +986,7 @@ app.controller('ProjectsController', ['$rootScope', '$route', '$routeParams', '$
                     firebase.database().ref('projectfacility/' + $scope.projectFacilityAlphabet + $scope.projectFacilityCount).set({
                             frequency: facilityValue.frequency,
                             name: facilityValue.name,
+                            order: facilityValue.order,
                             ID: $scope.projectFacilityAlphabet + $scope.projectFacilityCount,
                             projectID: $scope.projectAlphabet + $scope.projectCount
                     }).then(function() {
@@ -1356,7 +1394,7 @@ app.controller('ProjectsController', ['$rootScope', '$route', '$routeParams', '$
         switch (firstValue) {
             case 'Daily':
                 if (secondValue == 'Daily')
-                    return (firstObject)
+                    return 0;
                 else
                     return -1;
                 break;
@@ -1567,18 +1605,18 @@ app.controller('ProjectsController', ['$rootScope', '$route', '$routeParams', '$
     }
     
     $scope.numberItemSelected = function(facility, number) {
-        if (facility.no != number) {
-            var oldNumber = facility.no;
-            facility.no = 0;
+        if (facility.order != number) {
+            var oldNumber = facility.order;
+            facility.order = 0;
             angular.forEach($scope.project.projectFacilityList, function(projectFacilityValue, key) {
                 if (projectFacilityValue.frequency == facility.frequency) {
-                    if (projectFacilityValue.no != 0 && (oldNumber > projectFacilityValue.no && projectFacilityValue.no >= number))
-                        projectFacilityValue.no++;
-                    else if (projectFacilityValue != 0 && (oldNumber < projectFacilityValue.no && projectFacilityValue.no <= number))
-                        projectFacilityValue.no--;
+                    if (projectFacilityValue.order != 0 && (oldNumber > projectFacilityValue.order && projectFacilityValue.order >= number))
+                        projectFacilityValue.order++;
+                    else if (projectFacilityValue != 0 && (oldNumber < projectFacilityValue.order && projectFacilityValue.order <= number))
+                        projectFacilityValue.order--;
                 }
             })
-            facility.no = number;
+            facility.order = number;
         }
     }
     
@@ -1711,27 +1749,29 @@ app.controller('ProjectsController', ['$rootScope', '$route', '$routeParams', '$
                         }
                         console.log(newProjectFacility);
                         
-                        switch (newProjectFacility.frequency) {
-                            case 'Daily':
-                                newProjectFacility.no = ++$scope.dailySize;
-                                $scope.dailyList.push($scope.dailySize);
-                                break;
-                            case 'Weekly':
-                                newProjectFacility.no = ++$scope.weeklySize;
-                                $scope.weeklyList.push($scope.weeklySize);
-                                break;
-                            case 'Monthly':
-                                newProjectFacility.no = ++$scope.monthlySize;
-                                $scope.monthlyList.push($scope.monthlySize);
-                                break;
-                            case 'Quarterly':
-                                newProjectFacility.no = ++$scope.quarterlySize;
-                                $scope.quarterlyList.push($scope.quarterlySize);
-                                break;
-                            case 'Yearly':
-                                newProjectFacility.no = ++$scope.yearlySize;
-                                $scope.yearlyList.push($scope.yearlySize);
-                                break;
+                        if (newProjectFacility.order == null || newProjectFacility == undefined) {
+                            switch (newProjectFacility.frequency) {
+                                case 'Daily':
+                                    newProjectFacility.order = ++$scope.dailySize;
+                                    $scope.dailyList.push($scope.dailySize);
+                                    break;
+                                case 'Weekly':
+                                    newProjectFacility.order = ++$scope.weeklySize;
+                                    $scope.weeklyList.push($scope.weeklySize);
+                                    break;
+                                case 'Monthly':
+                                    newProjectFacility.order = ++$scope.monthlySize;
+                                    $scope.monthlyList.push($scope.monthlySize);
+                                    break;
+                                case 'Quarterly':
+                                    newProjectFacility.order = ++$scope.quarterlySize;
+                                    $scope.quarterlyList.push($scope.quarterlySize);
+                                    break;
+                                case 'Yearly':
+                                    newProjectFacility.order = ++$scope.yearlySize;
+                                    $scope.yearlyList.push($scope.yearlySize);
+                                    break;
+                            }
                         }
                         
                         $scope.project.projectFacilityList.push(newProjectFacility);
@@ -1910,7 +1950,7 @@ app.controller('ProjectsController', ['$rootScope', '$route', '$routeParams', '$
                 $scope.yearlyList.pop();
                 break;
         }
-        $scope.reorganizeNumberList(facility.frequency, facility.no);
+        $scope.reorganizeNumberList(facility.frequency, facility.order);
         facility.deleted = true;
     }
     
@@ -1940,7 +1980,7 @@ app.controller('ProjectsController', ['$rootScope', '$route', '$routeParams', '$
                 $scope.yearlyList.pop();
                 break;
         }
-        $scope.reorganizeNumberListAdd(facility.frequency, facility.no);
+        $scope.reorganizeNumberListAdd(facility.frequency, facility.order);
         
         $scope.facilityAddedList.splice(index,1);
     }
@@ -1948,8 +1988,8 @@ app.controller('ProjectsController', ['$rootScope', '$route', '$routeParams', '$
     $scope.reorganizeNumberListAdd = function(frequency, number) {
         angular.forEach($scope.facilityAddedList, function(projectFacilityValue, key) {
             if (projectFacilityValue.frequency == frequency) {
-                if (number <= projectFacilityValue.no)
-                    projectFacilityValue.no--;
+                if (number <= projectFacilityValue.order)
+                    projectFacilityValue.order--;
             }
         })
     }
@@ -1957,28 +1997,28 @@ app.controller('ProjectsController', ['$rootScope', '$route', '$routeParams', '$
     $scope.frequencyItemSelectedAdd = function(facility, frequency) {
         if (facility.frequency != frequency) {
             var oldFrequency = facility.frequency;
-            var oldNumber = facility.no;
+            var oldNumber = facility.order;
             facility.frequency = frequency;
 
             switch (frequency) {
                 case 'Daily':
-                    facility.no = ++$scope.dailySize;
+                    facility.order = ++$scope.dailySize;
                     $scope.dailyList.push($scope.dailySize);
                     break;
                 case 'Weekly':
-                    facility.no = ++$scope.weeklySize;
+                    facility.order = ++$scope.weeklySize;
                     $scope.weeklyList.push($scope.weeklySize);
                     break;
                 case 'Monthly':
-                    facility.no = ++$scope.monthlySize;
+                    facility.order = ++$scope.monthlySize;
                     $scope.monthlyList.push($scope.monthlySize);
                     break;
                 case 'Quarterly':
-                    facility.no = ++$scope.quarterlySize;
+                    facility.order = ++$scope.quarterlySize;
                     $scope.quarterlyList.push($scope.quarterlySize);
                     break;
                 case 'Yearly':
-                    facility.no = ++$scope.yearlySize;
+                    facility.order = ++$scope.yearlySize;
                     $scope.yearlyList.push($scope.yearlySize);
                     break;
             }
@@ -2011,18 +2051,18 @@ app.controller('ProjectsController', ['$rootScope', '$route', '$routeParams', '$
     }
     
     $scope.numberItemSelectedAdd = function(facility, number) {
-        if (facility.no != number) {
-            var oldNumber = facility.no;
-            facility.no = 0;
+        if (facility.order != number) {
+            var oldNumber = facility.order;
+            facility.order = 0;
             angular.forEach($scope.facilityAddedList, function(projectFacilityValue, key) {
                 if (projectFacilityValue.frequency == facility.frequency) {
-                    if (projectFacilityValue.no != 0 && (oldNumber > projectFacilityValue.no && projectFacilityValue.no >= number))
-                        projectFacilityValue.no++;
-                    else if (projectFacilityValue != 0 && (oldNumber < projectFacilityValue.no && projectFacilityValue.no <= number))
-                        projectFacilityValue.no--;
+                    if (projectFacilityValue.order != 0 && (oldNumber > projectFacilityValue.order && projectFacilityValue.order >= number))
+                        projectFacilityValue.order++;
+                    else if (projectFacilityValue != 0 && (oldNumber < projectFacilityValue.order && projectFacilityValue.order <= number))
+                        projectFacilityValue.order--;
                 }
             })
-            facility.no = number;
+            facility.order = number;
         }
     }
     
@@ -2116,7 +2156,7 @@ app.controller('ProjectsController', ['$rootScope', '$route', '$routeParams', '$
 //                    });
                 });
                 
-                $scope.project.projectFacilityList[0].no = ++$scope.dailySize;
+                $scope.project.projectFacilityList[0].order = ++$scope.dailySize;
                 $scope.dailyList.push($scope.dailySize);
                 
                 $scope.btnValidateRemove();
@@ -2510,6 +2550,7 @@ app.controller('ProjectsController', ['$rootScope', '$route', '$routeParams', '$
                         firebase.database().ref('projectfacility/' + facilityValue.ID).set({
                             frequency: facilityValue.frequency,
                             name: facilityValue.name,
+                            order: facilityValue.order,
                             ID: facilityValue.ID,
                             projectID: $scope.project.ID
                         }).then(function() {
@@ -2646,6 +2687,7 @@ app.controller('ProjectsController', ['$rootScope', '$route', '$routeParams', '$
                         firebase.database().ref('projectfacility/' + $scope.projectFacilityAlphabet + $scope.projectFacilityCount).set({
                                 frequency: facilityValue.frequency,
                                 name: facilityValue.name,
+                                order: facilityValue.order,
                                 ID: $scope.projectFacilityAlphabet + $scope.projectFacilityCount,
                                 projectID: $scope.project.ID
                         }).then(function() {
