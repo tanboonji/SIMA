@@ -1,5 +1,5 @@
 app.controller('ContractController', ['$rootScope', '$route', '$routeParams', '$scope', '$location', '$firebaseAuth', '$firebaseObject', 
-	'$firebaseArray', function($rootScope, $route, $routeParams, $scope, $location, $firebaseAuth, $firebaseObject, $firebaseArray){
+	'$firebaseArray', '$filter', function($rootScope, $route, $routeParams, $scope, $location, $firebaseAuth, $firebaseObject, $firebaseArray, $filter){
 	
 	/********************
     ****** General ******
@@ -648,11 +648,13 @@ app.controller('ContractController', ['$rootScope', '$route', '$routeParams', '$
                         var tempList = [];
                         angular.forEach(contractSnapshot.val().existing, function(projectValue, projectKey) {
                             angular.forEach(projectValue, function(contractValue, contractKey) {
-                                console.log(contractValue);
                                 var temp = contractValue;
                                 temp.projectID = projectKey;
                                 temp.contractID = contractKey;
                                 temp.status = 'Existing';
+                                temp.effectiveDate2 = $filter('date')(temp.effectiveDate, 'yyyyMMdd');
+                                temp.expiryDate2 = $filter('date')(temp.expiryDate, 'yyyyMMdd');
+                                console.log(contractValue);
 
                                 var newDate = new Date();
                                 var currentYear = newDate.newYearNow();
