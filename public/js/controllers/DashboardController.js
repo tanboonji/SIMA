@@ -1,5 +1,5 @@
 app.controller('DashboardController', ['$rootScope', '$route', '$routeParams', '$scope', '$location', '$firebaseAuth', '$firebaseObject', 
-	'$firebaseArray', function($rootScope, $route, $routeParams, $scope, $location, $firebaseAuth, $firebaseObject, $firebaseArray){
+	'$firebaseArray', '$timeout', function($rootScope, $route, $routeParams, $scope, $location, $firebaseAuth, $firebaseObject, $firebaseArray, $timeout){
 	
 	/***** General *****/
     
@@ -545,12 +545,54 @@ app.controller('DashboardController', ['$rootScope', '$route', '$routeParams', '
     /********************
     ** Generate Report **
     ********************/
+    
+    $scope.reportData;
+    $scope.reportCount = 0;
+        
+    $scope.printReport = function() {
+        if ($scope.reportCount != 0) {
+            console.log("ran");
+            $timeout($scope.printReport, 1000);
+        } else {
+            var loadFile=function(url,callback){
+                JSZipUtils.getBinaryContent(url,callback);
+            }
+            
+            loadFile("examples/tagExample.docx",function(error,content) {
+                if (error) { throw error };
+                var zip = new JSZip(content);
+                var doc = new Docxtemplater().loadZip(zip)
+                doc.setData($scope.reportData);
+
+                try {
+                    // render the document (replace all occurences of {first_name} by John, {last_name} by Doe, ...)
+                    doc.render()
+                } catch (error) {
+                    var e = {
+                        message: error.message,
+                        name: error.name,
+                        stack: error.stack,
+                        properties: error.properties,
+                    }
+                    console.log(JSON.stringify({error: e}));
+                    // The error thrown here contains additional information when logged with JSON.stringify (it contains a property object).
+                    throw error;
+                }
+
+                var out=doc.getZip().generate({
+                    type:"blob",
+                    mimeType: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+                }) //Output the document using Data-URI
+                saveAs(out,"output.docx")
+            })
+        }
+    };
         
     $scope.generateReport = function() {
         
-        var count = 0;
+        $scope.reportCount = 0;
         
-        var reportData = {
+        $scope.reportData = {
             "projectName":$scope.record.name,
             "date": $scope.record.inspectionDate,
             "issue":[]
@@ -560,39 +602,67 @@ app.controller('DashboardController', ['$rootScope', '$route', '$routeParams', '
             angular.forEach(projectFacilityValue.category, function(categoryValue, categoryKey) {
                 angular.forEach(categoryValue.question, function(questionValue, questionKey) {
                     if(questionValue.image != ""){
-                        count++;
+                        $scope.reportCount++;
                         $scope.convertImgToDataURLviaCanvas(questionValue.image, function(base64img){
                             console.log(base64img);
                             questionValue.image64 = base64img;
-                            count--;
+                            
+                            if (questionValue.isMCQ) {
+                                if (questionValue.isNo) {
+                                    $scope.reportData.issue.push({
+                                        "id":questionValue.ID,
+                                        "beforePhoto":questionValue.image,
+                                        "location":projectFacilityValue.name,
+                                        "question":questionValue.name,
+                                        "comments": questionValue.comments,
+                                        "afterPhoto":"here",
+                                        "remarks":""
+                                    })
+                                }
+                            } else {
+                                $scope.reportData.issue.push({
+                                    "id":questionValue.ID,
+                                    "beforePhoto":questionValue.image,
+                                    "location":projectFacilityValue.name,
+                                    "question":questionValue.name,
+                                    "comments": questionValue.comments,
+                                    "afterPhoto":"here",
+                                    "remarks":""
+                                })
+                            }
+                            
+                            $scope.reportCount--;
                         });
-                    };
-                    if (questionValue.isMCQ) {
-                        if (questionValue.isNo) {
-                            reportData.issue.push({
+                    } else {
+                        if (questionValue.isMCQ) {
+                            if (questionValue.isNo) {
+                                $scope.reportData.issue.push({
+                                    "id":questionValue.ID,
+                                    "beforePhoto":questionValue.image,
+                                    "location":projectFacilityValue.name,
+                                    "question":questionValue.name,
+                                    "comments": questionValue.comments,
+                                    "afterPhoto":"empty",
+                                    "remarks":""
+                                })
+                            }
+                        } else {
+                            $scope.reportData.issue.push({
                                 "id":questionValue.ID,
                                 "beforePhoto":questionValue.image,
                                 "location":projectFacilityValue.name,
                                 "question":questionValue.name,
                                 "comments": questionValue.comments,
-                                "afterPhoto":"",
+                                "afterPhoto":"empty",
                                 "remarks":""
                             })
                         }
-                    } else {
-                        reportData.issue.push({
-                            "id":questionValue.ID,
-                            "beforePhoto":questionValue.image,
-                            "location":projectFacilityValue.name,
-                            "question":questionValue.name,
-                            "comments": questionValue.comments,
-                            "afterPhoto":"",
-                            "remarks":""
-                        })
                     }
                 })
             })
         })
+        
+        $scope.printReport();
         
 //                {
 //                    "id":"1",
@@ -610,9 +680,9 @@ app.controller('DashboardController', ['$rootScope', '$route', '$routeParams', '
 //                    "remarks":"remarks"
 //                }
         
-        var loadFile=function(url,callback){
-            JSZipUtils.getBinaryContent(url,callback);
-        }
+//        var loadFile=function(url,callback){
+//            JSZipUtils.getBinaryContent(url,callback);
+//        }
         
 //        function loadFile(url,callback){
 //            JSZipUtils.getBinaryContent(url,callback);
@@ -644,44 +714,39 @@ app.controller('DashboardController', ['$rootScope', '$route', '$routeParams', '
 ////                    "remarks":"remarks"
 ////                }]
 ////            }); //set the templateVariables
-//            doc.setData(reportData); //set the templateVariables
+//            doc.setData($scope.reportData); //set the templateVariables
 //            doc.render() //apply them (replace all occurences of {first_name} by Hipp, ...)
 //            out=doc.getZip().generate({type:"blob"}) //Output the document using Data-URI
 //            saveAs(out,"output.docx")
 //        })
         
-        loadFile("examples/tagExample.docx",function(error,content){
-            if (error) { throw error };
-            var zip = new JSZip(content);
-            var doc = new Docxtemplater().loadZip(zip)
-            doc.setData({
-                first_name: 'John',
-                last_name: 'Doe',
-                phone: '0652455478',
-                description: 'New Website'
-            });
-
-            try {
-                // render the document (replace all occurences of {first_name} by John, {last_name} by Doe, ...)
-                doc.render()
-            } catch (error) {
-                var e = {
-                    message: error.message,
-                    name: error.name,
-                    stack: error.stack,
-                    properties: error.properties,
-                }
-                console.log(JSON.stringify({error: e}));
-                // The error thrown here contains additional information when logged with JSON.stringify (it contains a property object).
-                throw error;
-            }
-
-            var out=doc.getZip().generate({
-                type:"blob",
-                mimeType: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-            }) //Output the document using Data-URI
-            saveAs(out,"output.docx")
-        })
+//        loadFile("examples/tagExample.docx",function(error,content) {
+//            if (error) { throw error };
+//            var zip = new JSZip(content);
+//            var doc = new Docxtemplater().loadZip(zip)
+//            doc.setData($scope.reportData);
+//
+//            try {
+//                // render the document (replace all occurences of {first_name} by John, {last_name} by Doe, ...)
+//                doc.render()
+//            } catch (error) {
+//                var e = {
+//                    message: error.message,
+//                    name: error.name,
+//                    stack: error.stack,
+//                    properties: error.properties,
+//                }
+//                console.log(JSON.stringify({error: e}));
+//                // The error thrown here contains additional information when logged with JSON.stringify (it contains a property object).
+//                throw error;
+//            }
+//
+//            var out=doc.getZip().generate({
+//                type:"blob",
+//                mimeType: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+//            }) //Output the document using Data-URI
+//            saveAs(out,"output.docx")
+//        })
         
     };
     

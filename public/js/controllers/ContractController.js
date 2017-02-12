@@ -652,8 +652,8 @@ app.controller('ContractController', ['$rootScope', '$route', '$routeParams', '$
                                 temp.projectID = projectKey;
                                 temp.contractID = contractKey;
                                 temp.status = 'Existing';
-                                temp.effectiveDate2 = $filter('date')(temp.effectiveDate, 'yyyyMMdd');
-                                temp.expiryDate2 = $filter('date')(temp.expiryDate, 'yyyyMMdd');
+                                temp.effectiveDate = $filter('date')(new Date(temp.effectiveDate), 'yyyyMMdd');
+                                temp.expiryDate = $filter('date')(new Date(temp.expiryDate), 'yyyyMMdd');
                                 console.log(contractValue);
 
                                 var newDate = new Date();
