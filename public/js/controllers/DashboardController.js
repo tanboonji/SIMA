@@ -551,9 +551,20 @@ app.controller('DashboardController', ['$rootScope', '$route', '$routeParams', '
         
     $scope.printReport = function() {
         if ($scope.reportCount != 0) {
-            console.log("ran");
             $timeout($scope.printReport, 1000);
-        } else {
+        } else {   
+            var opts = {}
+            opts.centered = false;
+            opts.getImage=function(tagValue, tagName) {
+                return (tagValue);
+            }
+
+            opts.getSize=function(img,tagValue, tagName) {
+                return [150,150];
+            }
+
+            var imageModule=new ImageModule(opts);
+            
             var loadFile=function(url,callback){
                 JSZipUtils.getBinaryContent(url,callback);
             }
@@ -561,8 +572,10 @@ app.controller('DashboardController', ['$rootScope', '$route', '$routeParams', '
             loadFile("examples/tagExample.docx",function(error,content) {
                 if (error) { throw error };
                 var zip = new JSZip(content);
-                var doc = new Docxtemplater().loadZip(zip)
-                doc.setData($scope.reportData);
+                var doc = new Docxtemplater()
+                    .loadZip(zip)
+                    .attachModule(imageModule)
+                    .setData($scope.reportData);
 
                 try {
                     // render the document (replace all occurences of {first_name} by John, {last_name} by Doe, ...)
@@ -605,7 +618,9 @@ app.controller('DashboardController', ['$rootScope', '$route', '$routeParams', '
                         $scope.reportCount++;
                         $scope.convertImgToDataURLviaCanvas(questionValue.image, function(base64img){
                             console.log(base64img);
-                            questionValue.image64 = base64img;
+                            base64img = base64img.split(",");
+                            questionValue.image64 = base64img[1];
+                            console.log(questionValue.image64);
                             
                             if (questionValue.isMCQ) {
                                 if (questionValue.isNo) {
@@ -615,7 +630,7 @@ app.controller('DashboardController', ['$rootScope', '$route', '$routeParams', '
                                         "location":projectFacilityValue.name,
                                         "question":questionValue.name,
                                         "comments": questionValue.comments,
-                                        "afterPhoto":"here",
+                                        "afterPhoto":questionValue.image64,
                                         "remarks":""
                                     })
                                 }
@@ -626,7 +641,7 @@ app.controller('DashboardController', ['$rootScope', '$route', '$routeParams', '
                                     "location":projectFacilityValue.name,
                                     "question":questionValue.name,
                                     "comments": questionValue.comments,
-                                    "afterPhoto":"here",
+                                    "afterPhoto":questionValue.image64,
                                     "remarks":""
                                 })
                             }
@@ -642,7 +657,7 @@ app.controller('DashboardController', ['$rootScope', '$route', '$routeParams', '
                                     "location":projectFacilityValue.name,
                                     "question":questionValue.name,
                                     "comments": questionValue.comments,
-                                    "afterPhoto":"empty",
+                                    "%afterPhoto":"",
                                     "remarks":""
                                 })
                             }
@@ -653,7 +668,7 @@ app.controller('DashboardController', ['$rootScope', '$route', '$routeParams', '
                                 "location":projectFacilityValue.name,
                                 "question":questionValue.name,
                                 "comments": questionValue.comments,
-                                "afterPhoto":"empty",
+                                "%afterPhoto":"",
                                 "remarks":""
                             })
                         }
