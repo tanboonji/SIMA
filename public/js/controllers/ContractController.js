@@ -609,18 +609,22 @@ app.controller('ContractController', ['$rootScope', '$route', '$routeParams', '$
 //            return false;
 //    };
         
-    $scope.sortByStatusList = ['Existing','Expired'];
-    $scope.sortByStatusItem = 'Existing';
+    $scope.sortByStatusList = ['Expired','Expiring','Renewed','All'];
+    $scope.sortByStatusItem = 'Expired';
         
     $scope.sortByStatusItemSelected = function(itemSelected) {
         $scope.sortByStatusItem = itemSelected;
     };
     
     $scope.isexpired = function(c) {
-        if ($scope.sortByStatusItem === 'Existing')
-            return (c.status === 'Existing');
+        if ($scope.sortByStatusItem === 'Expiring')
+            return (c.status === 'Expiring' || c.status === 'ExpiringSoon');
         else if ($scope.sortByStatusItem === 'Expired')
             return (c.status === 'Expired');
+        else if ($scope.sortByStatusItem === 'Renewed')
+            return (c.status === 'Renewed');
+        else if ($scope.sortByStatusItem === 'All')
+            return true;
         else
             return false;
     }
@@ -646,45 +650,74 @@ app.controller('ContractController', ['$rootScope', '$route', '$routeParams', '$
                 firebase.database().ref('project').once('value').then(function (projectSnapshot, error) {
                     firebase.database().ref('staff').once('value').then(function (staffSnapshot, error) {
                         var tempList = [];
+                        var newDate = new Date();
+                        var currentYear = newDate.newYearNow();
+                        var currentMonth = newDate.newMonthNow();
+                        var currentDay = newDate.newDayNow();
                         angular.forEach(contractSnapshot.val().existing, function(projectValue, projectKey) {
                             angular.forEach(projectValue, function(contractValue, contractKey) {
                                 var temp = contractValue;
                                 temp.projectID = projectKey;
                                 temp.contractID = contractKey;
-                                temp.status = 'Existing';
                                 temp.effectiveDate = $filter('date')(new Date(temp.effectiveDate), 'yyyyMMdd');
                                 temp.expiryDate = $filter('date')(new Date(temp.expiryDate), 'yyyyMMdd');
-                                console.log(contractValue);
 
-                                var newDate = new Date();
-                                var currentYear = newDate.newYearNow();
-                                var currentMonth = newDate.newMonthNow();
-                                var currentDay = newDate.newDayNow();
                                 var contractYear = contractValue.expiryDate.toString().substr(0,4);
                                 var contractMonth = contractValue.expiryDate.toString().substr(4,2);
                                 var contractDay = contractValue.expiryDate.toString().substr(6,2);
+                                
+                                var yearDiff = contractYear - currentYear;
 
-                                if ((contractYear - currentYear) == 0) {
+                                if (yearDiff == 0) {
                                     var monthDiff = contractMonth - currentMonth;
                                     if (monthDiff == 1) {
                                         temp.remarks = "Expiring in " + monthDiff + " month";
+                                        temp.hasIssue = true;
+                                        temp.status = 'ExpiringSoon';
                                     } else if (monthDiff == 0) {
+                                        temp.hasIssue = true;
                                         var dayDiff = contractDay - currentDay;
                                         if (dayDiff == 0) {
                                             temp.remarks = "Expiring today"
+                                            temp.status = 'ExpiringSoon';
                                         } else if (dayDiff < 0) {
                                             dayDiff = currentDay - contractDay;
                                             temp.remarks = "Expired " + dayDiff + " days ago";
-                                            temp.hasIssue = true;
+                                            temp.status = 'Expired';
+                                        } else if (dayDiff == 1) {
+                                            temp.remarks = "Expiring in " + dayDiff + " day";
+                                            temp.status = 'ExpiringSoon';
                                         } else {
                                             temp.remarks = "Expiring in " + dayDiff + " days";
+                                            temp.status = 'ExpiringSoon';
                                         }
                                     } else if (monthDiff <= 3) {
                                         temp.remarks = "Expiring in " + monthDiff + " months";
+                                        temp.hasIssue = true;
+                                        temp.status = 'ExpiringSoon';
+                                    } else if (monthDiff == -1) {
+                                        temp.remarks = "Expired " + monthDiff + " month ago";
+                                        temp.hasIssue = true;
+                                        temp.status = 'Expired';
+                                    } else if (monthDiff <= 0) {
+                                        temp.remarks = "Expired " + monthDiff + " months ago";
+                                        temp.hasIssue = true;
+                                        temp.status = 'Expired';
+                                    } else {
+                                        temp.status = 'Expiring';
                                     }
+                                } else if (yearDiff == -1) {
+                                    temp.remarks = "Expired " + yearDiff + " year ago";
+                                    temp.status = 'Expired';
+                                } else if (yearDiff < -1) {
+                                    temp.remarks = "Expired " + yearDiff + " years ago";
+                                    temp.status = 'Expired';
+                                } else {
+                                    temp.status = 'Expiring';
                                 }
 
                                 tempList.push(temp);
+                                console.log(contractValue);
                             });
                         });
                         angular.forEach(contractSnapshot.val().expired, function(projectValue, projectKey) {
@@ -692,21 +725,24 @@ app.controller('ContractController', ['$rootScope', '$route', '$routeParams', '$
                                 var temp = contractValue;
                                 temp.projectID = projectKey;
                                 temp.contractID = contractKey;
-                                temp.status = 'Expired';
+                                temp.status = 'Renewed';
+                                temp.effectiveDate = $filter('date')(new Date(temp.effectiveDate), 'yyyyMMdd');
+                                temp.expiryDate = $filter('date')(new Date(temp.expiryDate), 'yyyyMMdd');
                                 tempList.push(temp);
+                                console.log(temp);
                             });
                         });
                         $scope.contractList = tempList;
                         tempList = [];
                     
-                    console.log($scope.contractList);
+                        console.log($scope.contractList);
                     
                         angular.forEach(staffSnapshot.val(), function(staffValue, staffKey) {
                             tempList.push(staffValue);
                         });
                         $scope.staffList = tempList;
                     
-                       angular.forEach($scope.contractList, function(contractValue, contractkey) {
+                        angular.forEach($scope.contractList, function(contractValue, contractkey) {
 
                            contractValue.MCSTS = projectSnapshot.val()[contractValue.projectID].MCSTS;
                            contractValue.projectName = projectSnapshot.val()[contractValue.projectID].name;
@@ -783,13 +819,14 @@ app.controller('ContractController', ['$rootScope', '$route', '$routeParams', '$
                            //     recordValue.hasIssue = false;
                            // else
                            //     recordValue.hasIssue = true;
-                       });
-                    
+                        });
+                        
                         $scope.contractList.sort(function(a,b) {
                             a = a.expiryDate;
                             b = b.expiryDate;
                             return a > b ? 1 : a < b ? -1 : 0;
                         });
+                        
                         $scope.$apply();
                     }).catch(function(error) {
                         console.log(error);

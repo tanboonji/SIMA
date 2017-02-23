@@ -83,7 +83,7 @@
                 </thead>
                 <tbody>
 <!--                <tr ng-repeat="c in contractList | filter:search | filter:isexpired | filter:userrole" ng-class="{'table-issue': c.hasIssue}">-->
-                <tr ng-repeat="c in contractList | filter:search | filter:isexpired" ng-class="{'table-issue': r.hasIssue}">
+                <tr ng-repeat="c in contractList | filter:search | filter:isexpired" ng-class="{'table-issue': c.hasIssue}">
                     <td ng-click="viewRecord(c)">{{c.MCSTS}}</td>
                     <td ng-click="viewRecord(c)">{{c.name}}</td>
                     <td ng-click="viewRecord(c)">{{c.type}}</td>

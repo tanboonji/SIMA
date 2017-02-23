@@ -630,7 +630,8 @@ app.controller('DashboardController', ['$rootScope', '$route', '$routeParams', '
                                         "location":projectFacilityValue.name,
                                         "question":questionValue.name,
                                         "comments": questionValue.comments,
-                                        "afterPhoto":questionValue.image64,
+                                        "afterPhoto":"",
+//                                        "afterPhoto":questionValue.image64,
                                         "remarks":""
                                     })
                                 }
@@ -641,7 +642,8 @@ app.controller('DashboardController', ['$rootScope', '$route', '$routeParams', '
                                     "location":projectFacilityValue.name,
                                     "question":questionValue.name,
                                     "comments": questionValue.comments,
-                                    "afterPhoto":questionValue.image64,
+                                    "afterPhoto":"",
+//                                    "afterPhoto":questionValue.image64,
                                     "remarks":""
                                 })
                             }
