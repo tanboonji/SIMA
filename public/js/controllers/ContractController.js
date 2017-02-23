@@ -628,6 +628,26 @@ app.controller('ContractController', ['$rootScope', '$route', '$routeParams', '$
         else
             return false;
     }
+    
+    $scope.sortByTypeList = ['Term Contracts','Insurance Policies','Licences','All'];
+    $scope.sortByTypeItem = 'Term Contracts';
+        
+    $scope.sortByTypeItemSelected = function(itemSelected) {
+        $scope.sortByTypeItem = itemSelected;
+    };
+        
+    $scope.istype = function(c) {
+        if ($scope.sortByTypeItem === 'Term Contracts')
+            return (c.category === 'Term Contracts');
+        else if ($scope.sortByTypeItem === 'Insurance Policies')
+            return (c.category === 'Insurance Policies');
+        else if ($scope.sortByTypeItem === 'Licences')
+            return (c.category === 'Licences');
+        else if ($scope.sortByTypeItem === 'All')
+            return true;
+        else
+            return false;
+    }
         
     /*********************
     *** Dashboard List ***

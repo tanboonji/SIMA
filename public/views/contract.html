@@ -32,6 +32,13 @@
 
     <div class="dashboard restrict container">
         <h3 class="title">Contracts</h3>
+        <div class="pull-right margin-top-15">
+            <div class="btn-group">
+                <button type="button" class="btn btn-default" ng-click="sendReminder()">
+                    Send Reminder ({{reminderDate}})
+                </button>
+            </div>
+        </div>
         <div class="row">
             <div class="col-md-12">
                 <div class="pull-left col-md-4 force-col-padding has-icon">
@@ -39,11 +46,13 @@
                     <input type="text" class="form-control" placeholder="Search for..." ng-model="query"/>
                 </div>
                 <div class="pull-right">
+<!--
                     <div class="btn-group margin-right-5">
                         <button type="button" class="btn btn-default" ng-click="sendReminder()">
                             Send Reminder ({{reminderDate}})
                         </button>
                     </div>
+-->
                     <label for="">Order:&nbsp;</label>
                     <div class="btn-group margin-right-5">
                         <button type="button" class="btn btn-default dropdown-toggle dropdown-style" 
@@ -53,6 +62,17 @@
                         </button>
                         <ul class="dropdown-menu">
                             <li ng-repeat="s in sortByOrderList"><a ng-click="sortByOrderItemSelected(s)">{{s}}</a></li>
+                        </ul>
+                    </div>
+                    <label for="">Type:&nbsp;</label>
+                    <div class="btn-group margin-right-5">
+                        <button type="button" class="btn btn-default dropdown-toggle dropdown-style" 
+                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                            <div class="dropdown-text-left">{{sortByTypeItem}}</div>
+                            <span class="caret dropdown-text-right"></span>
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li ng-repeat="s in sortByTypeList"><a ng-click="sortByTypeItemSelected(s)">{{s}}</a></li>
                         </ul>
                     </div>
                     <label for="">Status:&nbsp;</label>
@@ -83,7 +103,7 @@
                 </thead>
                 <tbody>
 <!--                <tr ng-repeat="c in contractList | filter:search | filter:isexpired | filter:userrole" ng-class="{'table-issue': c.hasIssue}">-->
-                <tr ng-repeat="c in contractList | filter:search | filter:isexpired" ng-class="{'table-issue': c.hasIssue}">
+                <tr ng-repeat="c in contractList | filter:search | filter:isexpired | filter:istype" ng-class="{'table-issue': c.hasIssue}">
                     <td ng-click="viewRecord(c)">{{c.MCSTS}}</td>
                     <td ng-click="viewRecord(c)">{{c.name}}</td>
                     <td ng-click="viewRecord(c)">{{c.type}}</td>
