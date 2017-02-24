@@ -176,9 +176,12 @@ app.controller('ContractController', ['$rootScope', '$route', '$routeParams', '$
             $scope.notify("An unknown error has occured (Error #000)", "danger");
         }
     });
+    
+    $scope.btnValidate = false;
         
     $scope.sendReminder = function() {
         
+        $scope.btnValidate = true;
         var newDate = new Date();
         
         firebase.database().ref("time").once("value").then(function(snapshot) {
@@ -334,9 +337,11 @@ app.controller('ContractController', ['$rootScope', '$route', '$routeParams', '$
                 var fullDateTime = newDate.newFullDateTime();
                 
                 firebase.database().ref('time').set(''+fullDateTime).then(function () {
+                    $scope.btnValidate = false;
                     $scope.reminderDate = $scope.transformDate(currentFullDay.toString());
                     $scope.$apply();
                 }).catch(function(error) {
+                    $scope.btnValidate = false;
                     console.log(error);
                     if (error.code === "PERMISSION_DENIED") {
                         //(#error)firebase-permission-denied
@@ -347,11 +352,13 @@ app.controller('ContractController', ['$rootScope', '$route', '$routeParams', '$
                     }
                 });
             } else {
+                $scope.btnValidate = false;
                 //(#error)database-user-not-found
                 console.log("database-user-not-found");
                 $scope.notify("User cannot be found in database (Error #002)", "danger");
             }
         }).catch(function(error) {
+            $scope.btnValidate = false;
             console.log(error);
             if (error.code === "PERMISSION_DENIED") {
                 //(#error)firebase-permission-denied
