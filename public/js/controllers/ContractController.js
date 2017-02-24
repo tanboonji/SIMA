@@ -195,99 +195,27 @@ app.controller('ContractController', ['$rootScope', '$route', '$routeParams', '$
                 if (lastReminderDate < currentFullDay) {
                     console.log("emailjs: sending reminder");
                     
+//                    var currentYear = newDate.newYearNow();
+                    var currentMonth = newDate.newMonthNow();
+                    var currentDay = newDate.newDayNow();
+                    
                     angular.forEach($scope.contractList, function(contractValue, contractKey){
-                        if (contractValue.status === "Existing") {
-
+                        if (contractValue.status === "ExpiringSoon" || contractValue.status === "Expired") {
                             console.log("emailjs: contract");
-                            var currentYear = newDate.newYearNow();
-                            var currentMonth = newDate.newMonthNow();
-                            var currentDay = newDate.newDayNow();
-                            var contractYear = contractValue.expiryDate.toString().substr(0,4);
+//                            var contractYear = contractValue.expiryDate.toString().substr(0,4);
                             var contractMonth = contractValue.expiryDate.toString().substr(4,2);
                             var contractDay = contractValue.expiryDate.toString().substr(6,2);
+                            
+//                            var yearDiff = contractYear - currentYear;
 
-                            if ((contractYear - currentYear) == 0) {
-                                console.log("emailjs: contractYear-currentYear == 0");
-                                
-                                var monthDiff = contractMonth - currentMonth;
-                                if (monthDiff == 1) {
-                                    console.log("emailjs: monthDiff == 1");
+//                            if (yearDiff == 0) {
+//                            console.log("emailjs: contractYear-currentYear == 0");
 
-                                    var expiry_params = {
-                                        "to_name": contractValue.CMName,
-                                        "send_email": contractValue.CMEmail,
-                                        "expiry_date": contractValue.showExpiryDate,
-                                        "project_name": contractValue.projectName,
-                                        "contract_name": contractValue.name
-                                    };
-
-                                    emailjs.send(service_id, 'contract_expiry_template', expiry_params)
-                                        .then(function (response) {
-                                            console.log("SUCCESS. status=%d, text=%s", response.status, response.text);
-                                        }, function (err) {
-                                            console.log("FAILED. error=", err);
-                                        });
-
-                                } else if (monthDiff <= 0) {
-                                    var dayDiff = contractDay - currentDay;
-                                    if (dayDiff == 0) {
-                                        console.log("emailjs: monthDiff <= 0 && dayDiff == 0");
-
-                                        var expiry_params = {
-                                            "to_name": contractValue.CMName,
-                                            "send_email": contractValue.CMEmail,
-                                            "expiry_date": contractValue.showExpiryDate,
-                                            "project_name": contractValue.projectName,
-                                            "contract_name": contractValue.name
-                                        };
-
-                                        emailjs.send(service_id, 'contract_expiry_template', expiry_params)
-                                            .then(function (response) {
-                                                console.log("SUCCESS. status=%d, text=%s", response.status, response.text);
-                                            }, function (err) {
-                                                console.log("FAILED. error=", err);
-                                            });
-
-                                    } else if (dayDiff < 0) {
-                                        console.log("emailjs: monthDiff <= 0 && dayDiff < 0");
-
-                                        var expiry_params = {
-                                            "to_name": contractValue.CMName,
-                                            "send_email": contractValue.CMEmail,
-                                            "expiry_date": contractValue.showExpiryDate,
-                                            "project_name": contractValue.projectName,
-                                            "contract_name": contractValue.name
-                                        };
-
-                                        emailjs.send(service_id, 'contract_expiry_template', expiry_params)
-                                            .then(function (response) {
-                                                console.log("SUCCESS. status=%d, text=%s", response.status, response.text);
-                                            }, function (err) {
-                                                console.log("FAILED. error=", err);
-                                            });
-
-
-                                    } else {
-                                        console.log("emailjs: monthDiff <= 0 && dayDiff > 0");
-
-                                        var expiry_params = {
-                                            "to_name": contractValue.CMName,
-                                            "send_email": contractValue.CMEmail,
-                                            "expiry_date": contractValue.showExpiryDate,
-                                            "project_name": contractValue.projectName,
-                                            "contract_name": contractValue.name
-                                        };
-
-                                        emailjs.send(service_id, 'contract_expiry_template', expiry_params)
-                                            .then(function (response) {
-                                                console.log("SUCCESS. status=%d, text=%s", response.status, response.text);
-                                            }, function (err) {
-                                                console.log("FAILED. error=", err);
-                                            });
-
-                                    }
-                                } else if (monthDiff <= 3) {
-                                        console.log("emailjs: monthDiff <= 3");
+                            var monthDiff = contractMonth - currentMonth;
+                            var dayDiff = contractDay - currentDay;
+                            if ((monthDiff == 3 && dayDiff == 0) || monthDiff == 2 || (monthDiff == 1 && dayDiff != 0)) {
+                                if (contractValue.reminder3m !== true) {
+                                    console.log("emailjs: 3 months");
 
                                     var expiry_params = {
                                         "to_name": contractValue.CMName,
@@ -300,19 +228,132 @@ app.controller('ContractController', ['$rootScope', '$route', '$routeParams', '$
                                     emailjs.send(service_id, 'contract_expiry_template', expiry_params)
                                         .then(function (response) {
                                             console.log("SUCCESS. status=%d, text=%s", response.status, response.text);
+                                            firebase.database().ref('contract/existing/' + contractValue.projectID + "/" + contractValue.contractID  + "/reminder3m").set(true).then(function () {
+                                                //do nothing
+                                            }).catch(function(error) {
+                                                console.log(error);
+                                                if (error.code === "PERMISSION_DENIED") {
+                                                    //(#error)firebase-permission-denied
+                                                    $scope.notify("You do not have the permission to access this data (Error #001)", "danger");
+                                                } else {
+                                                    //(#error)unknown-error
+                                                    $scope.notify("An unknown error has occured (Error #000)", "danger");
+                                                }
+                                            });
                                         }, function (err) {
                                             console.log("FAILED. error=", err);
                                         });
-
                                 } else {
-                                    console.log("emailjs: failed to send reminder");
+                                    console.log("reminder3m === true");
                                 }
-                            } else if ((contractYear - currentYear) < 0) {
-                                console.log("emailjs: contractYear-currentYear < 0");
+                            } else if ((monthDiff == 1 && dayDiff == 0) || (monthDiff == 0 && dayDiff > 0)) {
+                                if (contractValue.cmreminder1m !== true) {
+                                    console.log("emailjs: 1 month");
+
+                                    var expiry_params = {
+                                        "to_name": contractValue.CMName,
+                                        "send_email": contractValue.CMEmail,
+                                        "expiry_date": contractValue.showExpiryDate,
+                                        "project_name": contractValue.projectName,
+                                        "contract_name": contractValue.name
+                                    };
+
+                                    emailjs.send(service_id, 'contract_expiry_template', expiry_params)
+                                        .then(function (response) {
+                                            console.log("CM SUCCESS. status=%d, text=%s", response.status, response.text);
+                                            firebase.database().ref('contract/existing/' + contractValue.projectID + "/" + contractValue.contractID  + "/cmreminder1m").set(true).then(function () {
+                                                //do nothing
+                                            }).catch(function(error) {
+                                                console.log(error);
+                                                if (error.code === "PERMISSION_DENIED") {
+                                                    //(#error)firebase-permission-denied
+                                                    $scope.notify("You do not have the permission to access this data (Error #001)", "danger");
+                                                } else {
+                                                    //(#error)unknown-error
+                                                    $scope.notify("An unknown error has occured (Error #000)", "danger");
+                                                }
+                                            });
+                                        }, function (err) {
+                                            console.log("CM FAILED. error=", err);
+                                        });
+                                } else {
+                                    console.log("cmreminder1m === true");
+                                }
                                 
-                                var expiredMonth = (contractYear-currentYear+1)*12;
-                                expiredMonth = expiredMonth + currentMonth + (12-contractMonth);
-                                
+                                if (contractValue.tmreminder1m !== true) {
+                                    var expiry_params = {
+                                        "to_name": contractValue.TMName,
+                                        "send_email": contractValue.TMEmail,
+                                        "expiry_date": contractValue.showExpiryDate,
+                                        "project_name": contractValue.projectName,
+                                        "contract_name": contractValue.name
+                                    };
+
+                                    emailjs.send(service_id, 'contract_expiry_template', expiry_params)
+                                        .then(function (response) {
+                                            console.log("TM SUCCESS. status=%d, text=%s", response.status, response.text);
+                                            firebase.database().ref('contract/existing/' + contractValue.projectID + "/" + contractValue.contractID  + "/tmreminder1m").set(true).then(function () {
+                                                //do nothing
+                                            }).catch(function(error) {
+                                                console.log(error);
+                                                if (error.code === "PERMISSION_DENIED") {
+                                                    //(#error)firebase-permission-denied
+                                                    $scope.notify("You do not have the permission to access this data (Error #001)", "danger");
+                                                } else {
+                                                    //(#error)unknown-error
+                                                    $scope.notify("An unknown error has occured (Error #000)", "danger");
+                                                }
+                                            });
+                                        }, function (err) {
+                                            console.log("TM FAILED. error=", err);
+                                        });
+                                } else {
+                                    console.log("tmreminder1m === true");
+                                }
+//                                if (dayDiff == 0) {
+                                    
+
+//                                } else if (dayDiff < 0) {
+//                                    console.log("emailjs: monthDiff <= 0 && dayDiff < 0");
+//
+//                                    var expiry_params = {
+//                                        "to_name": contractValue.CMName,
+//                                        "send_email": contractValue.CMEmail,
+//                                        "expiry_date": contractValue.showExpiryDate,
+//                                        "project_name": contractValue.projectName,
+//                                        "contract_name": contractValue.name
+//                                    };
+//
+//                                    emailjs.send(service_id, 'contract_expiry_template', expiry_params)
+//                                        .then(function (response) {
+//                                            console.log("SUCCESS. status=%d, text=%s", response.status, response.text);
+//                                        }, function (err) {
+//                                            console.log("FAILED. error=", err);
+//                                        });
+//
+//
+//                                } else {
+//                                    console.log("emailjs: monthDiff <= 0 && dayDiff > 0");
+//
+//                                    var expiry_params = {
+//                                        "to_name": contractValue.CMName,
+//                                        "send_email": contractValue.CMEmail,
+//                                        "expiry_date": contractValue.showExpiryDate,
+//                                        "project_name": contractValue.projectName,
+//                                        "contract_name": contractValue.name
+//                                    };
+//
+//                                    emailjs.send(service_id, 'contract_expiry_template', expiry_params)
+//                                        .then(function (response) {
+//                                            console.log("SUCCESS. status=%d, text=%s", response.status, response.text);
+//                                        }, function (err) {
+//                                            console.log("FAILED. error=", err);
+//                                        });
+//
+//                                }
+                            } else {
+                                    console.log("emailjs: today & expired");
+
                                 var expiry_params = {
                                     "to_name": contractValue.CMName,
                                     "send_email": contractValue.CMEmail,
@@ -323,11 +364,66 @@ app.controller('ContractController', ['$rootScope', '$route', '$routeParams', '$
 
                                 emailjs.send(service_id, 'contract_expiry_template', expiry_params)
                                     .then(function (response) {
-                                        console.log("SUCCESS. status=%d, text=%s", response.status, response.text);
+                                        console.log("CM SUCCESS. status=%d, text=%s", response.status, response.text);
                                     }, function (err) {
-                                        console.log("FAILED. error=", err);
+                                        console.log("CM FAILED. error=", err);
                                     });
-                            }
+                                
+                                var expiry_params = {
+                                    "to_name": contractValue.TMName,
+                                    "send_email": contractValue.TMEmail,
+                                    "expiry_date": contractValue.showExpiryDate,
+                                    "project_name": contractValue.projectName,
+                                    "contract_name": contractValue.name
+                                };
+
+                                emailjs.send(service_id, 'contract_expiry_template', expiry_params)
+                                    .then(function (response) {
+                                        console.log("TM SUCCESS. status=%d, text=%s", response.status, response.text);
+                                    }, function (err) {
+                                        console.log("TM FAILED. error=", err);
+                                    });
+                                
+                                var expiry_params = {
+                                    "to_name": contractValue.BUHName,
+                                    "send_email": contractValue.BUHEmail,
+                                    "expiry_date": contractValue.showExpiryDate,
+                                    "project_name": contractValue.projectName,
+                                    "contract_name": contractValue.name
+                                };
+
+                                emailjs.send(service_id, 'contract_expiry_template', expiry_params)
+                                    .then(function (response) {
+                                        console.log("BUH SUCCESS. status=%d, text=%s", response.status, response.text);
+                                    }, function (err) {
+                                        console.log("BUH FAILED. error=", err);
+                                    });
+
+                            } 
+//                            else {
+//                                console.log("emailjs: failed to send reminder");
+//                            }
+//                            } else if (yearDiff < 0) {
+//                                console.log("emailjs: contractYear-currentYear < 0");
+//                                
+//                                var expiredMonth = (contractYear-currentYear+1)*12;
+//                                expiredMonth = expiredMonth + currentMonth + (12-contractMonth);
+//                                
+//                                var expiry_params = {
+//                                    "to_name": contractValue.CMName,
+//                                    "send_email": contractValue.CMEmail,
+//                                    "expiry_date": contractValue.showExpiryDate,
+//                                    "project_name": contractValue.projectName,
+//                                    "contract_name": contractValue.name
+//                                };
+//
+//                                emailjs.send(service_id, 'contract_expiry_template', expiry_params)
+//                                    .then(function (response) {
+//                                        console.log("SUCCESS. status=%d, text=%s", response.status, response.text);
+//                                    }, function (err) {
+//                                        console.log("FAILED. error=", err);
+//                                    });
+//                            }
                         }
                     });
                 } else {
@@ -537,7 +633,7 @@ app.controller('ContractController', ['$rootScope', '$route', '$routeParams', '$
     
     
     //get current date in yyyy/mm/dd format
-    Date.prototype.dayNow = function () { 
+    Date.prototype.dayNow = function () {
         return (this.getFullYear() + "/" + (((this.getMonth()+1) < 10)?"0":"") + (this.getMonth()+1) + "/" + 
             ((this.getDate() < 10)?"0":"") + this.getDate());
     }
@@ -637,7 +733,7 @@ app.controller('ContractController', ['$rootScope', '$route', '$routeParams', '$
     }
     
     $scope.sortByTypeList = ['Term Contracts','Insurance Policies','Licences','All'];
-    $scope.sortByTypeItem = 'Term Contracts';
+    $scope.sortByTypeItem = 'All';
         
     $scope.sortByTypeItemSelected = function(itemSelected) {
         $scope.sortByTypeItem = itemSelected;
