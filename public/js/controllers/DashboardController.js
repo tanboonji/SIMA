@@ -557,13 +557,15 @@ app.controller('DashboardController', ['$rootScope', '$route', '$routeParams', '
         
     $scope.printReport = function() {
         if ($scope.reportCount != 0) {
+            console.log("wait");
             $timeout($scope.printReport, 1000);
         } else {
             var opts = {}
             opts.centered = false;
             opts.getImage=function(tagValue, tagName) {
-                console.log(tagValue);
-                console.log(tagName);
+                console.log("tagValue:"+tagValue);
+                console.log("tagName:"+tagName);
+//                return fs.readFileSync('images/knight-frank-logo.png','binary');
                 return (tagValue);
             }
 
@@ -626,7 +628,7 @@ app.controller('DashboardController', ['$rootScope', '$route', '$routeParams', '
                         $scope.reportCount++;
                         $scope.convertImgToDataURLviaCanvas(questionValue.image, function(base64img){
                             console.log(base64img);
-//                            base64img2 = base64img;
+                            questionValue.base64img2 = base64img;
                             base64img = base64img.split(",");
                             questionValue.imageType = base64img[0];
                             questionValue.image64 = base64img[1];
@@ -647,8 +649,8 @@ app.controller('DashboardController', ['$rootScope', '$route', '$routeParams', '
                                         "location":projectFacilityValue.name,
                                         "question":questionValue.name,
                                         "comments": questionValue.comments,
-//                                        "afterPhoto":"",
-                                        "afterPhoto":questionValue.image64,
+                                        "afterPhoto":"",
+//                                        "afterPhoto":questionValue.image64,
                                         "remarks":""
                                     })
                                 }
@@ -659,8 +661,8 @@ app.controller('DashboardController', ['$rootScope', '$route', '$routeParams', '
                                     "location":projectFacilityValue.name,
                                     "question":questionValue.name,
                                     "comments": questionValue.comments,
-//                                    "afterPhoto":"",
-                                    "afterPhoto":questionValue.image64,
+                                    "afterPhoto":"",
+//                                    "afterPhoto":questionValue.image64,
                                     "remarks":""
                                 })
                             }
