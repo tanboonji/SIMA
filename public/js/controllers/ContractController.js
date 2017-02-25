@@ -712,7 +712,7 @@ app.controller('ContractController', ['$rootScope', '$route', '$routeParams', '$
 //            return false;
 //    };
         
-    $scope.sortByStatusList = ['Expired','Expiring','Renewed','All'];
+    $scope.sortByStatusList = ['All','Expired','Expiring','Renewed'];
     $scope.sortByStatusItem = 'Expired';
         
     $scope.sortByStatusItemSelected = function(itemSelected) {
@@ -732,7 +732,7 @@ app.controller('ContractController', ['$rootScope', '$route', '$routeParams', '$
             return false;
     }
     
-    $scope.sortByTypeList = ['Term Contracts','Insurance Policies','Licences','All'];
+    $scope.sortByTypeList = ['All','Term Contracts','Insurance Policies','Licences'];
     $scope.sortByTypeItem = 'All';
         
     $scope.sortByTypeItemSelected = function(itemSelected) {
