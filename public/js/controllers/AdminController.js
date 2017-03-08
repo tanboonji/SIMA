@@ -338,6 +338,9 @@ app.controller('AdminController', ['$route', '$rootScope', '$routeParams', '$sco
         else
             return (s.status === 'Active');
     }
+    
+    $scope.sortType = "name";
+    $scope.sortReverse = false;
 	
     /********************
     ****** Routing ******

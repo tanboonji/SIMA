@@ -61,7 +61,13 @@
                 <thead>
                     <tr>
                         <td>ID</td>
-                        <td>Name</td>
+                        <td>
+                            <a ng-click="sortType='name'; sortReverse=!sortReverse" class="no-style">
+                                Name
+                                <span ng-show="sortType=='name' && !sortReverse" class="caret"></span>
+                                <span ng-show="sortType=='name' && sortReverse" class="caret-reverse"></span>
+                            </a>
+                        </td>
                         <td>Contact</td>
                         <td>Email</td>
                         <td>Status</td>
@@ -69,7 +75,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr ng-repeat="s in adminList | filter:search | filter:isdeleted" ng-click="viewAdmin(s)">
+                    <tr ng-repeat="s in adminList | filter:search | filter:isdeleted | orderBy:sortType:sortReverse" ng-click="viewAdmin(s)">
                         <td>{{s.ID}}</td>
                         <td>{{s.name}}</td>
                         <td>{{s.phone}}</td>
