@@ -816,7 +816,7 @@ app.controller('ContractController', ['$rootScope', '$route', '$routeParams', '$
                                             temp.remarks = "Expiring in " + dayDiff + " days";
                                             temp.status = 'ExpiringSoon';
                                         }
-                                    } else if (monthDiff <= 3) {
+                                    } else if (monthDiff == 3 || monthDiff == 2) {
                                         temp.remarks = "Expiring in " + monthDiff + " months";
                                         temp.hasIssue = true;
                                         temp.status = 'ExpiringSoon';
