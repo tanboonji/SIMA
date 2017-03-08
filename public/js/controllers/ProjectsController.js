@@ -2223,6 +2223,7 @@ app.controller('ProjectsController', ['$rootScope', '$route', '$routeParams', '$
             firebase.database().ref('project/' + $scope.project.ID + "/deletedBy").set($scope.user.ID).then(function() {
                 $scope.notify("Successfully deleted \"" + $scope.project.name + "\" facility","success");
                 $scope.project.deleted = true;
+                $scope.$apply();
             }).catch(function(error) {
                 console.log(error);
                 if (error.code === "PERMISSION_DENIED") {
