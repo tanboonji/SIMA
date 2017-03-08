@@ -699,7 +699,7 @@ app.controller('AdminController', ['$route', '$rootScope', '$routeParams', '$sco
                     $scope.alpha = snapshot.val().alphabet;
                     
                     firebase.database().ref("adminpassword").once("value").then(function(adminpassword) {
-                        if (staffpassword.val() !== null) {
+                        if (adminpassword.val() !== null) {
                             //create user in auth
                             $scope.authObj.$createUserWithEmailAndPassword($scope.newadmin.email.trim(), adminpassword.val()).then(function (userData) {
                                     //formatting for ID
