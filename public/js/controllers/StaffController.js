@@ -388,7 +388,7 @@ app.controller('StaffController', ['$route', '$rootScope', '$routeParams', '$sco
                 if (error.code === "auth/requires-recent-login") {
                     //(#error)auth-requires-recent-login
                     alert(error);
-                    $scope.auth.$signOut();
+                    $scope.logout();
                 } else if (error.code === "auth/email-already-in-use")
                     //(#error)auth-email-already-in-use
                     alert(error);
@@ -1141,7 +1141,7 @@ app.controller('StaffController', ['$route', '$rootScope', '$routeParams', '$sco
                 if (error.code === "auth/requires-recent-login") {
                     //(#error)auth-requires-recent-login
                     alert(error);
-                    $scope.auth.$signOut();
+                    $scope.logout();
                 } else if (error.code === "auth/email-already-in-use")
                     //(#error)auth-email-already-in-use
                     alert(error);
@@ -1211,10 +1211,11 @@ app.controller('StaffController', ['$route', '$rootScope', '$routeParams', '$sco
                     });
                 }).catch(function(error) {
                     console.log(error);
-                    if (error.code === "auth/requires-recent-login")
+                    if (error.code === "auth/requires-recent-login") {
                         //(#error)auth-requires-recent-login
                         alert(error);
-                    else if (error.code === "auth/email-already-in-use")
+                        $scope.logout();
+                    } else if (error.code === "auth/email-already-in-use")
                         //(#error)auth-email-already-in-use
                         alert(error);
                     else
@@ -1240,10 +1241,11 @@ app.controller('StaffController', ['$route', '$rootScope', '$routeParams', '$sco
                     $route.reload();
                 }).catch(function(error) {
                     console.log(error);
-                    if (error.code === "auth/requires-recent-login")
+                    if (error.code === "auth/requires-recent-login") {
                         //(#error)auth-requires-recent-login
                         alert(error);
-                    else if (error.code === "auth/email-already-in-use")
+                        $scope.logout();
+                    } else if (error.code === "auth/email-already-in-use")
                         //(#error)auth-email-already-in-use
                         alert(error);
                     else
